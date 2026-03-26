@@ -55,3 +55,10 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Made a simple UI with a CvSU themed color palette (could be improve later on)
 - Implemented a navbar that changes between logged in users and guests
 - Implemented a Dark mode feature for me to not burn my eyes
+
+> Week #2
+- Made a incomplete front-end for main pages for my website (improve/change later on)
+- Also made sure that it is responsive depending on the device
+- Createda a mock database to help visualize the front-end pages (replace with a real mysql database later)
+    > Home Page Front-end
+    - 

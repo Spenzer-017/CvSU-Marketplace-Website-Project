@@ -51,7 +51,7 @@ $recent_purchases = [
   <!-- Welcome Banner -->
   <div class="welcome-banner">
     <div>
-      <h1>Welcome back, <?= htmlspecialchars($user['name']) ?>! 👋</h1>
+      <h1>Welcome back, <?= htmlspecialchars($user['name']) ?>!</h1>
       <p><?= htmlspecialchars($user['course']) ?> &nbsp;·&nbsp; CvSU Main Campus</p>
     </div>
     <a href="/sell.php" class="btn-post">+ Post an Item</a>
@@ -73,19 +73,19 @@ $recent_purchases = [
   </div>
   <div class="quick-actions">
     <a href="/sell.php" class="quick-action-btn">
-      <div class="quick-action-icon">📦</div>
+      <div class="quick-action-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M600-800H360v280h240v-280Zm200 0H680v280h120v-280ZM575-440H320v240h222q21 0 40.5-7t35.5-21l166-137q-8-8-18-12t-21-6q-17-3-33 1t-30 15l-108 87H400v-80h146l44-36q5-3 7.5-8t2.5-11q0-10-7.5-17.5T575-440Zm-335 0h-80v280h80v-280Zm40 0v-360q0-33 23.5-56.5T360-880h440q33 0 56.5 23.5T880-800v280q0 33-23.5 56.5T800-440H280ZM240-80h-80q-33 0-56.5-23.5T80-160v-280q0-33 23.5-56.5T160-520h415q85 0 164 29t127 98l27 41-223 186q-27 23-60 34.5T542-120H309q-11 18-29 29t-40 11Z"/></svg></div>
       <div class="quick-action-label">Post Item</div>
     </a>
     <a href="/browse.php" class="quick-action-btn">
-      <div class="quick-action-icon">🔍</div>
+      <div class="quick-action-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg></div>
       <div class="quick-action-label">Browse</div>
     </a>
     <a href="/messages.php" class="quick-action-btn">
-      <div class="quick-action-icon">💬</div>
+      <div class="quick-action-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Zm126-240h594v-480H160v525l46-45Zm-46 0v-480 480Z"/></svg></div>
       <div class="quick-action-label">Messages</div>
     </a>
     <a href="/profile.php" class="quick-action-btn">
-      <div class="quick-action-icon">👤</div>
+      <div class="quick-action-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm146.5-204.5Q340-521 340-580t40.5-99.5Q421-720 480-720t99.5 40.5Q620-639 620-580t-40.5 99.5Q539-440 480-440t-99.5-40.5ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm100-95.5q47-15.5 86-44.5-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160q53 0 100-15.5ZM523-537q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm-43-43Zm0 360Z"/></svg></div>
       <div class="quick-action-label">My Profile</div>
     </a>
   </div>
