@@ -7,16 +7,16 @@
         <!-- Brand column -->
         <div class="footer-brand">
             <a href="/index.php" class="logo">CvSU <span style="color: #C0B87A;">Marketplace</span></a>
-            <p>Your campus marketplace - buy, sell, and trade within the CvSU community.</p>
+            <p>Your campus marketplace - buy & sell within the CvSU community.</p>
         </div>
 
         <!-- Quick links -->
         <div class="footer-col">
             <h5>Marketplace</h5>
             <ul>
-                <li><a href="/browse.php">Browse Listings</a></li>
-                <li><a href="/sell.php">Post an Item</a></li>
-                <li><a href="/categories.php">Categories</a></li>
+                <li><a <?= ($user) ? 'href="/cvsu-marketplace/browse.php"' : 'href="/cvsu-marketplace/login.php"' ?>>Browse Listings</a></li>
+                <li><a <?= ($user) ? 'href="/cvsu-marketplace/sell.php"' : 'href="/cvsu-marketplace/login.php"' ?>>Post an Item</a></li>
+                <li><a <?= ($user) ? 'href="/cvsu-marketplace/cart.php"' : 'href="/cvsu-marketplace/login.php"' ?>>View Cart</a></li>
             </ul>
         </div>
 
@@ -24,9 +24,9 @@
         <div class="footer-col">
             <h5>Account</h5>
             <ul>
-                <li><a href="/login.php">Login</a></li>
-                <li><a href="/signup.php">Sign Up</a></li>
-                <li><a href="/profile.php">My Profile</a></li>
+                <li><a href="/cvsu-marketplace/login.php">Login</a></li>
+                <li><a href="/cvsu-marketplace/signup.php">Sign Up</a></li>
+                <li><a <?= ($user) ? 'href="/cvsu-marketplace/profile.php"' : 'href="/cvsu-marketplace/login.php"' ?>>My Profile</a></li>
             </ul>
         </div>
 
@@ -34,9 +34,9 @@
         <div class="footer-col">
             <h5>Info</h5>
             <ul>
-                <li><a href="/about.php">About Us</a></li>
-                <li><a href="/faq.php">FAQ</a></li>
-                <li><a href="/contact.php">Contact</a></li>
+                <li><a href="/cvsu-marketplace/info.php#about-us-section">About Us</a></li>
+                <li><a href="/cvsu-marketplace/info.php#faq-section">FAQ</a></li>
+                <li><a href="/cvsu-marketplace/info.php#contact-section">Contact</a></li>
             </ul>
         </div>
 
