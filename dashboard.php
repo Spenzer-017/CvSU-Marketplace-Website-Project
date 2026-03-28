@@ -55,7 +55,7 @@
   <div class="welcome-banner">
     <div>
       <h1>Welcome back, <?= htmlspecialchars($user['name'] ?? '') ?>!</h1>
-      <p><?= htmlspecialchars($user['course'] ?? '' ) ?> &nbsp;·&nbsp; CvSU Main Campus</p>
+      <p><?= htmlspecialchars($user['course'] ?? '' ) ?> &nbsp;-&nbsp; CvSU Main Campus</p>
     </div>
     <a href="/cvsu-marketplace/sell.php" class="btn-post">+ Post an Item</a>
   </div>
@@ -117,7 +117,7 @@
             <?php foreach ($my_listings as $listing): ?>
               <tr>
                 <td><?= htmlspecialchars($listing['title']) ?></td>
-                <td><?= htmlspecialchars($listing['price']) ?></td>
+                <td><?= number_format($listing['price']) ?></td>
                 <td class="hide-mobile"><?= htmlspecialchars($listing['views']) ?></td>
                 <td>
                   <span class="badge badge-<?= htmlspecialchars($listing['status']) ?>">

@@ -100,7 +100,7 @@
         <div class="listing-content">
           <div class="listing-category"><?= htmlspecialchars($item['category']) ?></div>
           <div class="listing-title"><?= htmlspecialchars($item['title']) ?></div>
-          <div class="listing-price">₱<?= htmlspecialchars($item['price']) ?></div>
+          <div class="listing-price">₱<?= number_format($item['price']) ?></div>
           <div class="listing-other-info">
             <span><?= $userIcon ?> &nbsp; <?= htmlspecialchars($item['seller']) ?></span>
             <span><?= $locationIcon ?> &nbsp; <?= htmlspecialchars($item['location']) ?></span>

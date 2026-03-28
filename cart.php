@@ -1,59 +1,60 @@
+<!-- PHP Logic (Authentication, Session, etc.) -->
 <?php
-/*
-  cart.php — Shopping Cart
-  Shows items the user has saved/reserved to buy.
-*/
+  /*
+    cart.php — Shopping Cart
+    Shows items the user has saved/reserved to buy.
+  */
 
-// Uncomment when you have real auth:
-// if (!isset($_SESSION['user'])) {
-//   header('Location: /login.php');
-//   exit;
-// }
+  session_start();
 
-// --- Mock cart items (replace with DB query later) ---
-// Real query: SELECT cart.*, listings.* FROM cart
-//             JOIN listings ON cart.listing_id = listings.id
-//             WHERE cart.user_id = $_SESSION['user']['id']
-$cart_items = [
-  [
-    'id'        => 1,
-    'title'     => 'Calculus Textbook 10th Edition',
-    'category'  => 'Books',
-    'condition' => 'Good',
-    'price'     => 280,
-    'seller'    => 'Maria Santos',
-    'location'  => 'Main Building',
-    'img'       => '📚',
-  ],
-  [
-    'id'        => 2,
-    'title'     => 'Scientific Calculator fx-991',
-    'category'  => 'Electronics',
-    'condition' => 'Like New',
-    'price'     => 450,
-    'seller'    => 'Carlo Reyes',
-    'location'  => 'IT Building',
-    'img'       => '🧮',
-  ],
-  [
-    'id'        => 3,
-    'title'     => 'Engineering Drawing Kit',
-    'category'  => 'Supplies',
-    'condition' => 'Good',
-    'price'     => 350,
-    'seller'    => 'Anna Flores',
-    'location'  => 'Engineering Bldg',
-    'img'       => '📐',
-  ],
-];
-
-$subtotal = array_sum(array_column($cart_items, 'price'));
+  // Forced user login (Remove/change later on for authentication)
+  $_SESSION['user'] = ["name" => "Spenzer", 'course' => 'BS Computer Science', "id" => 17];
+  $user = $_SESSION['user'] ?? null;
 ?>
 
+<!-- PHP UI/UX Logic -->
 <?php 
-    session_start();
-    $activePage = "cart"; 
-    include "includes/header.php";
+  $activePage = "cart"; 
+  include "includes/header.php";
+?>
+
+<!-- PHP Database Query -->
+<?php 
+  // Mock cart items (replace with DB query later)
+  $cart_items = [
+    [
+      'id' => 1654,
+      'title' => 'CvSU ID Lace',
+      'category' => 'Supplies',
+      'condition' => 'Good',
+      'price' => 80,
+      'seller' => 'Charlie',
+      'location' => 'CEIT',
+      'img' => $imgNotAvailableIcon,
+    ],
+    [
+      'id' => 2123,
+      'title' => 'Iphone 67 Pro Max Fully Paid',
+      'category' => 'Electronics',
+      'condition' => 'New',
+      'price' => 6700,
+      'seller' => 'Jedhorse',
+      'location' => 'DIT',
+      'img' => $imgNotAvailableIcon,
+    ],
+    [
+      'id' => 3980,
+      'title' => 'CvSU Uniform M (Large)',
+      'category' => 'Clothing',
+      'condition' => 'Good',
+      'price' => 300,
+      'seller' => 'Blessie',
+      'location' => 'CAS',
+      'img' => $imgNotAvailableIcon,
+    ],
+  ];
+
+  $subtotal = array_sum(array_column($cart_items, 'price'));
 ?>
 
 <div class="cart-page">
@@ -64,72 +65,65 @@ $subtotal = array_sum(array_column($cart_items, 'price'));
       <h1>My Cart</h1>
       <p><?= count($cart_items) ?> item<?= count($cart_items) !== 1 ? 's' : '' ?> saved</p>
     </div>
-    <a href="/cvsu-marketplace/browse.php" class="btn-back">← Continue Browsing</a>
+    <a href="/cvsu-marketplace/browse.php" class="btn-back">< Continue Browsing</a>
   </div>
 
   <?php if (empty($cart_items)): ?>
-
     <!-- Empty cart state -->
     <div class="cart-empty">
-      <div class="empty-icon">🛒</div>
+      <div class="empty-icon"><?= $cartIcon ?></div>
       <h2>Your cart is empty</h2>
       <p>Browse listings and save items you want to buy.</p>
-      <a href="/browse.php" class="btn-browse">Browse Listings</a>
+      <a href="/cvsu-marketplace/browse.php" class="btn-browse">Browse Listings</a>
     </div>
 
   <?php else: ?>
-
     <div class="cart-layout">
 
-      <!-- LEFT: Cart items list -->
+      <!-- Left: Cart items list -->
       <div class="cart-items">
 
         <?php foreach ($cart_items as $item): ?>
           <div class="cart-card" id="cart-item-<?= $item['id'] ?>">
 
-            <!-- Thumbnail -->
-            <div class="cart-thumb"><?= $item['img'] ?></div>
+            <!-- Cart Item Image -->
+            <div class="cart-img"><?= $item['img'] ?></div>
 
             <!-- Item details -->
             <div class="cart-info">
               <div class="cart-category"><?= htmlspecialchars($item['category']) ?></div>
-              <a href="/listing.php?id=<?= $item['id'] ?>" class="cart-title">
+              <a href="/cvsu-marketplace/listing.php?id=<?= $item['id'] ?>" class="cart-title">
                 <?= htmlspecialchars($item['title']) ?>
               </a>
               <div class="cart-meta">
                 <span class="badge badge-condition"><?= htmlspecialchars($item['condition']) ?></span>
-                <span class="cart-seller">👤 <?= htmlspecialchars($item['seller']) ?></span>
-                <span class="cart-location">📍 <?= htmlspecialchars($item['location']) ?></span>
+                <span class="cart-seller"><?= $userIcon ?>&nbsp;<?= htmlspecialchars($item['seller']) ?></span>
+                <span class="cart-location"><?= $locationIcon ?>&nbsp;<?= htmlspecialchars($item['location']) ?></span>
               </div>
             </div>
 
-            <!-- Price + actions -->
+            <!-- Price & actions -->
             <div class="cart-actions">
               <div class="cart-price">₱<?= number_format($item['price']) ?></div>
               <div class="cart-buttons">
-                <a href="/messages.php?seller=<?= urlencode($item['seller']) ?>&item=<?= $item['id'] ?>"
-                   class="btn-message">
-                  💬 Message Seller
+                <a href="/cvsu-marketplace/messages.php?seller=<?= urlencode($item['seller']) ?>&item=<?= $item['id'] ?>" class="btn-message">
+                  Message Seller
                 </a>
-                <button
-                  class="btn-remove"
-                  onclick="removeItem(<?= $item['id'] ?>, <?= $item['price'] ?>)"
-                  aria-label="Remove <?= htmlspecialchars($item['title']) ?> from cart"
-                >
+                <button class="btn-remove" onclick="removeItem(<?= $item['id'] ?>, <?= $item['price'] ?>)" aria-label="Remove <?= htmlspecialchars($item['title']) ?> from cart">
                   Remove
                 </button>
               </div>
             </div>
 
-          </div><!-- /.cart-card -->
+          </div>
         <?php endforeach; ?>
-
+        
         <!-- Clear all link -->
         <div class="cart-clear-row">
-          <button class="btn-clear-all" onclick="clearAll()">🗑 Clear Cart</button>
+          <button class="btn-clear-all" onclick="clearAll()">Clear Cart</button>
         </div>
 
-      </div><!-- /.cart-items -->
+      </div>
 
       <!-- RIGHT: Order summary -->
       <div class="cart-summary">
@@ -153,55 +147,39 @@ $subtotal = array_sum(array_column($cart_items, 'price'));
             <span id="totalPrice">₱<?= number_format($subtotal) ?></span>
           </div>
 
-          <p class="summary-note">
-            💡 Prices are set by individual sellers.
-            Agree on final payment when you meet up.
-          </p>
-
           <!-- Message all sellers -->
-          <a href="/messages.php" class="btn-checkout">
+          <a href="/cvsu-marketplace/messages.php" class="btn-checkout">
             Message All Sellers
           </a>
 
-          <a href="/browse.php" class="btn-browse-more">
+          <a href="/cvsu-marketplace/browse.php" class="btn-browse-more">
             + Add More Items
           </a>
         </div>
 
-        <!-- Safety tip card -->
-        <div class="safety-card">
-          <h4>🔒 Stay Safe</h4>
-          <ul>
-            <li>Always meet in a public campus spot</li>
-            <li>Inspect the item before paying</li>
-            <li>Never send money in advance</li>
-            <li>Report suspicious listings</li>
-          </ul>
-        </div>
+      </div>
 
-      </div><!-- /.cart-summary -->
-
-    </div><!-- /.cart-layout -->
+    </div>
 
   <?php endif; ?>
 
-</div><!-- /.cart-page -->
+</div>
 
 <script>
   // Keep a running total so we can update it when items are removed
   let cartTotal = <?= $subtotal ?>;
 
-  // ── Remove a single item ──────────────────────
+  // Remove a single item
   function removeItem(id, price) {
-    const card    = document.getElementById('cart-item-' + id);
+    const card = document.getElementById('cart-item-' + id);
     const sumLine = document.getElementById('summary-line-' + id);
 
     if (!card) return;
 
-    // Fade out and remove the card
+    // Fade out animation and remove the card
     card.style.transition = 'opacity 0.3s, transform 0.3s';
-    card.style.opacity    = '0';
-    card.style.transform  = 'translateX(20px)';
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(20px)';
 
     setTimeout(() => {
       card.remove();
@@ -209,8 +187,7 @@ $subtotal = array_sum(array_column($cart_items, 'price'));
 
       // Update total
       cartTotal -= price;
-      document.getElementById('totalPrice').textContent =
-        '₱' + cartTotal.toLocaleString();
+      document.getElementById('totalPrice').textContent = '₱' + cartTotal.toLocaleString();
 
       // Count remaining items
       const remaining = document.querySelectorAll('.cart-card').length;
@@ -221,13 +198,13 @@ $subtotal = array_sum(array_column($cart_items, 'price'));
     }, 300);
   }
 
-  // ── Clear all items ───────────────────────────
+  // Clear all items
   function clearAll() {
     const cards = document.querySelectorAll('.cart-card');
     cards.forEach((card, i) => {
       setTimeout(() => {
         card.style.transition = 'opacity 0.3s, transform 0.3s';
-        card.style.opacity    = '0';
+        card.style.opacity = '0';
         card.style.transform  = 'translateX(20px)';
         setTimeout(() => card.remove(), 300);
       }, i * 80); // stagger the removals
@@ -236,7 +213,7 @@ $subtotal = array_sum(array_column($cart_items, 'price'));
     setTimeout(() => showEmptyState(), cards.length * 80 + 350);
   }
 
-  // ── Update the "X items saved" counter ───────
+  // Update the "X items saved" counter
   function updateItemCount(count) {
     const header = document.querySelector('.cart-header p');
     if (header) {
@@ -244,18 +221,29 @@ $subtotal = array_sum(array_column($cart_items, 'price'));
     }
   }
 
-  // ── Replace layout with the empty state ──────
-  function showEmptyState() {
-    const layout = document.querySelector('.cart-layout');
-    if (!layout) return;
+  // Replace layout with the empty state
+  const cartIcon = <?= json_encode($cartIcon) ?>;
 
-    layout.innerHTML = `
+  function showEmptyState() {
+    const page = document.querySelector('.cart-page');
+    if (!page) return;
+
+    page.innerHTML = `
+      <div class="cart-header">
+        <div>
+          <h1>My Cart</h1>
+          <p>0 items saved</p>
+        </div>
+        <a href="/cvsu-marketplace/browse.php" class="btn-back">< Continue Browsing</a>
+      </div>
+
       <div class="cart-empty">
-        <div class="empty-icon">🛒</div>
+        <div class="empty-icon">${cartIcon}</div>
         <h2>Your cart is empty</h2>
         <p>Browse listings and save items you want to buy.</p>
-        <a href="/browse.php" class="btn-browse">Browse Listings</a>
-      </div>`;
+        <a href="/cvsu-marketplace/browse.php" class="btn-browse">Browse Listings</a>
+      </div>
+    `;
 
     updateItemCount(0);
   }
