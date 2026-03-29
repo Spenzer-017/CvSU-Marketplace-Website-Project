@@ -108,11 +108,10 @@
     <!-- Left column: main details -->
     <div class="sell-main">
 
-      <!-- Item title -->
+      <!-- Item Name/Title -->
       <div class="form-group">
-        <label for="title">Item Title <span class="required">*</span></label>
+        <label for="title">Item Name <span class="required">*</span></label>
         <input type="text" id="title" name="title" placeholder="e.g. Ethics Book" value="<?= htmlspecialchars($title ?? '') ?>" maxlength="100"/>
-        <span class="form-hint">Keep it short and descriptive (max 100 characters)</span>
       </div>
 
       <!-- Category & Condition row -->
