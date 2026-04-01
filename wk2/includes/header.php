@@ -53,7 +53,7 @@
                 <a href="profile.php" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>Profile</a>
                 <a href="logout.php" class="btn-login">Logout</a>
 
-            <!-- Guest -->
+                <!-- Guest -->
             <?php else: ?>
                 <a href="index.php" <?= ($activePage ?? '') === 'home' ? 'class="active"' : '' ?>>Home</a>
                 <a href="login.php" class="btn-login">Login</a>

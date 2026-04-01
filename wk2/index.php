@@ -14,7 +14,7 @@
 ?>
 
 <!-- PHP UI/UX Logic -->
-<?php  
+<?php 
   $activePage = "home"; 
   include "includes/header.php"; 
 ?>
