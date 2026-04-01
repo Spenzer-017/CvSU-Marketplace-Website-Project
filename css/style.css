@@ -5,52 +5,48 @@
 
 /* Color Variables */
 :root {
-  --primary:        #005F02;
-  --primary-light:  #427A43;
-  --accent:         #C0B87A;
-  --accent-light:   #F2E3BB;
-  --contrast-bg:    #FFFFFF;
-  --background:     #FAFAF7;
-  --text-dark:      #1A2B1A;
-  --text-muted:     #7A8C7A;
-  --border-light:   #E0D9C3;
-  --hover-bg:       #EEF4EE;
+  --primary: #005F02;
+  --primary-light: #427A43;
+  --accent: #C0B87A;
+  --accent-light: #F2E3BB;
+  --contrast-bg: #FFFFFF;
+  --background: #FAFAF7;
+  --text-dark: #1A2B1A;
+  --text-muted: #7A8C7A;
+  --border-light: #E0D9C3;
+  --hover-bg: #EEF4EE;
   --theme-hover-bg: #DDE8DD;
-  --gold-btn-text:  #005F02;
+  --gold-btn-text: #005F02;
 
-  /* Hero-specific light values */
-  --hero-bg:        #005F02;
-  --hero-heading:   #F2E3BB;
-  --hero-text:      #F2E3BB;
+  --hero-bg: #005F02;
+  --hero-heading: #F2E3BB;
+  --hero-text: #F2E3BB;
 
-  /* Surface tint: used for card thumbs, CTA banner, badges */
-  --surface-tint:      #F2E3BB;  /* cream in light mode */
-  --surface-tint-text: #005F02;  /* dark green text on cream */
+  --surface-tint: #F2E3BB;
+  --surface-tint-text: #005F02;
 }
 
 /* Darkmode Color Variables */
 .darkmode {
-  --primary:        #4CAF50;
-  --primary-light:  #66BB6A;
-  --accent:         #C0B87A;
-  --accent-light:   #8F8755;
-  --contrast-bg:    #1E1E1E;
-  --background:     #121212;
-  --text-dark:      #E6E6E6;
-  --text-muted:     #8A9E8A;
-  --border-light:   #2F2F2F;
-  --hover-bg:       #2A2A2A;
+  --primary: #4CAF50;
+  --primary-light: #66BB6A;
+  --accent: #C0B87A;
+  --accent-light: #8F8755;
+  --contrast-bg: #1E1E1E;
+  --background: #121212;
+  --text-dark: #E6E6E6;
+  --text-muted: #8A9E8A;
+  --border-light: #2F2F2F;
+  --hover-bg: #2A2A2A;
   --theme-hover-bg: #252525;
-  --gold-btn-text:  #1A2B1A;
+  --gold-btn-text: #1A2B1A;
 
-  /* Hero-specific dark values */
-  --hero-bg:        #0D1F0D;   /* very dark green, not bright */
-  --hero-heading:   #C0B87A;   /* gold — stands out on dark green */
-  --hero-text:      #A8C5A8;   /* soft light green for subtitle */
+  --hero-bg: #0D1F0D;   
+  --hero-heading: #C0B87A;   
+  --hero-text: #A8C5A8;   
 
-  /* Surface tint: dark mode uses a dark card surface instead of cream */
-  --surface-tint:      #252A25;  /* very dark green-grey */
-  --surface-tint-text: #C0B87A;  /* gold text on dark surface */
+  --surface-tint: #252A25;
+  --surface-tint-text: #C0B87A;
 }
 
 /* General Structure */
@@ -593,7 +589,6 @@ footer {
   font-weight: 600;
   color: var(--text-dark);
   margin-bottom: 8px;
-  /* Clamp to 2 lines */
   display: -webkit-box;
   line-clamp: 2;
   -webkit-line-clamp: 2;
@@ -818,7 +813,6 @@ footer {
 .welcome-banner p {
   font-size: 0.875rem;
   color: var(--hero-text);
-  /* no opacity — already a softer color, opacity makes it invisible in dark mode */
 }
 
 .welcome-banner .btn-post {
@@ -1193,7 +1187,6 @@ footer {
     font-size: 1.6rem;
   }
 
-  /* Hide less important table columns on mobile */
   .hide-mobile {
     display: none;
   }
@@ -1409,7 +1402,6 @@ footer {
   font-weight: 600;
   color: var(--text-dark);
   margin-bottom: 6px;
-  /* Clamp to 2 lines */
   display: -webkit-box;
   line-clamp: 2;
   -webkit-line-clamp: 2;
@@ -1477,7 +1469,7 @@ footer {
 
 @keyframes bounce {
   from { transform: translateY(0); opacity: 0.5; }
-  to   { transform: translateY(-8px); opacity: 1; }
+  to { transform: translateY(-8px); opacity: 1; }
 }
 
 /* End of results message */
@@ -1517,9 +1509,7 @@ footer {
   font-size: 0.875rem;
 }
 
-/* 
-    Responsiveness
-    */
+/* Responsiveness */
 
 @media (max-width: 900px) {
   .listings-grid {
@@ -1676,9 +1666,7 @@ footer {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(66, 122, 67, 0.12);
 }
@@ -1832,18 +1820,13 @@ footer {
   transform: translateY(0);
 }
 
-/* 
-    Responsiveness — SELL PAGE
-    */
+/* Responsiveness */
 
 @media (max-width: 860px) {
-  /* Stack the two columns vertically */
   .sell-form {
     grid-template-columns: 1fr;
   }
 
-  /* Move the side column above submit on mobile
-      so tips/image don't get buried below a long form */
   .sell-side {
     order: -1;
   }
@@ -1956,8 +1939,6 @@ footer {
   color: var(--text-dark);
   margin-bottom: 8px;
   transition: color 0.2s;
-
-  /* Clamp to 2 lines */
   display: -webkit-box;
   line-clamp: 2;
   -webkit-line-clamp: 2;
@@ -1999,7 +1980,7 @@ footer {
   fill: var(--primary);
 }
 
-/* Price + action buttons */
+/* Price & action buttons */
 .cart-actions {
   display: flex;
   flex-direction: column;
@@ -2113,8 +2094,6 @@ footer {
   font-size: 0.8rem;
   color: var(--text-muted);
   flex: 1;
-
-  /* Clamp to 1 line */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2236,16 +2215,13 @@ footer {
   background-color: var(--primary-light);
 }
 
-/* 
-    Responsiveness — CART PAGE
-    */
+/* Responsiveness */
 
 @media (max-width: 860px) {
   .cart-layout {
     grid-template-columns: 1fr;
   }
 
-  /* Move summary above the items list on mobile */
   .cart-summary {
     order: -1;
   }
@@ -2256,7 +2232,6 @@ footer {
     padding: 20px 16px;
   }
 
-  /* Stack card contents vertically on small screens */
   .cart-card {
     flex-wrap: wrap;
   }
@@ -2496,9 +2471,7 @@ footer {
   margin-bottom: 7px;
 }
 
-.profile-right input,
-.profile-right select,
-.profile-right textarea {
+.profile-right input, .profile-right select, .profile-right textarea {
   width: 100%;
   font-family: 'Poppins', sans-serif;
   font-size: 0.875rem;
@@ -2511,9 +2484,7 @@ footer {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.profile-right input:focus,
-.profile-right select:focus,
-.profile-right textarea:focus {
+.profile-right input:focus, .profile-right select:focus, .profile-right textarea:focus {
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(66, 122, 67, 0.12);
 }
@@ -2582,23 +2553,19 @@ footer {
   text-align: center;
 }
 
-/* 
-    Responsiveness — PROFILE PAGE
-    */
+/* Responsiveness */
 
 @media (max-width: 860px) {
   .profile-form {
     grid-template-columns: 1fr;
   }
 
-  /* On tablet, put avatar left side-by-side with stats */
   .profile-left {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
 
-  /* Avatar picker spans both columns */
   .avatar-picker-card {
     grid-column: span 2;
   }
@@ -2614,7 +2581,6 @@ footer {
     gap: 8px;
   }
 
-  /* Stack left side back to single column */
   .profile-left {
     grid-template-columns: 1fr;
   }
@@ -2623,7 +2589,6 @@ footer {
     grid-column: span 1;
   }
 
-  /* 3-column avatar grid on small screens */
   .avatar-grid {
     grid-template-columns: repeat(3, 1fr);
   }
