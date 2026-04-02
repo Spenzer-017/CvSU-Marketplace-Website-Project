@@ -72,3 +72,14 @@ There's still room for improvement on the color scheme of my themes like in hove
     - ???
     > Profile Page Front-end
     - ???
+
+> Week 3
+- Made authentication (Login, Signup, Logout)
+- Made UI for authentication pages (Login, Signup)
+- Made a include dedicated for database connection/access
+- Remove manual forced logins and set the $_SESSION to $user in the database
+- Added protection to protected pages like (dashboard, profile, etc.) redirecting guest into login page if they aren't logged in
+    > Login Page Front-end
+    - ???
+    > Signup Page Front-end
+    - ???

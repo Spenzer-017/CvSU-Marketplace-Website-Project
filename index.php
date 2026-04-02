@@ -6,10 +6,9 @@
   */
 
   session_start();
+
+  require_once "includes/db.php";
   
-  // Test Code for user log in (Remove after adding real log in authentication and db)
-  //unset($_SESSION['user']); // Test for guest navigation
-  $_SESSION['user'] = ["name" => "Spenzer", "id" => 17]; // Test for logged-in user navigation
   $user = $_SESSION['user'] ?? null; 
 ?>
 
@@ -21,26 +20,49 @@
 
 <!-- PHP Database Query -->
 <?php
-  // Mock featured listings (replace with real DB query later)
-  $featured = [
-    ['title' => 'Ethics Book', 'price' => 400, 'category' => 'Books', 'seller' => 'Gypsy', 'location' => 'CAS', 'img' => $imgNotAvailableIcon, 'id' => 124],
-    ['title' => 'CvSU ID Lace','price' => 80, 'category' => 'Supplies', 'seller' => 'Charlie',  'location' => 'CEIT', 'img' => $imgNotAvailableIcon, 'id' => 155],
-    ['title' => 'Iphone 67 Pro Max Fully Paid', 'price' => 6700, 'category' => 'Electronics', 'seller' => 'Jedhorse', 'location' => 'DIT','img' => $imgNotAvailableIcon, 'id' => 267],
-    ['title' => 'Lomi', 'price' => 99, 'category' => 'Food', 'seller' => 'Nuggets', 'location' => 'DIET', 'img' => $imgNotAvailableIcon, 'id' => 655],
-    ['title' => 'CvSU Uniform M (Large)', 'price' => 500, 'category' => 'Clothing', 'seller' => 'Blessie', 'location' => 'CAS','img' => $imgNotAvailableIcon, 'id' => 430],
-    ['title' => 'Laundry Services', 'price' => 350, 'category' => 'Services', 'seller' => 'Moglie', 'location' => 'Bancod',  'img' => $imgNotAvailableIcon, 'id' => 886],
-    ['title' => 'Understanding The Self Book', 'price' => 450, 'category' => 'Books', 'seller' => 'Happy', 'location' => 'Oval',  'img' => $imgNotAvailableIcon, 'id' => 987],
-    ['title' => 'Keychain', 'price' => 25, 'category' => 'Other', 'seller' => 'Pumpkin', 'location' => 'Grand Stand',  'img' => $imgNotAvailableIcon, 'id' => 101]
+  // PHP Icons Variable To Use With Categories
+  $icons = [
+    'Books' => $bookIcon,
+    'Electronics' => $electronicsIcon,
+    'Supplies' => $suppliesIcon,
+    'Clothing' => $clothesIcon,
+    'Food' => $foodIcon,
+    'Services' => $servicesIcon,
   ];
-    
-  $categories = [
-    ['label' => 'Books', 'icon' => $bookIcon, 'count' => 142],
-    ['label' => 'Electronics', 'icon' => $electronicsIcon, 'count' => 87],
-    ['label' => 'Supplies', 'icon' => $suppliesIcon,  'count' => 65],
-    ['label' => 'Clothing', 'icon' => $clothesIcon, 'count' => 53],
-    ['label' => 'Food', 'icon' => $foodIcon, 'count' => 39],
-    ['label' => 'Services', 'icon' => $servicesIcon, 'count' => 28],
-  ];
+
+  // Features Database Query
+  $stmt = $pdo->query("
+    SELECT 
+      items.item_id,
+      items.title,
+      items.price,
+      items.image_path,
+      items.meetup_location AS location,
+      categories.name AS category,
+      users.name AS seller
+    FROM items
+    JOIN users ON items.seller_id = users.id
+    JOIN categories ON items.category_id = categories.category_id
+    WHERE items.status = 'active'
+    ORDER BY items.created_at DESC
+    LIMIT 8
+  ");
+
+  $featured = $stmt->fetchAll();
+  
+  // Categories Database Query
+  $stmt = $pdo->query("
+    SELECT 
+      categories.category_id,
+      categories.name,
+      COUNT(items.item_id) AS count
+    FROM categories
+    LEFT JOIN items ON items.category_id = categories.category_id
+    WHERE categories.name != 'Other'
+    GROUP BY categories.category_id
+  ");
+
+  $categories = $stmt->fetchAll();
 ?>
 
 <!-- Hero Section -->
@@ -77,9 +99,9 @@
     </div>
     <div class="categories-grid">
       <?php foreach ($categories as $cat): ?>
-        <a href="<?= ($user) ? 'browse.php?category=' . urlencode($cat['label']) : 'login.php' ?>" class="category-card">
-          <div class="category-icon"><?= $cat['icon'] ?></div>
-          <div class="category-label"><?= htmlspecialchars($cat['label']) ?></div>
+        <a href="<?= ($user) ? 'browse.php?category=' . urlencode($cat['name']) : 'login.php' ?>" class="category-card">
+          <div class="category-icon"><?= $icons[$cat['name']] ?? '' ?></div>
+          <div class="category-label"><?= htmlspecialchars($cat['name']) ?></div>
           <div class="category-count"><?= htmlspecialchars($cat['count']) ?> listings</div>
         </a>
       <?php endforeach; ?>
@@ -95,8 +117,14 @@
   </div>
   <div class="listings-grid">
     <?php foreach ($featured as $item): ?>
-      <a href="listing.php?id=<?= urlencode($item['id']) ?>" class="listing-card">
-        <div class="listing-img"><?= $item['img'] ?></div>
+      <a href="listing.php?id=<?= urlencode($item['item_id']) ?>" class="listing-card">
+        <div class="listing-img">
+          <?php if (!empty($item['image_path'])): ?>
+            <img src="<?= htmlspecialchars($item['image_path']) ?>" alt="Item">
+          <?php else: ?>
+            <?= $imgNotAvailableIcon ?>
+          <?php endif; ?>
+        </div>
         <div class="listing-content">
           <div class="listing-category"><?= htmlspecialchars($item['category']) ?></div>
           <div class="listing-title"><?= htmlspecialchars($item['title']) ?></div>

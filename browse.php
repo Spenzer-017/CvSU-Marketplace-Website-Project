@@ -6,10 +6,13 @@
   */
 
   session_start();
+  
+  if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit;
+  }
 
-  // Forced user login (Remove/change later on for authentication)
-  $_SESSION['user'] = ["name" => "Spenzer", 'course' => 'BS Computer Science', "id" => 17];
-  $user = $_SESSION['user'] ?? null;
+  $user = $_SESSION['user'] ?? null; 
 ?>
 
 <!-- PHP UI/UX Logic -->

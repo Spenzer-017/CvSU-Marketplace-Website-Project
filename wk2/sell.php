@@ -138,6 +138,7 @@
             <option value="Like New" <?= ($condition ?? '') === 'Like New' ? 'selected' : '' ?>>Like New</option>
             <option value="Good" <?= ($condition ?? '') === 'Good' ? 'selected' : '' ?>>Good</option>
             <option value="Fair" <?= ($condition ?? '') === 'Fair' ? 'selected' : '' ?>>Fair</option>
+            <option value="N/A" <?= ($condition ?? '') === 'N/A' ? 'selected' : '' ?>>N/A</option>
           </select>
         </div>
       </div>
@@ -147,7 +148,7 @@
         <label for="price">Price <span class="required">*</span></label>
         <div class="price-input">
           <span class="price-prefix">₱</span>
-          <input type="number" id="price" name="price" placeholder="0.00" min="0" step="0.01" value="<?= htmlspecialchars($price ?? '') ?>"/>
+          <input type="number" id="price" name="price" placeholder="0.00" min="0" step="1" value="<?= htmlspecialchars($price ?? '') ?>"/>
         </div>
       </div>
 

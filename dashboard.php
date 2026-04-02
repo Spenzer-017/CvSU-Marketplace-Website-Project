@@ -7,9 +7,12 @@
 
   session_start();
 
-  // Forced user login (Remove/change later on for authentication)
-  $_SESSION['user'] = ["name" => "Spenzer", 'course' => 'BS Computer Science', "id" => 17];
-  $user = $_SESSION['user'] ?? null;
+  if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit;
+  }
+
+  $user = $_SESSION['user'] ?? null; 
 ?>
 
 <!-- PHP UI/UX Logic -->
@@ -55,7 +58,7 @@
   <div class="welcome-banner">
     <div>
       <h1>Welcome back, <?= htmlspecialchars($user['name'] ?? '') ?>!</h1>
-      <p><?= htmlspecialchars($user['course'] ?? '' ) ?> &nbsp;-&nbsp; CvSU Main Campus</p>
+      <p><?= !empty($user['course']) ? htmlspecialchars($user['course']) . '&nbsp;-&nbsp; CvSU Main Campus' : 'CvSU Main Campus'?></p>
     </div>
     <a href="sell.php" class="btn-post">+ Post an Item</a>
   </div>
