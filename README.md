@@ -61,4 +61,14 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Also made sure that it is responsive depending on the device
 - Createda a mock database to help visualize the front-end pages (replace with a real mysql database later)
     > Home Page Front-end
-    - 
+    - ???
+    > Dashboard Front-end
+    - ???
+    > Browse Page Front-end
+    - ???
+    > Sell Page Front-end
+    - ???
+    > Cart Page Front-end
+    - ???
+    > Profile Page Front-end
+    - ???

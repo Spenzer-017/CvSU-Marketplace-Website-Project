@@ -70,20 +70,17 @@ CREATE TABLE users (
 -- TABLE 2: categories
 CREATE TABLE categories (
     category_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    icon VARCHAR(10) DEFAULT '📦'
+    name VARCHAR(50) NOT NULL UNIQUE
 );
 
 INSERT INTO categories (name, icon) VALUES
-('Books','📚'),
-('Electronics','💻'),
-('Supplies','✏️'),
-('Clothing','👕'),
-('Food','🍱'),
-('Services','🛠️'),
-('Other','📦');
-
-
+('Books'),
+('Electronics'),
+('Supplies'),
+('Clothing'),
+('Food'),
+('Services'),
+('Other');
 
 -- TABLE 3: items
 CREATE TABLE items (

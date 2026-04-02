@@ -29,22 +29,22 @@
   ];
   
   $my_listings = [
-    ['title' => 'Calculus Textbook', 'price' => 280, 'status' => 'active', 'views' => 34, 'id' => 987],
-    ['title' => 'Scientific Calculator', 'price' => 450, 'status' => 'active', 'views' => 21, 'id' => 190],
-    ['title' => 'Engineering Drawing Kit', 'price' => 350, 'status' => 'sold', 'views' => 58, 'id' => 275],
-    ['title' => 'Physics Lab Manual', 'price' => 120, 'status' => 'active', 'views' => 15, 'id' => 489],
+    ['title' => 'Portrait of Myself', 'price' => 777, 'status' => 'active', 'views' => 34, 'id' => 967],
+    ['title' => 'Junimo Plushe', 'price' => 500, 'status' => 'active', 'views' => 21, 'id' => 190],
+    ['title' => 'Statue of My Dog (Life Size)', 'price' => 2500, 'status' => 'sold', 'views' => 58, 'id' => 275],
+    ['title' => 'Rubiks Cube', 'price' => 420, 'status' => 'active', 'views' => 15, 'id' => 489],
   ];
   
   $recent_messages = [
-    ['from' => 'Maria Santos', 'item' => 'Calculus Textbook', 'msg' => 'Is this still available?', 'time' => '10 min ago',  'unread' => true],
-    ['from' => 'Carlo Reyes', 'item' => 'Scientific Calculator', 'msg' => 'Can you do ₱400?', 'time' => '1 hour ago', 'unread' => true],
-    ['from' => 'Anna Flores', 'item' => 'Engineering Kit', 'msg' => 'Thank you for the fast delivery!','time' => '3 hours ago', 'unread' => false],
+    ['from' => 'Mom', 'item' => 'Statue of My Dog (Life Size)', 'msg' => 'Why are you selling this son?', 'time' => '10 min ago',  'unread' => true],
+    ['from' => 'Xymon', 'item' => 'Portrait of Myself', 'msg' => 'How much for you to burn it?', 'time' => '1 hour ago', 'unread' => true],
+    ['from' => 'Rob', 'item' => 'Junimo Plushe', 'msg' => 'I will take this out of your hand for 50.','time' => '3 hours ago', 'unread' => false],
   ];
   
   $recent_purchases = [
-    ['title' => 'USB-C Hub', 'from' => 'Leo Mendoza', 'price' => 550, 'date' => 'Mar 10'],
-    ['title' => 'Notebook Bundle', 'from' => 'Claire Tan', 'price' => 150, 'date' => 'Mar 8'],
-    ['title' => 'Arduino Kit', 'from' => 'Ryan Castro', 'price' => 900, 'date' => 'Mar 5'],
+    ['title' => 'Death Note', 'from' => 'Ryuk', 'price' => 666, 'date' => 'Mar 10'],
+    ['title' => 'Key Chain', 'from' => 'Yñigo', 'price' => 85, 'date' => 'Mar 8'],
+    ['title' => 'Venus Fly Trap', 'from' => 'Gypsy', 'price' => 800, 'date' => 'Mar 5'],
   ];
 ?>
 
