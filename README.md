@@ -47,6 +47,14 @@ that the darkmode icon is the one that is on display and when its in darkmode th
 Also the footer is not affected by the theme because, i don't like how it looks when it changes.
 There's still room for improvement on the color scheme of my themes like in hover and buttons.
 
+# Things To Take Note Of
+- Image upload might need to change where it saves, also might need to do something on how the image will look like in the      
+  front-end.
+- There's still no anything on info pages like about, faq, contact
+- The load page specific javascript have no purpose for now because almost all script are embedded
+- The infinite scroll in browse page is quite finicky (doesn't work that great), but it still works. Because its loading
+  the entire items table and cutting it in javascript
+
 <!-- Weekly Report -->
 
 > Week #1

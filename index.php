@@ -55,7 +55,7 @@
     SELECT 
       categories.category_id,
       categories.name,
-      COUNT(items.item_id) AS count
+      COUNT(CASE WHEN items.status = 'active' THEN 1 END) AS count
     FROM categories
     LEFT JOIN items ON items.category_id = categories.category_id
     WHERE categories.name != 'Other'
@@ -119,15 +119,16 @@
     <?php foreach ($featured as $item): ?>
       <a href="listing.php?id=<?= urlencode($item['item_id']) ?>" class="listing-card">
         <div class="listing-img">
-          <?php if (!empty($item['image_path'])): ?>
-            <img src="<?= htmlspecialchars($item['image_path']) ?>" alt="Item">
+          <?php $imgFile = "uploads/" . $item['image_path']; ?>
+          <?php if (!empty($item['image_path']) && file_exists($imgFile)): ?>
+            <img src="<?= htmlspecialchars($imgFile) ?>" alt="Item Image">
           <?php else: ?>
             <?= $imgNotAvailableIcon ?>
           <?php endif; ?>
         </div>
         <div class="listing-content">
           <div class="listing-category"><?= htmlspecialchars($item['category']) ?></div>
-          <div class="listing-title"><?= htmlspecialchars($item['title']) ?></div>
+          <div class="listing-title"><?= htmlspecialchars(strlen($item['title']) > 30 ? substr($item['title'], 0, 30) . '...' : $item['title']) ?></div>
           <div class="listing-price">₱<?= number_format($item['price']) ?></div>
           <div class="listing-other-info">
             <span><?= $userIcon ?> &nbsp; <?= htmlspecialchars($item['seller']) ?></span>

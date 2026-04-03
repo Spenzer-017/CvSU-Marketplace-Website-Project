@@ -63,7 +63,7 @@ CREATE TABLE users (
     year_level VARCHAR(20) DEFAULT NULL,
     bio VARCHAR(255) DEFAULT NULL,
     contact_info VARCHAR(100) DEFAULT NULL,
-    avatar VARCHAR(20) DEFAULT 'avatar_1',
+    avatar VARCHAR(20) DEFAULT 'junimo_0',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

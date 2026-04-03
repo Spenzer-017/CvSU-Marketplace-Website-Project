@@ -6,6 +6,8 @@
 
   session_start();
 
+  require_once "includes/db.php";
+
   if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit;
@@ -18,6 +20,7 @@
   $errors = [];
 
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     // Collect and sanitize inputs
     $title = trim($_POST['title'] ?? '');
     $category = trim($_POST['category'] ?? '');
@@ -39,32 +42,67 @@
 
     // Image upload validation
     $uploaded_image = null;
+
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
       $allowed_types = ['image/jpeg', 'image/png', 'image/webp'];
-      $max_size = 5 * 1024 * 1024; // 5MB
+      $max_size = 5 * 1024 * 1024;
 
       if (!in_array($_FILES['image']['type'], $allowed_types)) {
         $errors[] = 'Image must be JPG, PNG, or WebP.';
       } elseif ($_FILES['image']['size'] > $max_size) {
         $errors[] = 'Image must be smaller than 5MB.';
       } else {
-        // In production: move_uploaded_file() to your uploads folder
-        $uploaded_image = $_FILES['image']['name'];
+        $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $filename = uniqid() . '.' . $ext;
+
+        $upload_dir = 'uploads/';
+        $target = $upload_dir . $filename;
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
+          $uploaded_image = $filename;
+        } else {
+          $errors[] = 'Failed to upload image.';
+        }
       }
     }
 
-    // If no errors, save to DB (placeholder)
+    // Get category_id from category name
+    $stmt = $pdo->prepare("SELECT category_id FROM categories WHERE name = ?");
+    $stmt->execute([$category]);
+    $catData = $stmt->fetch();
+
+    if (!$catData) {
+      $errors[] = 'Invalid category selected.';
+    } else {
+      $category_id = $catData['category_id'];
+    }
+
+    // If no errors, save to DB
     if (empty($errors)) {
-      /* 
-        Example:
-          $stmt = $pdo->prepare("INSERT INTO listings
-            (title, category, condition, price, description, meetup, contact, image, seller_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-          $stmt->execute([$title, $category, $condition, $price,
-                          $description, $meetup, $contact,
-                          $uploaded_image, $_SESSION['user']['id']]); 
-      */
-      $success = true;
+      try {
+        $stmt = $pdo->prepare("
+          INSERT INTO items 
+          (seller_id, category_id, title, description, price, image_path, condition_type, meetup_location, contact_info)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+
+        $stmt->execute([
+          $user['id'],
+          $category_id,
+          $title,
+          $description,
+          $price,
+          $uploaded_image,
+          $condition,
+          $meetup,
+          $contact
+        ]);
+
+        $success = true;
+
+      } catch (PDOException $e) {
+        $errors[] = "Something went wrong while saving. Please try again.";
+      }
     }
   }
 ?>
@@ -106,7 +144,7 @@
   <?php endif; ?>
 
   <!-- Form -->
-  <form class="sell-form" method="POST" enctype="multipart/form-data">
+  <form class="sell-form" id="sell-form-group" method="POST" enctype="multipart/form-data">
 
     <!-- Left column: main details -->
     <div class="sell-main">
@@ -231,6 +269,8 @@
 
   // Click anywhere on the upload area to trigger the file input
   uploadArea.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('click', (e) => e.stopPropagation());
 
   fileInput.addEventListener('change', function () {
     const file = this.files[0];

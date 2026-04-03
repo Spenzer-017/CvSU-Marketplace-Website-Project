@@ -7,11 +7,14 @@
 
   session_start();
 
+  require_once "includes/db.php";
+
   if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit;
   }
 
+  $user_id = $_SESSION['user']['id'];
   $user = $_SESSION['user'] ?? null; 
 ?>
 
@@ -23,23 +26,17 @@
 
 <!-- PHP Database Query -->
 <?php 
-  // Mock current user data (replace with DB query later)
-  $user = [
-    'name' => 'Spenzer Lima',
-    'email' => 'kevinspenzer.lima@cvsu.edu.ph',
-    'course' => 'BS Computer Science',
-    'year' => '1st Year',
-    'bio' => 'CS student, and the creator of this platform.',
-    'contact' => 'FB: Spenzer Lima',
-    'avatar' => 'junimo_0',
-    'joined' => 'January 2025',
-    'listings' => 4,
-    'sold' => 12,
-    'bought' => 7,
-  ];
+  // User Database Query
+  $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+  $stmt->execute([$user_id]);
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  // Temporary/Mock password
-  $stored_hash = password_hash('charlie017', PASSWORD_DEFAULT);
+  if (!$user) {
+    die("User not found.");
+  }
+
+  // User Password
+  $stored_hash = $user['password'];
 
   // Avatars
   $avatars = [
@@ -65,6 +62,7 @@
     'BS Nursing',
     'BS Tourism Management',
     'BS Hotel And Restaurant Management',
+    'BS Criminology',
     'Other',
   ];
 
@@ -113,20 +111,42 @@
 
     // Save New Info
     if (empty($errors)) {
-      $user['name'] = $name;
-      $user['course'] = $course;
-      $user['year'] = $year;
-      $user['bio'] = $bio;
-      $user['contact'] = $contact;
-      $user['avatar'] = $avatar;
 
-      // If changing password
-      if ($new_password) {
-        $stored_hash = password_hash($new_password, PASSWORD_DEFAULT);
-      }
-
-      $success = true;
+    // If changing password
+    if ($new_password) {
+      $stored_hash = password_hash($new_password, PASSWORD_DEFAULT);
     }
+
+    $stmt = $pdo->prepare("
+      UPDATE users 
+      SET name = ?, 
+          course = ?, 
+          year_level = ?, 
+          bio = ?, 
+          contact_info = ?, 
+          avatar = ?, 
+          password = ?
+      WHERE id = ?
+    ");
+
+    $stmt->execute([
+      $name,
+      $course,
+      $year,
+      $bio,
+      $contact,
+      $avatar,
+      $stored_hash,
+      $user_id
+    ]);
+
+    // Refresh user data
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $success = true;
+  }
   }
 
   // Function that returns an <img> tag pointing to the pixel art PNG.
@@ -192,8 +212,8 @@
         <input type="hidden" name="avatar" id="avatarInput" value="<?= htmlspecialchars($user['avatar']) ?>" />
       </div>
 
-      <!-- Stats -->
-      <div class="profile-stats-card">
+      <!-- Stats (Uncomment after user listings, sold, bought exist in users table in DB) -->
+      <!-- <div class="profile-stats-card">
         <h3 class="card-title">Your Stats</h3>
         <div class="profile-stats">
           <div class="profstat">
@@ -210,7 +230,7 @@
           </div>
         </div>
         <p class="joined-note">Member since <?= htmlspecialchars($user['joined']) ?></p>
-      </div>
+      </div> -->
 
     </div>
 
@@ -252,7 +272,7 @@
             <select id="year" name="year">
               <option value="" disabled>Select year</option>
               <?php foreach ($years as $y):?>
-                <option value="<?= $y ?>" <?= $user['year'] === $y ? 'selected' : '' ?>>
+                <option value="<?= $y ?>" <?= $user['year_level'] === $y ? 'selected' : '' ?>>
                   <?= $y ?>
                 </option>
               <?php endforeach; ?>
@@ -272,7 +292,7 @@
         <!-- Contact -->
         <div class="form-group" style="margin-bottom:0;">
           <label for="contact">Contact / Messenger</label>
-          <input type="text" id="contact" name="contact" value="<?= htmlspecialchars($user['contact']) ?>" placeholder="e.g. FB: Juan dela Cruz" maxlength="80"/>
+          <input type="text" id="contact" name="contact" value="<?= htmlspecialchars($user['contact_info']) ?>" placeholder="e.g. FB: Juan dela Cruz" maxlength="80"/>
         </div>
 
       </div>

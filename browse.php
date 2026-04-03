@@ -6,6 +6,8 @@
   */
 
   session_start();
+
+  require_once "includes/db.php";
   
   if (!isset($_SESSION['user'])) {
     header('Location: login.php');
@@ -23,27 +25,84 @@
 
 <!-- PHP Database Query -->
 <?php 
-  // Mock listings data (replace with real DB query later)
-  // In real use: SELECT * FROM listings WHERE ... LIMIT 12 OFFSET $offset (To load only 12 listing per)
-  $all_listings = [
-    ['id' => 1641, 'title' => 'Art Appreciation Book', 'price' => 280, 'category' => 'Books', 'seller' => 'Nuggets', 'location' => 'Library', 'img' => $imgNotAvailableIcon, 'condition' => 'Good'],
-    ['id' => 2457, 'title' => 'Mini Fan', 'price' => 150, 'category' => 'Electronics', 'seller' => 'Bona', 'location' => 'CAS', 'img' => $imgNotAvailableIcon, 'condition' => 'Like New'],
-    ['id' => 3312, 'title' => 'BT Earphones', 'price' => 250, 'category' => 'Supplies', 'seller' => 'Mikel', 'location' => 'CEMDS', 'img' => $imgNotAvailableIcon, 'condition' => 'Good'],
-    ['id' => 4098, 'title' => 'CvSU ID Lace','price' => 80, 'category' => 'Supplies', 'seller' => 'Charlie',  'location' => 'CEIT', 'img' => $imgNotAvailableIcon, 'condition' => 'Like New'],
-    ['id' => 5156, 'title' => 'Iphone 67 Pro Max Fully Paid', 'price' => 6700, 'category' => 'Electronics', 'seller' => 'Jedhorse', 'location' => 'DIT','img' => $imgNotAvailableIcon, 'condition' => 'Good'],
-    ['id' => 6230, 'title' => 'Lomi', 'price' => 99, 'category' => 'Food', 'seller' => 'Nuggets', 'location' => 'DIET', 'img' => $imgNotAvailableIcon, 'condition' => 'N/A'],
-    ['id' => 7998, 'title' => 'CvSU Uniform M (Large)', 'price' => 300, 'category' => 'Clothing', 'seller' => 'Blessie', 'location' => 'CAS','img' => $imgNotAvailableIcon, 'condition' => 'Like New'],
-    ['id' => 8008, 'title' => 'Laundry Services', 'price' => 350, 'category' => 'Services', 'seller' => 'Moglie', 'location' => 'Bancod',  'img' => $imgNotAvailableIcon, 'condition' => 'N/A'],
-    ['id' => 9669, 'title' => 'Understanding The Self Book', 'price' => 450, 'category' => 'Books', 'seller' => 'Happy', 'location' => 'Oval',  'img' => $imgNotAvailableIcon, 'condition' => 'Good'],
-    ['id' => 1010, 'title' => 'Keychain', 'price' => 25, 'category' => 'Other', 'seller' => 'Pumpkin', 'location' => 'Grand Stand',  'img' => $imgNotAvailableIcon, 'condition' => 'Like New'],
-    ['id' => 1122, 'title' => 'Pins', 'price' => 30, 'category' => 'Other', 'seller' => 'Jettie', 'location' => 'Dorm A', 'img' => $imgNotAvailableIcon, 'condition' => 'Good'],
-    ['id' => 1200, 'title' => 'CvSU PE Uniform Set', 'price' => 300, 'category' => 'Clothing', 'seller' => 'Wiffie', 'location' => 'Gym', 'img' => $imgNotAvailableIcon, 'condition' => 'Good'],
-];
-  
+  // Pagination Setup
+  $perBatch = 8;
+  $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+  $offset = ($page - 1) * $perBatch;
+
+  // Items Database Query
+  $stmt = $pdo->prepare("
+    SELECT 
+      items.item_id AS id,
+      items.title,
+      items.price,
+      items.image_path,
+      items.condition_type AS `condition`,
+      items.meetup_location AS location,
+      categories.name AS category,
+      users.name AS seller
+    FROM items
+    JOIN users ON items.seller_id = users.id
+    JOIN categories ON items.category_id = categories.category_id
+    WHERE items.status = 'active'
+    ORDER BY items.created_at DESC
+  ");
+
+  $perBatch = 40;
+  $offset = 0;
+
+  $stmt = $pdo->prepare("
+    SELECT 
+      items.item_id AS id,
+      items.title,
+      items.price,
+      items.image_path,
+      items.condition_type AS `condition`,
+      items.meetup_location AS location,
+      categories.name AS category,
+      users.name AS seller
+    FROM items
+    JOIN users ON items.seller_id = users.id
+    JOIN categories ON items.category_id = categories.category_id
+    WHERE items.status = 'active'
+    ORDER BY items.created_at DESC
+    LIMIT :limit OFFSET :offset
+  ");
+
+  $stmt->bindValue(':limit', $perBatch, PDO::PARAM_INT);
+  $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+  $stmt->execute();
+
+  $items = $stmt->fetchAll();
+
+  // Convert to JS friendly format
+  $all_listings = [];
+
+  foreach ($items as $item) {
+    $imgPath = "uploads/" . $item['image_path'];
+
+    if (!empty($item['image_path']) && file_exists($imgPath)) {
+      $img = '<img src="' . htmlspecialchars($imgPath) . '" alt="Item Image">';
+    } else {
+      $img = $imgNotAvailableIcon;
+    }
+
+    $all_listings[] = [
+      'id' => $item['id'],
+      'title' => $item['title'],
+      'price' => (int)$item['price'],
+      'category' => $item['category'],
+      'seller' => $item['seller'],
+      'location' => $item['location'],
+      'condition' => $item['condition'],
+      'img' => $img
+    ];
+  }
+
   $categories = ['All', 'Books', 'Electronics', 'Supplies', 'Clothing', 'Food', 'Services', 'Other'];
   $conditions = ['Any Condition', 'New', 'Like New', 'Good', 'Fair', 'N/A'];
-  
-  // Active filters from URL
+
+  // Active filters
   $active_cat = $_GET['category'] ?? 'All';
   $active_sort = $_GET['sort'] ?? 'newest';
   $search_q = $_GET['q'] ?? '';
@@ -216,9 +275,24 @@
     applyFilters();
     loadNextBatch();
   }
+
+  // Load more items from server
+  async function loadMoreFromServer() {
+    const nextPage = Math.floor(allListings.length / 40) + 1;
+
+    const res = await fetch(`api/get_listings.php?page=${nextPage}`);
+    const data = await res.json();
+
+    if (data.length === 0) {
+      allLoaded = true;
+      return;
+    }
+
+    allListings.push(...data);
+  }
  
   // Load the next batch of items
-  function loadNextBatch() {
+  async function loadNextBatch() {
     if (isLoading || allLoaded) return;
  
     isLoading = true;
@@ -254,6 +328,12 @@
       isLoading = false;
       loader.style.display = 'none';
     }, 400); // 400ms simulated delay
+
+    const endOfLoadedData = start + perBatchAmt >= allListings.length;
+
+    if (endOfLoadedData && !allLoaded) {
+      await loadMoreFromServer();
+    }
   }
  
   // Infinite Scroll via IntersectionObserver
