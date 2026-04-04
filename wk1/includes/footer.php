@@ -16,7 +16,7 @@
             <ul>
                 <li><a href="browse.php">Browse Listings</a></li>
                 <li><a href="sell.php">Post an Item</a></li>
-                <li><a href="cart.php">View Cart</a></li>
+                <li><a href="transactions.php">Transactions</a></li>
             </ul>
         </div>
 
@@ -48,7 +48,7 @@
 
 </footer>
 
-<!-- Move Later A JS Script File -->
+<!-- Move Later To A JS Script File -->
 <script>
     const menuToggle = document.querySelector(".menu-toggle");
     const nav = document.querySelector("nav");

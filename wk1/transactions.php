@@ -1,11 +1,11 @@
 <?php 
 session_start();
-$activePage = "cart"; 
+$activePage = "transactions"; 
 include "includes/header.php";
 ?>
 
 <h1>
-    <center>Cart</center>
+    <center>Transactions</center>
 </h1>
 
 <?php include "includes/footer.php"; ?>

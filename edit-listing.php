@@ -1,8 +1,9 @@
 <!-- PHP Logic (Authentication, Session, etc.) -->
 <?php
-  /*
-    sell.php - Post a New Listing
-  */
+/*
+  edit-listing.php - Edit an Existing Listing
+  Only the seller who owns the listing can access this page.
+*/
 
   session_start();
 
@@ -13,24 +14,44 @@
     exit;
   }
 
-  $user = $_SESSION['user'] ?? null; 
+  $loggedInUser = $_SESSION['user'];
+  $item_id  = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+  if ($item_id <= 0) {
+    header('Location: my-listings.php');
+    exit;
+  }
 ?>
 
 <!-- PHP UI/UX Logic -->
-<?php 
-  $activePage = "sell"; 
+<?php
+  $activePage = '';
   include "includes/header.php";
 ?>
 
 <!-- PHP Database Query -->
-<?php 
-  // Handle form submission
+<?php
+  // Fetch the item - make sure it belongs to the logged-in user
+  $stmt = $pdo->prepare("
+    SELECT items.*, categories.name AS category_name
+    FROM items
+    JOIN categories ON items.category_id = categories.category_id
+    WHERE items.item_id = ? AND items.seller_id = ?
+    LIMIT 1
+  ");
+  $stmt->execute([$item_id, (int)$loggedInUser['id']]);
+  $item = $stmt->fetch();
+
+  // If not found or not the owner, redirect away
+  if (!$item) {
+    header('Location: my-listings.php');
+    exit;
+  }
+
   $success = false;
-  $errors = [];
+  $errors  = [];
 
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // Collect and sanitize inputs
     $title = trim($_POST['title'] ?? '');
     $category = trim($_POST['category'] ?? '');
     $condition = trim($_POST['condition'] ?? '');
@@ -49,8 +70,8 @@
     if ($meetup === '') $errors[] = 'Meetup location is required.';
     if ($contact === '') $errors[] = 'Contact info is required.';
 
-    // Image upload validation
-    $uploaded_image = null;
+    // Image upload (optional on edit - keep existing if no new file)
+    $image_path = $item['image_path'];
 
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
       $allowed_types = ['image/jpeg', 'image/png', 'image/webp'];
@@ -63,12 +84,14 @@
       } else {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
         $filename = uniqid() . '.' . $ext;
-
-        $upload_dir = 'uploads/';
-        $target = $upload_dir . $filename;
+        $target = 'uploads/' . $filename;
 
         if (move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
-          $uploaded_image = $filename;
+          // Delete old image if it exists
+          if (!empty($item['image_path']) && file_exists('uploads/' . $item['image_path'])) {
+            unlink('uploads/' . $item['image_path']);
+          }
+          $image_path = $filename;
         } else {
           $errors[] = 'Failed to upload image.';
         }
@@ -81,36 +104,44 @@
     $catData = $stmt->fetch();
 
     if (!$catData) {
-      $errors[] = 'Invalid category selected.';
-    } else {
-      $category_id = $catData['category_id'];
+      $errors[] = 'Invalid category.';
     }
 
-    // If no errors, save to DB
     if (empty($errors)) {
       try {
         $stmt = $pdo->prepare("
-          INSERT INTO items 
-          (seller_id, category_id, title, description, price, image_path, condition_type, meetup_location, contact_info)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          UPDATE items
+          SET title = ?, category_id = ?, condition_type = ?, price = ?,
+              description = ?, meetup_location = ?, contact_info = ?, image_path = ?
+          WHERE item_id = ? AND seller_id = ?
         ");
-
         $stmt->execute([
-          $user['id'],
-          $category_id,
           $title,
-          $description,
-          $price,
-          $uploaded_image,
+          $catData['category_id'],
           $condition,
+          $price,
+          $description,
           $meetup,
-          $contact
+          $contact,
+          $image_path,
+          $item_id,
+          (int)$loggedInUser['id']
         ]);
+
+        // Refresh item data to show updated values
+        $stmt = $pdo->prepare("
+          SELECT items.*, categories.name AS category_name
+          FROM items
+          JOIN categories ON items.category_id = categories.category_id
+          WHERE items.item_id = ?
+        ");
+        $stmt->execute([$item_id]);
+        $item = $stmt->fetch();
 
         $success = true;
 
       } catch (PDOException $e) {
-        $errors[] = "Something went wrong while saving. Please try again.";
+        $errors[] = 'Something went wrong. Please try again.';
       }
     }
   }
@@ -118,23 +149,20 @@
 
 <div class="sell-page">
 
-  <!-- Page header -->
   <div class="sell-header">
     <div>
-      <h1>Post an Item</h1>
-      <p>Fill in the details below and your listing will be live immediately.</p>
+      <h1>Edit Listing</h1>
+      <p>Update the details of your listing.</p>
     </div>
-    <a href="dashboard.php" class="btn-back">< Back to Dashboard</a>
+    <a href="my-listings.php" class="btn-back">< Back to My Listings</a>
   </div>
 
-  <!-- Success message -->
   <?php if ($success): ?>
     <div class="alert alert-success">
-      Your listing has been posted! <a href="browse.php">View it on Browse</a>
+      Listing updated! <a href="listing.php?id=<?= $item_id ?>">View listing</a>
     </div>
   <?php endif; ?>
 
-  <!-- Error messages -->
   <?php if (!empty($errors)): ?>
     <div class="alert alert-error">
       <strong>Please fix the following:</strong>
@@ -146,106 +174,98 @@
     </div>
   <?php endif; ?>
 
-  <!-- Form -->
-  <form class="sell-form" id="sell-form-group" method="POST" enctype="multipart/form-data">
+  <form class="sell-form" method="POST" enctype="multipart/form-data">
 
-    <!-- Left column: main details -->
     <div class="sell-main">
 
-      <!-- Item Name/Title -->
       <div class="form-group">
         <label for="title">Item Name <span class="required">*</span></label>
-        <input type="text" id="title" name="title" placeholder="e.g. Ethics Book" value="<?= htmlspecialchars($title ?? '') ?>" maxlength="100"/>
+        <input type="text" id="title" name="title" placeholder="e.g. Ethics Book" value="<?= htmlspecialchars($item['title']) ?>" maxlength="100" />
       </div>
 
-      <!-- Category & Condition row -->
       <div class="form-row">
         <div class="form-group">
           <label for="category">Category <span class="required">*</span></label>
           <select id="category" name="category">
-            <option value="" disabled selected>Select category</option>
-            <option value="Books" <?= ($category ?? '') === 'Books' ? 'selected' : '' ?>>Books</option>
-            <option value="Electronics"<?= ($category ?? '') === 'Electronics' ? 'selected' : '' ?>>Electronics</option>
-            <option value="Supplies" <?= ($category ?? '') === 'Supplies' ? 'selected' : '' ?>>Supplies</option>
-            <option value="Clothing" <?= ($category ?? '') === 'Clothing' ? 'selected' : '' ?>>Clothing</option>
-            <option value="Food" <?= ($category ?? '') === 'Food' ? 'selected' : '' ?>>Food</option>
-            <option value="Services" <?= ($category ?? '') === 'Services' ? 'selected' : '' ?>>Services</option>
-            <option value="Other" <?= ($category ?? '') === 'Other' ? 'selected' : '' ?>>Other</option>
+            <option value="" disabled>Select category</option>
+            <?php foreach (['Books','Electronics','Supplies','Clothing','Food','Services','Other'] as $cat): ?>
+              <option value="<?= $cat ?>" <?= $item['category_name'] === $cat ? 'selected' : '' ?>><?= $cat ?></option>
+            <?php endforeach; ?>
           </select>
         </div>
 
         <div class="form-group">
           <label for="condition">Condition <span class="required">*</span></label>
           <select id="condition" name="condition">
-            <option value="" disabled selected>Select condition</option>
-            <option value="New" <?= ($condition ?? '') === 'New' ? 'selected' : '' ?>>New</option>
-            <option value="Like New" <?= ($condition ?? '') === 'Like New' ? 'selected' : '' ?>>Like New</option>
-            <option value="Good" <?= ($condition ?? '') === 'Good' ? 'selected' : '' ?>>Good</option>
-            <option value="Fair" <?= ($condition ?? '') === 'Fair' ? 'selected' : '' ?>>Fair</option>
-            <option value="N/A" <?= ($condition ?? '') === 'N/A' ? 'selected' : '' ?>>N/A</option>
+            <option value="" disabled>Select condition</option>
+            <?php foreach (['New','Like New','Good','Fair','N/A'] as $cond): ?>
+              <option value="<?= $cond ?>" <?= $item['condition_type'] === $cond ? 'selected' : '' ?>><?= $cond ?></option>
+            <?php endforeach; ?>
           </select>
         </div>
       </div>
 
-      <!-- Price -->
       <div class="form-group">
         <label for="price">Price <span class="required">*</span></label>
         <div class="price-input">
-          <span class="price-prefix">₱</span>
-          <input type="number" id="price" name="price" placeholder="0.00" min="0" step="1" value="<?= htmlspecialchars($price ?? '') ?>"/>
+          <span class="price-prefix">&#8369;</span>
+          <input type="number" id="price" name="price" placeholder="0.00" min="0" step="1" value="<?= htmlspecialchars($item['price']) ?>" />
         </div>
       </div>
 
-      <!-- Description -->
       <div class="form-group">
         <label for="description">Description <span class="required">*</span></label>
-        <textarea id="description" name="description" rows="5" placeholder="Describe your item - include size, defects, or anything buyers should know…" maxlength="1000"><?= htmlspecialchars($description ?? '') ?></textarea>
+        <textarea id="description" name="description" rows="5" maxlength="200" placeholder="Describe your item..."><?= htmlspecialchars($item['description'] ?? '') ?></textarea>
         <span class="form-hint char-count">
-          <span id="charCount">0</span> / 1000 characters
+          <span id="charCount"><?= strlen($item['description'] ?? '') ?></span> / 200 characters
         </span>
       </div>
 
     </div>
 
-    <!-- Right column: image & logistics -->
     <div class="sell-side">
 
-      <!-- Image upload -->
       <div class="form-card">
         <h3 class="card-title">Item Photo</h3>
+
+        <!-- Show current image if there is one -->
+        <?php if (!empty($item['image_path']) && file_exists('uploads/' . $item['image_path'])): ?>
+          <div style="margin-bottom: 12px;">
+            <img src="uploads/<?= htmlspecialchars($item['image_path']) ?>" alt="Current image" style="width:100%; border-radius:8px; object-fit:cover; max-height:200px;" />
+            <span class="form-hint">Current photo. Upload a new one to replace it.</span>
+          </div>
+        <?php endif; ?>
 
         <div class="upload-area" id="uploadArea">
           <div class="upload-placeholder" id="uploadPlaceholder">
             <div class="upload-icon"><?= $photoIcon ?></div>
-            <p class="upload-label">Click to upload a photo</p>
+            <p class="upload-label">Click to upload a new photo</p>
             <p class="upload-sub">JPG, PNG or WebP - Max 5MB</p>
           </div>
           <img id="imagePreview" class="image-preview" src="" alt="Preview" style="display:none;" />
           <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp" />
         </div>
-
-        <?php if (!empty($uploaded_image)): ?>
-          <p class="form-hint" style="margin-top:8px;"><?= htmlspecialchars($uploaded_image) ?></p>
-        <?php endif; ?>
       </div>
 
-      <!-- Meetup location -->
       <div class="form-card">
         <h3 class="card-title">Meetup & Contact</h3>
 
         <div class="form-group">
           <label for="meetup">Preferred Meetup Spot <span class="required">*</span></label>
-          <input type="text" id="meetup" name="meetup" placeholder="e.g. CEIT Bldg." value="<?= htmlspecialchars($meetup ?? '') ?>" maxlength="100"/>
+          <input type="text" id="meetup" name="meetup" placeholder="e.g. CEIT Bldg." value="<?= htmlspecialchars($item['meetup_location'] ?? '') ?>" maxlength="100" />
         </div>
 
         <div class="form-group" style="margin-bottom: 0;">
           <label for="contact">Contact / Messenger <span class="required">*</span></label>
-          <input type="text" id="contact" name="contact" placeholder="e.g. FB: Juan dela Cruz" value="<?= htmlspecialchars($contact ?? '') ?>"/>
+          <input type="text" id="contact" name="contact" placeholder="e.g. FB: Juan dela Cruz" value="<?= htmlspecialchars($item['contact_info'] ?? '') ?>" />
         </div>
       </div>
 
-      <!-- Submit button -->
-      <button type="submit" class="btn-submit">Post Listing</button>
+      <button type="submit" class="btn-submit">Save Changes</button>
+
+      <a href="listing.php?id=<?= $item_id ?>" class="btn-back" style="display:block; text-align:center; margin-top:10px;">
+        View Listing
+      </a>
 
     </div>
 
@@ -254,64 +274,28 @@
 </div>
 
 <script>
-  // Character counter for description
   const desc = document.getElementById('description');
   const charCount = document.getElementById('charCount');
+  desc.addEventListener('input', () => { charCount.textContent = desc.value.length; });
 
-  function updateCount() {
-    charCount.textContent = desc.value.length;
-  }
-  desc.addEventListener('input', updateCount);
-  updateCount();
-
-  // Image upload preview
   const fileInput = document.getElementById('image');
   const uploadArea = document.getElementById('uploadArea');
   const placeholder = document.getElementById('uploadPlaceholder');
   const imagePreview = document.getElementById('imagePreview');
 
-  // Click anywhere on the upload area to trigger the file input
   uploadArea.addEventListener('click', () => fileInput.click());
-
   fileInput.addEventListener('click', (e) => e.stopPropagation());
 
   fileInput.addEventListener('change', function () {
     const file = this.files[0];
     if (!file) return;
-
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = (e) => {
       imagePreview.src = e.target.result;
       imagePreview.style.display = 'block';
       placeholder.style.display  = 'none';
     };
     reader.readAsDataURL(file);
-  });
-
-  // Drag and drop support
-  uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadArea.classList.add('drag-over');
-  });
-
-  uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('drag-over');
-  });
-
-  uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadArea.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      fileInput.files = e.dataTransfer.files;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        imagePreview.src = ev.target.result;
-        imagePreview.style.display = 'block';
-        placeholder.style.display  = 'none';
-      };
-      reader.readAsDataURL(file);
-    }
   });
 </script>
 

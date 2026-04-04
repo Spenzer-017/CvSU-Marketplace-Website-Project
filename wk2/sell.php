@@ -9,7 +9,16 @@
   // Forced user login (Remove/change later on for authentication)
   $_SESSION['user'] = ["name" => "Spenzer", 'course' => 'BS Computer Science', "id" => 17];
   $user = $_SESSION['user'] ?? null;
+?>
 
+<!-- PHP UI/UX Logic -->
+<?php 
+  $activePage = "sell"; 
+  include "includes/header.php";
+?>
+
+<!-- PHP Database Query -->
+<?php 
   // Handle form submission
   $success = false;
   $errors = [];
@@ -64,12 +73,6 @@
       $success = true;
     }
   }
-?>
-
-<!-- PHP UI/UX Logic -->
-<?php 
-  $activePage = "sell"; 
-  include "includes/header.php";
 ?>
 
 <div class="sell-page">
@@ -155,9 +158,9 @@
       <!-- Description -->
       <div class="form-group">
         <label for="description">Description <span class="required">*</span></label>
-        <textarea id="description" name="description" rows="5" placeholder="Describe your item - include edition, size, defects, or anything buyers should know…" maxlength="200"><?= htmlspecialchars($description ?? '') ?></textarea>
+        <textarea id="description" name="description" rows="5" placeholder="Describe your item - include size, defects, or anything buyers should know…" maxlength="1000"><?= htmlspecialchars($description ?? '') ?></textarea>
         <span class="form-hint char-count">
-          <span id="charCount">0</span> / 200 characters
+          <span id="charCount">0</span> / 1000 characters
         </span>
       </div>
 

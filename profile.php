@@ -20,8 +20,8 @@
 
 <!-- PHP UI/UX Logic -->
 <?php
-    $activePage = "profile";
-    include "includes/header.php";
+  $activePage = "profile";
+  include "includes/header.php";
 ?>
 
 <!-- PHP Database Query -->
@@ -112,42 +112,71 @@
     // Save New Info
     if (empty($errors)) {
 
-    // If changing password
-    if ($new_password) {
-      $stored_hash = password_hash($new_password, PASSWORD_DEFAULT);
+      // If changing password
+      if ($new_password) {
+        $stored_hash = password_hash($new_password, PASSWORD_DEFAULT);
+      }
+
+      $stmt = $pdo->prepare("
+        UPDATE users 
+        SET name = ?, 
+            course = ?, 
+            year_level = ?, 
+            bio = ?, 
+            contact_info = ?, 
+            avatar = ?, 
+            password = ?
+        WHERE id = ?
+      ");
+
+      $stmt->execute([
+        $name,
+        $course,
+        $year,
+        $bio,
+        $contact,
+        $avatar,
+        $stored_hash,
+        $user_id
+      ]);
+
+      // Refresh user data
+      $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+      $stmt->execute([$user_id]);
+      $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      $success = true;
     }
-
-    $stmt = $pdo->prepare("
-      UPDATE users 
-      SET name = ?, 
-          course = ?, 
-          year_level = ?, 
-          bio = ?, 
-          contact_info = ?, 
-          avatar = ?, 
-          password = ?
-      WHERE id = ?
-    ");
-
-    $stmt->execute([
-      $name,
-      $course,
-      $year,
-      $bio,
-      $contact,
-      $avatar,
-      $stored_hash,
-      $user_id
-    ]);
-
-    // Refresh user data
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-    $stmt->execute([$user_id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    $success = true;
   }
-  }
+
+  // User Stats
+
+  // Active listings
+  $stmt = $pdo->prepare("
+    SELECT COUNT(*) 
+    FROM items 
+    WHERE seller_id = ? AND status = 'active'
+  ");
+  $stmt->execute([$user_id]);
+  $activeListings = $stmt->fetchColumn();
+
+  // Items sold
+  $stmt = $pdo->prepare("
+    SELECT COUNT(*) 
+    FROM items 
+    WHERE seller_id = ? AND status = 'sold'
+  ");
+  $stmt->execute([$user_id]);
+  $soldItems = $stmt->fetchColumn();
+
+  // Purchases
+  $stmt = $pdo->prepare("
+    SELECT COUNT(*) 
+    FROM transactions 
+    WHERE buyer_id = ? AND status = 'completed'
+  ");
+  $stmt->execute([$user_id]);
+  $purchases = $stmt->fetchColumn();
 
   // Function that returns an <img> tag pointing to the pixel art PNG.
   function get_avatar_img(string $id): string {
@@ -212,25 +241,25 @@
         <input type="hidden" name="avatar" id="avatarInput" value="<?= htmlspecialchars($user['avatar']) ?>" />
       </div>
 
-      <!-- Stats (Uncomment after user listings, sold, bought exist in users table in DB) -->
-      <!-- <div class="profile-stats-card">
+      <!-- Stats -->
+      <div class="profile-stats-card">
         <h3 class="card-title">Your Stats</h3>
         <div class="profile-stats">
           <div class="profstat">
-            <div class="profstat-value"><?= $user['listings'] ?></div>
+            <div class="profstat-value"><?= $activeListings ?></div>
             <div class="profstat-label">Active Listings</div>
           </div>
           <div class="profstat">
-            <div class="profstat-value"><?= $user['sold'] ?></div>
+            <div class="profstat-value"><?= $soldItems ?></div>
             <div class="profstat-label">Items Sold</div>
           </div>
           <div class="profstat">
-            <div class="profstat-value"><?= $user['bought'] ?></div>
+            <div class="profstat-value"><?= $purchases ?></div>
             <div class="profstat-label">Purchases</div>
           </div>
         </div>
-        <p class="joined-note">Member since <?= htmlspecialchars($user['joined']) ?></p>
-      </div> -->
+        <p class="joined-note">Member since <?= date('F Y', strtotime($user['created_at'])) ?></p>
+      </div>
 
     </div>
 

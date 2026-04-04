@@ -1,59 +1,4 @@
--- References For Tables
-/*
-users table
-
-id (PRIMARY KEY)
-name
-email
-password
-created_at
------------------------------------------------------
-items table
-
-item_id (PRIMARY KEY)
-title
-description
-price
-image_path
-seller_id (FOREIGN KEY) of id in users table
-status
-created_at
------------------------------------------------------
-messages table
-
-msg_id (PRIMARY KEY)
-sender_id (FOREIGN KEY) of id in users table
-receiver_id (FOREIGN KEY) of id in users table
-item_id (FOREIGN KEY) of item_id in items table
-message
-created_at
------------------------------------------------------
-comments table
-
-commment_id
-commenter_id (FOREIGN KEY) of id in users table
-item_id (FOREIGN KEY) of item_id in items table
-comment
-created_at
------------------------------------------------------
-cart
-
-cart_id (PRIMARY KEY)
-id (FOREIGN KEY) of id in users table
-item_id (FOREIGN KEY) of item_id in items table
-quantity
------------------------------------------------------
-transactions
-
-transaction_id (PRIMARY KEY)
-buyer_id (FOREIGN KEY) of id in users table
-seller_id (FOREIGN KEY) of id in users table
-item_id (FOREIGN KEY) of item_id in items table
-status
-created_at
-*/
-
--- TABLE 1: users
+-- TABLE: users
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(20) NOT NULL,
@@ -67,7 +12,7 @@ CREATE TABLE users (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- TABLE 2: categories
+-- TABLE: categories
 CREATE TABLE categories (
     category_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL UNIQUE
@@ -82,7 +27,7 @@ INSERT INTO categories (name) VALUES
 ('Services'),
 ('Other');
 
--- TABLE 3: items
+-- TABLE: items
 CREATE TABLE items (
     item_id INT PRIMARY KEY AUTO_INCREMENT,
     seller_id INT NOT NULL,
@@ -101,19 +46,7 @@ CREATE TABLE items (
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE RESTRICT
 );
 
--- TABLE 4: cart
-CREATE TABLE cart (
-    cart_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    item_id INT NOT NULL,
-    quantity INT DEFAULT 1,
-    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_cart_item (user_id, item_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
-);
-
--- TABLE 5: messages
+-- TABLE: messages
 CREATE TABLE messages (
     msg_id INT PRIMARY KEY AUTO_INCREMENT,
     sender_id INT NOT NULL,
@@ -127,7 +60,7 @@ CREATE TABLE messages (
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
 );
 
--- TABLE 6: comments
+-- TABLE: comments
 CREATE TABLE comments (
     comment_id INT PRIMARY KEY AUTO_INCREMENT,
     commenter_id INT NOT NULL,
@@ -138,7 +71,7 @@ CREATE TABLE comments (
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
 );
 
--- TABLE 7: transactions
+-- TABLE: transactions
 CREATE TABLE transactions (
     transaction_id INT PRIMARY KEY AUTO_INCREMENT,
     buyer_id INT NOT NULL,
@@ -153,7 +86,7 @@ CREATE TABLE transactions (
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
 );
 
--- TABLE 8: reports
+-- TABLE: reports
 CREATE TABLE reports (
     report_id INT PRIMARY KEY AUTO_INCREMENT,
     reporter_id INT NOT NULL,
@@ -166,7 +99,7 @@ CREATE TABLE reports (
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
 );
 
--- TABLE 9: saved_items
+-- TABLE: saved_items
 CREATE TABLE saved_items (
     save_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -177,7 +110,7 @@ CREATE TABLE saved_items (
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
 );
 
--- TABLE 10: notifications
+-- TABLE: notifications
 CREATE TABLE notifications (
     notif_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,

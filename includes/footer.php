@@ -16,7 +16,7 @@
             <ul>
                 <li><a <?= ($user) ? 'href="browse.php"' : 'href="login.php"' ?>>Browse Listings</a></li>
                 <li><a <?= ($user) ? 'href="sell.php"' : 'href="login.php"' ?>>Post an Item</a></li>
-                <li><a <?= ($user) ? 'href="cart.php"' : 'href="login.php"' ?>>View Cart</a></li>
+                <li><a <?= ($user) ? 'href="transactions.php"' : 'href="login.php"' ?>>Transactions</a></li>
             </ul>
         </div>
 
@@ -57,8 +57,8 @@ if (isset($activePage)) {
         echo '<script src="js/browse.js"></script>';
     } elseif ($activePage === 'home') {
         echo '<script src="js/home.js"></script>';
-    } elseif ($activePage === 'cart') {
-        echo '<script src="js/cart.js"></script>';
+    } elseif ($activePage === 'transactions') {
+        echo '<script src="js/transactions.js"></script>';
     } elseif ($activePage === 'sell') {
         echo '<script src="js/sell.js"></script>';
     } 

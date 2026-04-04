@@ -25,7 +25,7 @@
                 <a href="dashboard.php" <?= ($activePage ?? '') === 'dashboard' ? 'class="active"' : '' ?>>Dashboard</a>
                 <a href="browse.php" <?= ($activePage ?? '') === 'browse' ? 'class="active"' : '' ?>>Browse</a>
                 <a href="sell.php" <?= ($activePage ?? '') === 'sell' ? 'class="active"' : '' ?>>Sell</a>
-                <a href="cart.php" <?= ($activePage ?? '') === 'cart' ? 'class="active"' : '' ?>>Cart</a>
+                <a href="transactions.php" <?= ($activePage ?? '') === 'transactions' ? 'class="active"' : '' ?>>Transactions</a>
                 <a href="profile.php" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>Profile</a>
                 <a href="logout.php" class="btn-login">Logout</a>
 
