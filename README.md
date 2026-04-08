@@ -54,8 +54,7 @@ There's still room for improvement on the color scheme of my themes like in hove
 - The load page specific javascript have no purpose for now because almost all script are embedded
 - The infinite scroll in browse page is quite finicky (doesn't work that great), but it still works. Because its loading
   the entire items table and cutting it in javascript
-- Things to implement/fix still (dashboard, transactions[wk2, wk3], messages, my-listings, edit & delete listing, info, 
-  purchases, comments)
+- Things to implement/fix still (dashboard, transactions[wk2, wk3], messages, my-listings, info, purchases & sales, comments)
 
 <!-- Weekly Report -->
 
@@ -78,7 +77,7 @@ There's still room for improvement on the color scheme of my themes like in hove
     - ???
     > Sell Page Front-end
     - ???
-    > Cart Page Front-end
+    > Transaction Page Front-end
     - ???
     > Profile Page Front-end
     - ???
@@ -93,3 +92,8 @@ There's still room for improvement on the color scheme of my themes like in hove
     - ???
     > Signup Page Front-end
     - ???
+    > Transaction Page Front-end
+    - ???
+
+> Week 4
+- 

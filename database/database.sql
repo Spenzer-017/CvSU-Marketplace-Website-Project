@@ -1,7 +1,7 @@
 -- TABLE: users
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(20) NOT NULL,
+    name VARCHAR(80) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     course VARCHAR(100) DEFAULT NULL,
@@ -121,3 +121,27 @@ CREATE TABLE notifications (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- INDEXES
+
+-- USERS
+CREATE INDEX idx_users_email ON users(email);
+
+-- ITEMS
+CREATE INDEX idx_items_seller ON items(seller_id);
+CREATE INDEX idx_items_category ON items(category_id);
+
+-- MESSAGES
+CREATE INDEX idx_messages_sender ON messages(sender_id);
+CREATE INDEX idx_messages_receiver ON messages(receiver_id);
+CREATE INDEX idx_messages_item ON messages(item_id);
+
+-- TRANSACTIONS
+CREATE INDEX idx_transactions_buyer ON transactions(buyer_id);
+CREATE INDEX idx_transactions_seller ON transactions(seller_id);
+
+-- SAVED ITEMS
+CREATE INDEX idx_saved_user ON saved_items(user_id);
+
+-- NOTIFICATIONS
+CREATE INDEX idx_notifications_user ON notifications(user_id);

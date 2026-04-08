@@ -68,7 +68,7 @@ There's still room for improvement on the color scheme of my themes like in hove
     - ???
     > Sell Page Front-end
     - ???
-    > Cart Page Front-end
+    > Transaction Page Front-end
     - ???
     > Profile Page Front-end
     - ???

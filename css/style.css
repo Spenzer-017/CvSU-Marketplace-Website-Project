@@ -1718,9 +1718,9 @@ footer {
 }
 
 .form-group .price-input input {
-  border: none; /* mark */
-  border-radius: 0; /* mark */
-  box-shadow: none; /* mark */
+  border: none; 
+  border-radius: 0; 
+  box-shadow: none; 
   flex: 1;
 }
 
@@ -2273,8 +2273,8 @@ footer {
 
 /* Stats card */
 .profile-left > .profile-stats-card {
-  background-color: var(--surface-tint); /* mark */
-  border-color: transparent; /* mark */
+  background-color: var(--surface-tint); 
+  border-color: transparent; 
 }
 
 .profile-stats-card .card-title {
@@ -2554,9 +2554,9 @@ footer {
 }
  
 .password-input input {
-  border: none; /* mark */
-  border-radius: 0; /* mark */
-  box-shadow: none; /* mark */
+  border: none; 
+  border-radius: 0; 
+  box-shadow: none; 
   flex: 1;
 }
  
@@ -2599,6 +2599,21 @@ footer {
   text-decoration: underline;
 }
  
+/* Error Messages */
+.alert-error {
+  background: #2a1a1a;
+  border: 1px solid #b94040;
+  color: #ffb3b3;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+#lockTimer {
+  margin-top: 8px;
+  font-weight: bold;
+  color: #ff8080;
+}
+
 /* Responsiveness */
  
 @media (max-width: 480px) {

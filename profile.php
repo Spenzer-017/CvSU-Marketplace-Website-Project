@@ -15,7 +15,6 @@
   }
 
   $user_id = $_SESSION['user']['id'];
-  $user = $_SESSION['user'] ?? null; 
 ?>
 
 <!-- PHP UI/UX Logic -->
@@ -112,38 +111,66 @@
     // Save New Info
     if (empty($errors)) {
 
-      // If changing password
+      // If Changing Password
       if ($new_password) {
         $stored_hash = password_hash($new_password, PASSWORD_DEFAULT);
+
+        $stmt = $pdo->prepare("
+          UPDATE users 
+          SET name = ?, 
+              course = ?, 
+              year_level = ?, 
+              bio = ?, 
+              contact_info = ?, 
+              avatar = ?, 
+              password = ?
+          WHERE id = ?
+        ");
+
+        $stmt->execute([
+          $name,
+          $course,
+          $year,
+          $bio,
+          $contact,
+          $avatar,
+          $stored_hash,
+          $user_id
+        ]);
+
+      } else {
+
+        $stmt = $pdo->prepare("
+          UPDATE users 
+          SET name = ?, 
+              course = ?, 
+              year_level = ?, 
+              bio = ?, 
+              contact_info = ?, 
+              avatar = ?
+          WHERE id = ?
+        ");
+
+        $stmt->execute([
+          $name,
+          $course,
+          $year,
+          $bio,
+          $contact,
+          $avatar,
+          $user_id
+        ]);
       }
-
-      $stmt = $pdo->prepare("
-        UPDATE users 
-        SET name = ?, 
-            course = ?, 
-            year_level = ?, 
-            bio = ?, 
-            contact_info = ?, 
-            avatar = ?, 
-            password = ?
-        WHERE id = ?
-      ");
-
-      $stmt->execute([
-        $name,
-        $course,
-        $year,
-        $bio,
-        $contact,
-        $avatar,
-        $stored_hash,
-        $user_id
-      ]);
 
       // Refresh user data
       $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
       $stmt->execute([$user_id]);
       $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      // Update session
+      $_SESSION['user']['name'] = $user['name'];
+      $_SESSION['user']['avatar'] = $user['avatar'];
+      $_SESSION['user']['course'] = $user['course'];
 
       $success = true;
     }
@@ -272,7 +299,7 @@
         <!-- Full name -->
         <div class="form-group">
           <label for="name">Full Name <span class="required">*</span></label>
-          <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name']) ?>" placeholder="Your full name" maxlength="80"/>
+          <input type="text" id="name" name="name" value="<?= htmlspecialchars($user['name']) ?>" placeholder="Your full name" maxlength="80" required/>
         </div>
 
         <!-- Email -->
@@ -286,7 +313,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="course">Course <span class="required">*</span></label>
-            <select id="course" name="course">
+            <select id="course" name="course" required>
               <option value="" disabled>Select course</option>
               <?php foreach ($courses as $c): ?>
                 <option value="<?= $c ?>" <?= $user['course'] === $c ? 'selected' : '' ?>>
@@ -298,7 +325,7 @@
 
           <div class="form-group">
             <label for="year">Year Level <span class="required">*</span></label>
-            <select id="year" name="year">
+            <select id="year" name="year" required>
               <option value="" disabled>Select year</option>
               <?php foreach ($years as $y):?>
                 <option value="<?= $y ?>" <?= $user['year_level'] === $y ? 'selected' : '' ?>>
