@@ -50,11 +50,19 @@ There's still room for improvement on the color scheme of my themes like in hove
 # Things To Take Note Of
 - Image upload might need to change where it saves, also might need to do something on how the image will look like in the      
   front-end.
-- There's still no anything on info pages like about, faq, contact
-- The load page specific javascript have no purpose for now because almost all script are embedded
+- Might want to add modals for confirmation popups like deleting listings, canceling transactions, etc.
+- The load page specific javascript in the footer have no purpose for now because almost all script are embedded
 - The infinite scroll in browse page is quite finicky (doesn't work that great), but it still works. Because its loading
   the entire items table and cutting it in javascript
-- Things to implement/fix still (dashboard, transactions[wk2, wk3], messages, my-listings, info, purchases & sales, comments)
+- Things to implement/fix still (dashboard, transactions wk3, messages, my-listings, info, purchases & sales, comments,
+  account deletion option, forgot password, real cvsu account validation)
+- Things that exist in db & some in front-end but not yet implemented properly (saved items [d. board], notifications, reports)
+- Need more icons for (send button, hide/show password button, etc.)
+- Things to fix: 
+    * show only options like cancel transaction, create transaction, mark as sold, etc. to users that has said transaction
+    * maybe delete convo after cancelling transaction or finishing transaction, so that the seller can't make a transaction
+      again with the same buyer over and over again
+    * maybe we finally fix the theme icon positioning
 
 <!-- Weekly Report -->
 
@@ -94,6 +102,11 @@ There's still room for improvement on the color scheme of my themes like in hove
     - ???
     > Transaction Page Front-end
     - ???
+    > Message Page Front-end
+    - ???
+    > My Listings Page Front-end
+    - ???
+
 
 > Week 4
 - 

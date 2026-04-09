@@ -1,4 +1,3 @@
-<!-- PHP Logic (Authentication, Session, etc.) -->
 <?php
   /*
     listing.php - Individual Item Listing Page
@@ -10,17 +9,15 @@
   require_once "includes/db.php";
 
   /* $loggedInUser is the session array - we avoid naming it $user to prevent
-     accidental collision with the $user DB row fetched below */
+    accidental collision with the $user DB row fetched below */
   $loggedInUser = $_SESSION['user'] ?? null;
 ?>
 
-<!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
   include "includes/header.php";
 ?>
 
-<!-- PHP Database Query -->
 <?php
   // Get and validate item id from URL
   $item_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -49,25 +46,50 @@
   $stmt->execute([$item_id]);
   $item = $stmt->fetch();
 
-  // Handle delete listing
-  if ($loggedInUser && isset($_POST['delete_item']) && (int)$loggedInUser['id'] === (int)$item['seller_id']) {
-    $stmt = $pdo->prepare("DELETE FROM items WHERE item_id = ?");
-    $stmt->execute([$item_id]);
-
-    header("Location: my-listings.php");
-    exit;
-  }
-
   // Redirect to browse if item not found
   if (!$item) {
     header('Location: browse.php');
     exit;
   }
 
-  // Increment view count - skip if the viewer is the seller
-  if (!$loggedInUser || (int)$loggedInUser['id'] !== (int)$item['seller_id']) {
-    $pdo->prepare("UPDATE items SET views = views + 1 WHERE item_id = ?")->execute([$item_id]);
+  // Handle delete listing
+  if ($loggedInUser && isset($_POST['delete_item']) && (int)$loggedInUser['id'] === (int)$item['seller_id']) {
+    $pdo->prepare("DELETE FROM items WHERE item_id = ?")->execute([$item_id]);
+    header("Location: my-listings.php");
+    exit;
   }
+
+  // Increment view count - skip if the viewer is the seller or its the same viewer
+  if (!isset($_SESSION['viewed_items'])) {
+    $_SESSION['viewed_items'] = [];
+  }
+
+  if (
+    (!$loggedInUser || (int)$loggedInUser['id'] !== (int)$item['seller_id']) &&
+    !in_array($item_id, $_SESSION['viewed_items'])
+  ) {
+    $pdo->prepare("UPDATE items SET views = views + 1 WHERE item_id = ?")->execute([$item_id]);
+
+    $_SESSION['viewed_items'][] = $item_id;
+  }
+
+  // Fetch the current transaction for this item (only one pending allowed)
+  $stmt = $pdo->prepare("
+    SELECT transactions.*, users.name AS buyer_name
+    FROM transactions
+    JOIN users ON transactions.buyer_id = users.id
+    WHERE transactions.item_id = ?
+    ORDER BY
+      CASE status WHEN 'pending' THEN 0 WHEN 'completed' THEN 1 ELSE 2 END,
+      transactions.created_at DESC
+    LIMIT 1
+  ");
+  $stmt->execute([$item_id]);
+  $transaction = $stmt->fetch();
+
+  $txn_status = $transaction ? $transaction['status'] : null;
+  $txn_buyer_id = $transaction ? (int)$transaction['buyer_id'] : null;
+  $txn_id = $transaction ? (int)$transaction['transaction_id'] : null;
 
   // Check if item is saved to wishlist
   $is_saved = false;
@@ -89,14 +111,14 @@
   }
 
   // Handle comment submission
-  $comment_error   = '';
+  $comment_error = '';
   $comment_success = false;
   if ($loggedInUser && isset($_POST['submit_comment'])) {
     $comment_text = trim($_POST['comment'] ?? '');
     if ($comment_text === '') {
       $comment_error = 'Comment cannot be empty.';
-    } elseif (strlen($comment_text) > 500) {
-      $comment_error = 'Comment must be 500 characters or less.';
+    } elseif (strlen($comment_text) > 1000) {
+      $comment_error = 'Comment must be 1000 characters or less.';
     } else {
       $pdo->prepare("INSERT INTO comments (commenter_id, item_id, comment) VALUES (?, ?, ?)")->execute([(int)$loggedInUser['id'], $item_id, $comment_text]);
       $comment_success = true;
@@ -127,14 +149,13 @@
   $seller_listings = $stmt->fetchAll();
 
   $is_own_listing = $loggedInUser && (int)$loggedInUser['id'] === (int)$item['seller_id'];
+  $is_buyer_in_txn = $loggedInUser && $txn_buyer_id === (int)$loggedInUser['id'];
 ?>
 
 <div class="listing-page">
 
-  <!-- Back link -->
   <a href="browse.php" class="btn-back">< Back to Browse</a>
 
-  <!-- Main layout: item details + sidebar -->
   <div class="listing-layout">
 
     <!-- Left: Item details -->
@@ -155,6 +176,8 @@
 
         <?php if ($item['status'] === 'sold'): ?>
           <div class="listing-sold-overlay">SOLD</div>
+        <?php elseif ($txn_status === 'pending'): ?>
+          <div class="listing-reserved-overlay">RESERVED</div>
         <?php endif; ?>
       </div>
 
@@ -167,7 +190,7 @@
 
         <div class="listing-meta-row">
           <span><?= $locationIcon ?> &nbsp;<?= htmlspecialchars($item['meetup_location'] ?? 'Not specified') ?></span>
-          <span><?= $userIcon ?> &nbsp;<?= (int)$item['views'] + 1 ?> views</span>
+          <span><?= $userIcon ?> &nbsp;<?= (int)$item['views']?> views</span>
           <span>Posted <?= date('M j, Y', strtotime($item['created_at'])) ?></span>
         </div>
 
@@ -241,32 +264,114 @@
       <!-- Action card -->
       <div class="listing-action-card">
 
-        <?php if ($item['status'] === 'sold'): ?>
-          <div class="sold-notice">This item has been sold.</div>
+        <?php if ($item['status'] === 'sold' && $txn_status !== 'pending'): ?>
+          <!-- Item is fully sold, no active transaction -->
+          <div class="txn-status-notice txn-notice-sold">
+            Item Sold
+          </div>
 
         <?php elseif ($is_own_listing): ?>
-          <a href="my-listings.php?id=<?= $item_id ?>" class="btn-submit">Edit This Listing</a>
-          <form method="POST" onsubmit="return confirm('Are you sure you want to delete this listing?');">
-            <button type="submit" name="delete_item" class="btn-delete-listing">Delete Listing</button>
-          </form>
+          <!-- SELLER VIEW -->
+
+          <?php if ($txn_status === 'pending'): ?>
+            <!-- Seller: transaction is pending with a buyer -->
+            <div class="txn-status-notice txn-notice-pending">
+              Transaction Pending
+            </div>
+            <div class="txn-buyer-info">
+              Buyer: <strong><?= htmlspecialchars($transaction['buyer_name']) ?></strong>
+            </div>
+            <a href="messages.php?to=<?= $txn_buyer_id ?>&item=<?= $item_id ?>" class="btn-message-seller">
+              Message Buyer
+            </a>
+            <!-- Mark as sold - goes to transactions page -->
+            <form method="POST" action="transactions.php">
+              <input type="hidden" name="transaction_id" value="<?= $txn_id ?>">
+              <input type="hidden" name="status" value="completed">
+              <button type="submit" name="update_status" class="btn-submit" onclick="return confirm('Mark this transaction as completed? The item will be marked as sold.')">
+                Mark as Sold
+              </button>
+            </form>
+            <!-- Seller can cancel -->
+            <form method="POST" action="transactions.php">
+              <input type="hidden" name="transaction_id" value="<?= $txn_id ?>">
+              <input type="hidden" name="status" value="cancelled">
+              <button type="submit" name="update_status" class="btn-delete-listing" onclick="return confirm('Cancel this transaction? The item will be available again.')">
+                Cancel Transaction
+              </button>
+            </form>
+
+          <?php else: ?>
+            <!-- Seller: no pending transaction, normal edit/delete -->
+            <a href="edit-listing.php?id=<?= $item_id ?>" class="btn-submit">Edit Listing</a>
+            <form method="POST" onsubmit="return confirm('Are you sure you want to delete this listing?');">
+              <button type="submit" name="delete_item" class="btn-delete-listing">Delete Listing</button>
+            </form>
+          <?php endif; ?>
 
         <?php elseif ($loggedInUser): ?>
+          <!-- BUYER VIEW -->
 
-          <!-- Message seller -->
-          <a href="messages.php?to=<?= (int)$item['seller_id'] ?>&item=<?= $item_id ?>" class="btn-message-seller">
-            Message Seller
-          </a>
+          <?php if ($txn_status === 'pending' && $is_buyer_in_txn): ?>
+            <!-- This buyer has a pending transaction for this item -->
+            <div class="txn-status-notice txn-notice-pending">
+              Your Transaction is Pending
+            </div>
+            <p class="txn-helper-text">
+              You have an active transaction on this item. Go to your transactions to manage it.
+            </p>
+            <a href="messages.php?to=<?= (int)$item['seller_id'] ?>&item=<?= $item_id ?>" class="btn-message-seller">
+              Message Seller
+            </a>
+            <a href="transactions.php?view=buying&status=pending" class="btn-save">
+              View My Transactions
+            </a>
+            <!-- Buyer can also cancel -->
+            <form method="POST" action="transactions.php">
+              <input type="hidden" name="transaction_id" value="<?= $txn_id ?>">
+              <input type="hidden" name="status" value="cancelled">
+              <button type="submit" name="update_status" class="btn-delete-listing" onclick="return confirm('Cancel this transaction?')">
+                Cancel Transaction
+              </button>
+            </form>
 
-          <!-- Save / Unsave -->
-          <form method="POST">
-            <button type="submit" name="toggle_save" class="btn-save">
-              <?= $is_saved ? 'Remove from Saved' : 'Save Item' ?>
-            </button>
-          </form>
+          <?php elseif ($txn_status === 'pending' && !$is_buyer_in_txn): ?>
+            <!-- Another buyer already has a pending transaction -->
+            <div class="txn-status-notice txn-notice-reserved">
+              Reserved by Another Buyer
+            </div>
+            <p class="txn-helper-text">
+              This item currently has a pending transaction. It may become available again if the transaction falls through.
+            </p>
+            <!-- Still allow saving -->
+            <form method="POST">
+              <button type="submit" name="toggle_save" class="btn-save">
+                <?= $is_saved ? 'Remove from Saved' : 'Save Item' ?>
+              </button>
+            </form>
+
+          <?php elseif ($item['status'] === 'active'): ?>
+            <!-- Item is free, buyer can message -->
+            <a href="messages.php?to=<?= (int)$item['seller_id'] ?>&item=<?= $item_id ?>" class="btn-message-seller">
+              Message Seller
+            </a>
+            <form method="POST">
+              <button type="submit" name="toggle_save" class="btn-save">
+                <?= $is_saved ? 'Remove from Saved' : 'Save Item' ?>
+              </button>
+            </form>
+
+          <?php else: ?>
+            <!-- Item sold, no active transaction for this buyer -->
+            <div class="txn-status-notice txn-notice-sold">
+              Item Sold
+            </div>
+          <?php endif; ?>
 
         <?php else: ?>
+          <!-- GUEST VIEW -->
           <a href="login.php" class="btn-submit">Log In to Buy</a>
-          <p class="action-login-note">You need an account to buy, message, or save items.</p>
+          <p class="action-login-note">You need an account to message sellers or save items.</p>
         <?php endif; ?>
 
       </div>
@@ -274,15 +379,10 @@
       <!-- Seller info card -->
       <div class="seller-card">
         <h3 class="card-title">Seller</h3>
-
         <div class="seller-info">
           <div class="seller-avatar">
             <?php if (!empty($item['seller_avatar'])): ?>
-              <img
-                src="assets/img/<?= htmlspecialchars($item['seller_avatar']) ?>.png"
-                alt="<?= htmlspecialchars($item['seller_name']) ?>"
-                class="avatar-pixel-img"
-              />
+              <img src="assets/img/<?= htmlspecialchars($item['seller_avatar']) ?>.png" alt="<?= htmlspecialchars($item['seller_name']) ?>" class="avatar-pixel-img"/>
             <?php else: ?>
               <?= strtoupper($item['seller_name'][0] ?? '?') ?>
             <?php endif; ?>
@@ -294,7 +394,6 @@
             <?php endif; ?>
           </div>
         </div>
-
       </div>
 
       <!-- Other listings by same seller -->

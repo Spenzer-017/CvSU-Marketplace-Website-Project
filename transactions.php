@@ -29,8 +29,8 @@
 <?php 
   // Handle status update POST
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
-    $txn_id = (int)($_POST['transaction_id'] ?? 0);
-    $newStatus = trim($_POST['status'] ?? '');
+    $txn_id = isset($_POST['transaction_id']) ? (int)$_POST['transaction_id'] : 0;
+    $newStatus = strtolower(trim($_POST['status'] ?? ''));
     $allowed = ['completed', 'cancelled'];
 
     if ($txn_id > 0 && in_array($newStatus, $allowed)) {
@@ -42,7 +42,13 @@
       $txn = $stmt->fetch();
 
       if ($txn) {
-        if ($newStatus === 'completed') {
+        // Only seller can complete request
+        if ($newStatus === 'completed' && (int)$txn['seller_id'] !== $uid) {
+          header("Location: transactions.php");
+          exit;
+        }
+
+        if ($newStatus === 'completed' && (int)$txn['seller_id'] === $uid) {
           // Mark transaction completed and set completed_at timestamp
           $pdo->prepare("
             UPDATE transactions SET status = 'completed', completed_at = NOW()
@@ -51,13 +57,29 @@
 
           // Mark the item as sold
           $pdo->prepare("
-            UPDATE items SET status = 'sold' WHERE item_id = ?
+            UPDATE items 
+            SET status = 'sold' 
+            WHERE item_id = ? AND status != 'sold'
           ")->execute([$txn['item_id']]);
 
         } elseif ($newStatus === 'cancelled') {
+
+          // Transaction is cancelled
           $pdo->prepare("
             UPDATE transactions SET status = 'cancelled' WHERE transaction_id = ?
           ")->execute([$txn_id]);
+
+          $pdo->prepare("
+            UPDATE items 
+            SET status = 'active' 
+            WHERE item_id = ?
+            AND NOT EXISTS (
+              SELECT 1 FROM transactions 
+              WHERE item_id = ? 
+              AND status = 'pending'
+              AND transaction_id != ?
+            )
+          ")->execute([$txn['item_id'], $txn['item_id'], $txn_id]);
         }
       }
     }
@@ -66,32 +88,71 @@
     exit;
   }
 
-  // Handle create transaction POST (seller creates when deal is agreed)
+  // Handle create transaction POST
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_transaction'])) {
-    $item_id  = (int)($_POST['item_id']  ?? 0);
+
+    $item_id = (int)($_POST['item_id'] ?? 0);
     $buyer_id = (int)($_POST['buyer_id'] ?? 0);
 
-    if ($item_id > 0 && $buyer_id > 0) {
-      // Verify this user is the seller of that item
-      $stmt = $pdo->prepare("SELECT * FROM items WHERE item_id = ? AND seller_id = ? AND status = 'active'");
-      $stmt->execute([$item_id, $uid]);
-      $item = $stmt->fetch();
+    // Basic validation
+    if ($item_id <= 0 || $buyer_id <= 0) {
+      exit;
+    }
 
-      if ($item) {
-        // Check no pending transaction already exists for this item + buyer
-        $stmt = $pdo->prepare("
-          SELECT 1 FROM transactions
-          WHERE item_id = ? AND buyer_id = ? AND status = 'pending'
-          LIMIT 1
-        ");
-        $stmt->execute([$item_id, $buyer_id]);
+    // Prevent self-transaction
+    if ($buyer_id === $uid) {
+      exit;
+    }
 
-        if (!$stmt->fetch()) {
-          $pdo->prepare("
-            INSERT INTO transactions (buyer_id, seller_id, item_id, amount, status)
-            VALUES (?, ?, ?, ?, 'pending')
-          ")->execute([$buyer_id, $uid, $item_id, $item['price']]);
-        }
+    $stmt = $pdo->prepare("
+      SELECT * FROM items 
+      WHERE item_id = ? 
+      AND seller_id = ? 
+      AND status = 'active'
+    ");
+    $stmt->execute([$item_id, $uid]);
+    $item = $stmt->fetch();
+
+    // If item doesn't exist or doesn't belong to seller then STOP
+    if (!$item) {
+      exit;
+    }
+
+    // Check theres no pending transaction already exists
+    $stmt = $pdo->prepare("
+      SELECT transaction_id FROM transactions
+      WHERE item_id = ? AND status = 'pending'
+      LIMIT 1
+    ");
+    $stmt->execute([$item_id]);
+
+    if (!$stmt->fetch()) {
+
+      // Check if there is a valid message between buyer and seller
+      $stmt = $pdo->prepare("
+        SELECT 1 FROM messages
+        WHERE item_id = ?
+        AND ((sender_id = ? AND receiver_id = ?)
+          OR (sender_id = ? AND receiver_id = ?))
+        LIMIT 1
+      ");
+      $stmt->execute([$item_id, $buyer_id, $uid, $uid, $buyer_id]);
+
+      if ($stmt->fetch()) {
+
+        // Insert transaction
+        $pdo->prepare("
+          INSERT INTO transactions (buyer_id, seller_id, item_id, amount, status)
+          VALUES (?, ?, ?, ?, 'pending')
+        ")->execute([$buyer_id, $uid, $item_id, $item['price']]);
+
+        // Reserve item
+        $pdo->prepare("
+          UPDATE items 
+          SET status = 'reserved' 
+          WHERE item_id = ?
+          AND status = 'active'
+        ")->execute([$item_id]);
       }
     }
 
@@ -121,11 +182,11 @@
     SELECT
       t.*,
       i.title AS item_title, i.image_path AS item_image, i.meetup_location,
-      buyer.name  AS buyer_name,
+      buyer.name AS buyer_name,
       seller.name AS seller_name
     FROM transactions t
     JOIN items i ON t.item_id = i.item_id
-    JOIN users buyer  ON t.buyer_id  = buyer.id
+    JOIN users buyer ON t.buyer_id  = buyer.id
     JOIN users seller ON t.seller_id = seller.id
     WHERE $where
     ORDER BY t.created_at DESC
@@ -218,7 +279,7 @@
               <?= ucfirst($txn['status']) ?>
             </span>
             <div class="txn-date"><?= date('M j, Y', strtotime($txn['created_at'])) ?></div>
-            <?php if ($txn['completed_at']): ?>
+            <?php if (!empty($txn['completed_at'])): ?>
               <div class="txn-date">Completed: <?= date('M j, Y', strtotime($txn['completed_at'])) ?></div>
             <?php endif; ?>
           </div>

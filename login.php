@@ -1,82 +1,82 @@
 <?php
-  /*
-    login.php - User Login
-  */
+/*
+  login.php - User Login
+*/
 
-  session_start();
+session_start();
 
-  $errors = [];
+$errors = [];
 
-  // Login Rate Limiting
-  $max_attempts = 5;
-  $lock_time = 60;
-  $is_locked = false;
+// Login Rate Limiting
+$max_attempts = 5;
+$lock_time = 60;
+$is_locked = false;
 
-  if (!isset($_SESSION['login_attempts'])) {
+if (!isset($_SESSION['login_attempts'])) {
+  $_SESSION['login_attempts'] = 0;
+  $_SESSION['last_attempt_time'] = time();
+}
+
+if ($_SESSION['login_attempts'] >= $max_attempts) {
+  $time_passed = time() - $_SESSION['last_attempt_time'];
+
+  if ($time_passed < $lock_time) {
+    $is_locked = true;
+    $remaining = $lock_time - $time_passed;
+    $errors[] = "Too many login attempts.";
+  } else {
     $_SESSION['login_attempts'] = 0;
-    $_SESSION['last_attempt_time'] = time();
   }
+}
 
-  if ($_SESSION['login_attempts'] >= $max_attempts) {
-    $time_passed = time() - $_SESSION['last_attempt_time'];
+// If already logged in, redirect to dashboard
+if (isset($_SESSION['user'])) {
+  header('Location: dashboard.php');
+  exit;
+}
 
-    if ($time_passed < $lock_time) {
-      $is_locked = true;
-      $remaining = $lock_time - $time_passed;
-      $errors[] = "Too many login attempts.";
+// DB connection
+require_once 'includes/db.php';
+
+$email = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_locked) {
+  $email = trim($_POST['email'] ?? '');
+  $password = $_POST['password'] ?? '';
+
+  // Validation
+  if ($email === '') $errors[] = 'Email is required.';
+  if ($password === '') $errors[] = 'Password is required.';
+
+  if (empty($errors)) {
+    // Look up user by email
+    $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+
+    if (!$user || !password_verify($password, $user['password'])) {
+      $_SESSION['login_attempts']++;
+      $_SESSION['last_attempt_time'] = time();
+      $errors[] = 'Incorrect email or password.';
     } else {
+      // Login success - store user in session
+      session_regenerate_id(true);
+
       $_SESSION['login_attempts'] = 0;
+      $_SESSION['last_attempt_time'] = 0;
+
+      $_SESSION['user'] = [
+        'id' => $user['id'],
+        'name' => $user['name'],
+        'email' => $user['email'],
+        'course' => $user['course'],
+        'avatar' => $user['avatar'],
+      ];
+      header('Location: dashboard.php');
+      exit;
     }
   }
-
-  // If already logged in, redirect to dashboard
-  if (isset($_SESSION['user'])) {
-    header('Location: dashboard.php');
-    exit;
-  }
-
-  // DB connection
-  require_once 'includes/db.php';
-
-  $email = '';
-
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_locked) {
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    // Validation
-    if ($email === '') $errors[] = 'Email is required.';
-    if ($password === '') $errors[] = 'Password is required.';
-
-    if (empty($errors)) {
-      // Look up user by email
-      $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
-      $stmt->execute([$email]);
-      $user = $stmt->fetch();
-
-      if (!$user || !password_verify($password, $user['password'])) {
-        $_SESSION['login_attempts']++;
-        $_SESSION['last_attempt_time'] = time();
-        $errors[] = 'Incorrect email or password.';
-      } else {
-        // Login success - store user in session
-        session_regenerate_id(true);
-
-        $_SESSION['login_attempts'] = 0;
-        $_SESSION['last_attempt_time'] = 0;
-        
-        $_SESSION['user'] = [
-          'id' => $user['id'],
-          'name' => $user['name'],
-          'email' => $user['email'],
-          'course' => $user['course'],
-          'avatar' => $user['avatar'],
-        ];
-        header('Location: dashboard.php');
-        exit;
-      }
-    }
-  }
+}
 ?>
 
 <?php
@@ -131,7 +131,10 @@
         <label for="password">Password</label>
         <div class="password-input">
           <input type="password" id="password" name="password" placeholder="Enter your password" required/>
-          <button type="button" class="toggle-password" onclick="togglePassword('password', this)">Show</button>
+          <button type="button" class="toggle-password" onclick="togglePassword('password', this)" aria-label="Show password">
+            <span class="icon-visibility-on"><?= $visibilityOnIcon ?></span>
+            <span class="icon-visibility-off" style="display:none;"><?= $visibilityOffIcon ?></span>
+          </button>
         </div>
       </div>
 
@@ -147,19 +150,22 @@
 </div>
 
 <script>
-  // Show/Hide Password
   function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);
+    const iconOn = btn.querySelector('.icon-visibility-on');
+    const iconOff = btn.querySelector('.icon-visibility-off');
+
     if (input.type === 'password') {
       input.type = 'text';
-      btn.textContent = 'Hide';
+      iconOn.style.display = 'none';
+      iconOff.style.display = 'inline-flex';
     } else {
       input.type = 'password';
-      btn.textContent = 'Show';
+      iconOn.style.display = 'inline-flex';
+      iconOff.style.display = 'none';
     }
   }
 
-  // Show Login Attempts Cooldown
   const timerEl = document.getElementById('lockTimer');
 
   if (timerEl) {

@@ -2042,13 +2042,26 @@ footer {
   flex-shrink: 0;
   min-width: 110px;
 }
+
+.txn-actions form {
+  margin: 0;
+}
+
+.txn-actions button,.txn-actions a {
+  width: 100%;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
  
 .btn-txn-complete {
   background-color: var(--primary);
   color: #ffffff;
   border: none;
   border-radius: 6px;
-  padding: 8px 14px;
   font-family: 'Poppins', sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
@@ -2062,10 +2075,10 @@ footer {
 }
  
 .btn-txn-cancel {
+  display: block;
   background: none;
   border: 1.5px solid #b94040;
   border-radius: 6px;
-  padding: 6px 14px;
   font-family: 'Poppins', sans-serif;
   font-size: 0.78rem;
   font-weight: 500;
@@ -2083,7 +2096,6 @@ footer {
 .btn-txn-msg {
   display: block;
   text-align: center;
-  padding: 6px 14px;
   border-radius: 6px;
   font-size: 0.78rem;
   font-weight: 500;
@@ -2109,8 +2121,12 @@ footer {
  
   .txn-actions {
     flex-direction: row;
-    flex-wrap: wrap;
+    gap: 6px;
     width: 100%;
+  }
+
+  .txn-actions button, .txn-actions a {
+    flex :1;
   }
  
   .transactions-page {
@@ -2474,7 +2490,7 @@ footer {
   padding: 40px 24px;
   background-color: var(--background);
 }
- 
+
 .auth-card {
   background-color: var(--contrast-bg);
   border: 1px solid var(--border-light);
@@ -2483,34 +2499,34 @@ footer {
   width: 100%;
   max-width: 440px;
 }
- 
+
 .auth-header {
   text-align: center;
   margin-bottom: 28px;
 }
- 
+
 .auth-header .logo {
   display: inline-block;
   margin-bottom: 20px;
   font-size: 1.1rem;
 }
- 
+
 .auth-header h1 {
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-dark);
   margin-bottom: 6px;
 }
- 
+
 .auth-header p {
   font-size: 0.875rem;
   color: var(--text-muted);
 }
- 
+
 .auth-form .form-group {
   margin-bottom: 18px;
 }
- 
+
 .auth-form label {
   display: block;
   font-size: 0.875rem;
@@ -2518,7 +2534,7 @@ footer {
   color: var(--text-dark);
   margin-bottom: 7px;
 }
- 
+
 .auth-form input {
   width: 100%;
   font-family: 'Poppins', sans-serif;
@@ -2531,13 +2547,13 @@ footer {
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
- 
+
 .auth-form input:focus {
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(66, 122, 67, 0.12);
 }
- 
-/* Password field with show/hide button */
+
+/* Password field with show/hide icon button */
 .password-input {
   display: flex;
   align-items: center;
@@ -2547,58 +2563,69 @@ footer {
   transition: border-color 0.2s, box-shadow 0.2s;
   background-color: var(--contrast-bg);
 }
- 
+
 .password-input:focus-within {
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(66, 122, 67, 0.12);
 }
- 
+
 .password-input input {
-  border: none; 
-  border-radius: 0; 
-  box-shadow: none; 
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   flex: 1;
 }
- 
+
 .toggle-password {
   background: none;
   border: none;
   border-left: 1.5px solid var(--border-light);
-  padding: 0 14px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--primary-light);
+  padding: 0 10px;
   cursor: pointer;
-  height: 100%;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
   transition: color 0.2s;
+  height: 100%;
 }
- 
+
 .toggle-password:hover {
   color: var(--primary);
 }
- 
+
+.toggle-password svg {
+  height: 20px;
+  width: 20px;
+  fill: currentColor;
+  display: block;
+}
+
+.toggle-password .icon-visibility-on, .toggle-password .icon-visibility-off {
+  display: inline-flex;
+  align-items: center;
+}
+
 .auth-form .btn-submit {
   margin-top: 8px;
 }
- 
+
 .auth-switch {
   text-align: center;
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-top: 20px;
 }
- 
+
 .auth-switch a {
   color: var(--primary);
   font-weight: 600;
 }
- 
+
 .auth-switch a:hover {
   text-decoration: underline;
 }
- 
+
 /* Error Messages */
 .alert-error {
   background: #2a1a1a;
@@ -2614,8 +2641,6 @@ footer {
   color: #ff8080;
 }
 
-/* Responsiveness */
- 
 @media (max-width: 480px) {
   .auth-card {
     padding: 28px 20px;
@@ -2938,6 +2963,7 @@ footer {
 /* Save button */
 .btn-save {
   display: block;
+  text-align: center;
   width: 100%;
   background-color: transparent;
   color: var(--primary-light);
@@ -3113,6 +3139,68 @@ footer {
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--primary);
+}
+
+/* Status notice boxes shown in listing sidebar */
+.txn-status-notice {
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+ 
+.txn-notice-sold {
+  background-color: var(--surface-tint);
+  color: var(--surface-tint-text);
+}
+ 
+.txn-notice-pending {
+  background-color: rgba(192, 184, 122, 0.2);
+  color: #7A6820;
+  border: 1px solid rgba(192, 184, 122, 0.4);
+}
+ 
+.txn-notice-reserved {
+  background-color: rgba(192, 184, 122, 0.1);
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+}
+ 
+/* Small helper text under status notices */
+.txn-helper-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+ 
+/* Buyer name shown under pending notice on seller view */
+.txn-buyer-info {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 8px;
+}
+ 
+.txn-buyer-info strong {
+  color: var(--text-dark);
+}
+ 
+/* Reserved overlay on item image (yellow-ish, distinct from sold) */
+.listing-reserved-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(192, 160, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
 }
 
 /* Responsiveness */
@@ -3513,24 +3601,136 @@ footer {
 .chat-form textarea:focus {
   border-color: var(--primary-light);
 }
- 
+
 .btn-send {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+}
+
+.btn-send svg {
+  width: 36px;
+  height: 36px;
+  display: block;
+  fill: var(--primary);
+}
+
+.btn-send:hover svg {
+  transform: scale(1.1);
+  fill: #88f78a;
+}
+
+/* Transaction bar inside the chat panel */
+.chat-txn-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  background-color: var(--hover-bg);
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+ 
+.chat-txn-status {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+ 
+.chat-txn-pending {
+  background-color: rgba(192, 184, 122, 0.25);
+  color: #7A6820;
+}
+ 
+.chat-txn-completed {
+  background-color: var(--hover-bg);
+  color: var(--primary);
+  border: 1px solid var(--primary-light);
+}
+ 
+.chat-txn-cancelled {
+  background-color: rgba(185, 64, 64, 0.08);
+  color: #b94040;
+  border: 1px solid rgba(185, 64, 64, 0.2);
+}
+ 
+.chat-txn-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+ 
+.chat-txn-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+ 
+/* Create Deal button - gold, stands out */
+.btn-chat-txn-create {
+  background-color: var(--accent);
+  color: var(--gold-btn-text);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s;
+  white-space: nowrap;
+}
+ 
+.btn-chat-txn-create:hover {
+  filter: brightness(0.9);
+}
+ 
+/* Mark as Sold inside chat */
+.btn-chat-txn-complete {
   background-color: var(--primary);
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: 6px;
+  padding: 6px 14px;
   font-family: 'Poppins', sans-serif;
-  font-size: 0.875rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
   white-space: nowrap;
-  flex-shrink: 0;
 }
  
-.btn-send:hover {
+.btn-chat-txn-complete:hover {
   background-color: var(--primary-light);
+}
+ 
+/* Cancel Deal inside chat */
+.btn-chat-txn-cancel {
+  background: none;
+  border: 1px solid #b94040;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #b94040;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+ 
+.btn-chat-txn-cancel:hover {
+  background-color: #b94040;
+  color: #ffffff;
 }
  
 @media (max-width: 768px) {

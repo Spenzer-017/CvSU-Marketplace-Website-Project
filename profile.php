@@ -91,6 +91,9 @@
     if ($course === '') $errors[] = 'Course is required.';
     if ($year === '') $errors[] = 'Year level is required.';
     if (!array_key_exists($avatar, $avatars)) $errors[] = 'Please select an avatar.';
+    if (strlen($bio) > 200) $errors[] = 'Bio too long.';
+    if (strlen($contact) > 80) $errors[] = 'Contact too long.';
+    if (!isset($avatars[$avatar])) $errors[] = 'Invalid avatar.';
 
     // Password Validation
     if ($current_password || $new_password || $confirm_password) {
@@ -341,7 +344,7 @@
           <label for="bio">Bio</label>
           <textarea id="bio" name="bio" rows="3" maxlength="200" placeholder="Tell something about yourself…"><?= htmlspecialchars($user['bio']) ?></textarea>
           <span class="form-hint char-count">
-            <span id="bioCount"><?= strlen($user['bio']) ?></span> / 200 characters
+            <span id="bioCount"><?= htmlspecialchars(strlen($user['bio'])) ?></span> / 200 characters
           </span>
         </div>
 

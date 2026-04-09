@@ -1,57 +1,99 @@
-<!-- PHP Logic (Authentication, Session, etc.) -->
 <?php
-  /*
-    messages.php - Direct Messaging
-    Shows conversation threads between buyers and sellers about items.
-    URL parameters: ?to=USER_ID&item=ITEM_ID  (opens or starts a conversation)
-  */
+/*
+  messages.php - Direct Messaging
+  Shows conversation threads between buyers and sellers about items.
+  URL parameters: ?to=USER_ID&item=ITEM_ID  (opens or starts a conversation)
+*/
 
-  session_start();
+session_start();
 
-  require_once "includes/db.php";
+require_once "includes/db.php";
 
-  if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
-    exit;
-  }
+if (!isset($_SESSION['user'])) {
+  header('Location: login.php');
+  exit;
+}
 
-  $loggedInUser = $_SESSION['user'];
-  $uid = (int)$loggedInUser['id'];
+$loggedInUser = $_SESSION['user'];
+$uid = (int)$loggedInUser['id'];
 ?>
 
-<!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
   include "includes/header.php";
 ?>
 
-<!-- PHP Database Query -->
-<?php 
+<?php
   // Handle sending a message
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
     $receiver_id = (int)($_POST['receiver_id'] ?? 0);
-    $item_id     = (int)($_POST['item_id']     ?? 0);
-    $message     = trim($_POST['message']      ?? '');
+    $item_id = (int)($_POST['item_id'] ?? 0);
+    $message = trim($_POST['message'] ?? '');
 
     if ($receiver_id > 0 && $item_id > 0 && $message !== '' && strlen($message) <= 1000) {
-      // Verify item exists
-      $stmt = $pdo->prepare("SELECT item_id FROM items WHERE item_id = ? LIMIT 1");
+      $stmt = $pdo->prepare("SELECT seller_id FROM items WHERE item_id = ? LIMIT 1");
       $stmt->execute([$item_id]);
-      if ($stmt->fetch()) {
-        $pdo->prepare("
-          INSERT INTO messages (sender_id, receiver_id, item_id, message)
-          VALUES (?, ?, ?, ?)
-        ")->execute([$uid, $receiver_id, $item_id, $message]);
+      $item = $stmt->fetch();
+
+      if ($item) {
+        $seller_id = (int)$item['seller_id'];
+        if (
+          ($uid !== $seller_id && $receiver_id === $seller_id) ||
+          ($uid === $seller_id && $receiver_id !== $seller_id)
+        ) {
+          $pdo->prepare("
+            INSERT INTO messages (sender_id, receiver_id, item_id, message)
+            VALUES (?, ?, ?, ?)
+          ")->execute([$uid, $receiver_id, $item_id, $message]);
+        }
       }
     }
 
-    // Redirect back to same conversation to prevent form resubmit on refresh
     header("Location: messages.php?to=$receiver_id&item=$item_id");
     exit;
   }
 
+  // Handle create transaction (seller only, from chat panel)
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_transaction'])) {
+    $item_id = (int)($_POST['item_id'] ?? 0);
+    $buyer_id = (int)($_POST['buyer_id'] ?? 0);
+
+    if ($item_id > 0 && $buyer_id > 0) {
+      // Verify this user is the seller of that item
+      $stmt = $pdo->prepare("SELECT * FROM items WHERE item_id = ? AND seller_id = ? AND status = 'active'");
+      $stmt->execute([$item_id, $uid]);
+      $item = $stmt->fetch();
+
+      if ($item) {
+        // No pending transaction for this item already
+        $stmt = $pdo->prepare("SELECT 1 FROM transactions WHERE item_id = ? AND status = 'pending' LIMIT 1");
+        $stmt->execute([$item_id]);
+
+        if (!$stmt->fetch()) {
+          // Verify there is a conversation between seller and this buyer about this item
+          $stmt = $pdo->prepare("
+            SELECT 1 FROM messages
+            WHERE item_id = ?
+            AND ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
+            LIMIT 1
+          ");
+          $stmt->execute([$item_id, $buyer_id, $uid, $uid, $buyer_id]);
+
+          if ($stmt->fetch()) {
+            $pdo->prepare("
+              INSERT INTO transactions (buyer_id, seller_id, item_id, amount, status)
+              VALUES (?, ?, ?, ?, 'pending')
+            ")->execute([$buyer_id, $uid, $item_id, $item['price']]);
+          }
+        }
+      }
+    }
+
+    header("Location: messages.php?to=$buyer_id&item=$item_id");
+    exit;
+  }
+
   // Get all unique conversations for this user
-  // A conversation is defined by a unique (item_id, other_user_id) pair
   $stmt = $pdo->prepare("
     SELECT
       m.item_id,
@@ -78,28 +120,29 @@
   $conversations = $stmt->fetchAll();
 
   // Active conversation from URL params
-  $active_to = isset($_GET['to'])   ? (int)$_GET['to']   : 0;
-  $active_item = isset($_GET['item']) ? (int)$_GET['item']  : 0;
+  $active_to = isset($_GET['to']) ? (int)$_GET['to'] : 0;
+  $active_item = isset($_GET['item']) ? (int)$_GET['item'] : 0;
 
-  // If no active conversation set, default to the first one in the list
+  // Default to first conversation if none selected
   if ($active_to === 0 && !empty($conversations)) {
-    $active_to   = (int)$conversations[0]['other_user_id'];
+    $active_to = (int)$conversations[0]['other_user_id'];
     $active_item = (int)$conversations[0]['item_id'];
   }
 
-  // Load the active conversation messages
   $active_messages = [];
   $active_item_data = null;
   $other_user = null;
+  $chat_transaction = null;
+  $is_seller_in_chat = false;
 
   if ($active_to > 0 && $active_item > 0) {
-    // Mark messages in this conversation as read
+    // Mark messages as read
     $pdo->prepare("
       UPDATE messages SET is_read = 1
       WHERE receiver_id = ? AND sender_id = ? AND item_id = ?
     ")->execute([$uid, $active_to, $active_item]);
 
-    // Fetch the messages in this thread
+    // Fetch messages in this thread
     $stmt = $pdo->prepare("
       SELECT m.*, u.name AS sender_name, u.avatar AS sender_avatar
       FROM messages m
@@ -112,18 +155,31 @@
     $stmt->execute([$uid, $active_to, $active_to, $uid, $active_item]);
     $active_messages = $stmt->fetchAll();
 
-    // Fetch the item this conversation is about
+    // Fetch item data
     $stmt = $pdo->prepare("
-      SELECT items.item_id, items.title, items.price, items.image_path, items.status
+      SELECT item_id, title, price, image_path, status, seller_id
       FROM items WHERE item_id = ?
     ");
     $stmt->execute([$active_item]);
     $active_item_data = $stmt->fetch();
 
-    // Fetch the other user's info
+    // Fetch other user info
     $stmt = $pdo->prepare("SELECT id, name, avatar, course FROM users WHERE id = ?");
     $stmt->execute([$active_to]);
     $other_user = $stmt->fetch();
+
+    // Fetch the current transaction for this item
+    $stmt = $pdo->prepare("
+      SELECT * FROM transactions
+      WHERE item_id = ?
+      ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END, created_at DESC
+      LIMIT 1
+    ");
+    $stmt->execute([$active_item]);
+    $chat_transaction = $stmt->fetch();
+
+    // Is the logged-in user the seller of this item?
+    $is_seller_in_chat = $active_item_data && (int)$active_item_data['seller_id'] === $uid;
   }
 ?>
 
@@ -217,6 +273,90 @@
           </a>
         </div>
 
+        <!-- Transaction bar (shown inside chat when relevant) -->
+        <?php
+          $chat_txn_status = $chat_transaction ? $chat_transaction['status'] : null;
+          $can_create_txn = $is_seller_in_chat
+            && $active_item_data['status'] === 'active'
+            && $chat_txn_status !== 'pending';
+          $show_txn_bar = $chat_txn_status || $can_create_txn;
+        ?>
+
+        <?php if ($show_txn_bar): ?>
+          <div class="chat-txn-bar">
+
+            <?php if ($chat_txn_status === 'pending'): ?>
+              <div class="chat-txn-status chat-txn-pending">
+                Transaction Pending
+              </div>
+              <?php if ($is_seller_in_chat): ?>
+                <div class="chat-txn-actions">
+                  <form method="POST" action="transactions.php">
+                    <input type="hidden" name="transaction_id" value="<?= (int)$chat_transaction['transaction_id'] ?>">
+                    <input type="hidden" name="status" value="completed">
+                    <button type="submit" name="update_status" class="btn-chat-txn-complete" onclick="return confirm('Mark as sold?')">
+                      Mark as Sold
+                    </button>
+                  </form>
+                  <form method="POST" action="transactions.php">
+                    <input type="hidden" name="transaction_id" value="<?= (int)$chat_transaction['transaction_id'] ?>">
+                    <input type="hidden" name="status" value="cancelled">
+                    <button type="submit" name="update_status" class="btn-chat-txn-cancel" onclick="return confirm('Cancel this transaction?')">
+                      Cancel Transaction
+                    </button>
+                  </form>
+                </div>
+              <?php else: ?>
+                <div class="chat-txn-actions">
+                  <form method="POST" action="transactions.php">
+                    <input type="hidden" name="transaction_id" value="<?= (int)$chat_transaction['transaction_id'] ?>">
+                    <input type="hidden" name="status" value="cancelled">
+                    <button type="submit" name="update_status" class="btn-chat-txn-cancel" onclick="return confirm('Cancel this transaction?')">
+                      Cancel Transaction
+                    </button>
+                  </form>
+                </div>
+              <?php endif; ?>
+
+            <?php elseif ($chat_txn_status === 'completed'): ?>
+              <div class="chat-txn-status chat-txn-completed">
+                Transaction Completed
+              </div>
+
+            <?php elseif ($chat_txn_status === 'cancelled'): ?>
+              <div class="chat-txn-status chat-txn-cancelled">
+                Transaction Cancelled
+              </div>
+              <?php if ($can_create_txn): ?>
+                <div class="chat-txn-actions">
+                  <form method="POST">
+                    <input type="hidden" name="item_id" value="<?= $active_item ?>">
+                    <input type="hidden" name="buyer_id" value="<?= $active_to ?>">
+                    <button type="submit" name="create_transaction" class="btn-chat-txn-create" onclick="return confirm('Create a transaction with this buyer for &#8369;<?= number_format($active_item_data['price'], 2) ?>?')">
+                      Create Transaction
+                    </button>
+                  </form>
+                </div>
+              <?php endif; ?>
+
+            <?php elseif ($can_create_txn): ?>
+              <div class="chat-txn-hint">
+                Agreed on a transaction?
+              </div>
+              <div class="chat-txn-actions">
+                <form method="POST">
+                  <input type="hidden" name="item_id" value="<?= $active_item ?>">
+                  <input type="hidden" name="buyer_id" value="<?= $active_to ?>">
+                  <button type="submit" name="create_transaction" class="btn-chat-txn-create" onclick="return confirm('Create a pending transaction with this buyer for &#8369;<?= number_format($active_item_data['price'], 2) ?>?')">
+                    Create Transaction
+                  </button>
+                </form>
+              </div>
+            <?php endif; ?>
+
+          </div>
+        <?php endif; ?>
+
         <!-- Messages thread -->
         <div class="chat-messages" id="chatMessages">
           <?php if (empty($active_messages)): ?>
@@ -244,8 +384,10 @@
           <form method="POST" class="chat-form" id="chatForm">
             <input type="hidden" name="receiver_id" value="<?= $active_to ?>">
             <input type="hidden" name="item_id" value="<?= $active_item ?>">
-            <textarea name="message" id="messageInput" placeholder="Type a message..." maxlength="1000" rows="1" required ></textarea>
-            <button type="submit" name="send_message" class="btn-send">Send</button>
+            <textarea name="message" id="messageInput" placeholder="Type a message..." maxlength="1000" rows="1" required></textarea>
+            <button type="submit" name="send_message" class="btn-send" aria-label="Send message">
+              <?= $sendIcon ?>
+            </button>
           </form>
         </div>
 
@@ -257,13 +399,11 @@
 </div>
 
 <script>
-  // Auto scroll to bottom of chat on load
   const chatMessages = document.getElementById('chatMessages');
   if (chatMessages) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // Auto resize textarea as user types
   const msgInput = document.getElementById('messageInput');
   if (msgInput) {
     msgInput.addEventListener('input', function () {
@@ -271,7 +411,6 @@
       this.style.height = Math.min(this.scrollHeight, 120) + 'px';
     });
 
-    // Send on Enter, new line on Shift+Enter
     msgInput.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();

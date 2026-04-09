@@ -173,7 +173,7 @@
   <!-- Recent Purchases -->
   <div class="section-heading">
     <h2>Recent Purchases</h2>
-    <a href="purchases.php">View all ></a>
+    <a href="transactions.php?view=buying">View all ></a>
   </div>
   <div class="purchases-box">
     <?php foreach ($recent_purchases as $purchase): ?>

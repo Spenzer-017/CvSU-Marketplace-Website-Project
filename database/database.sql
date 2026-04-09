@@ -39,7 +39,7 @@ CREATE TABLE items (
     condition_type ENUM('New','Like New','Good','Fair','N/A') NOT NULL,
     meetup_location VARCHAR(100) DEFAULT NULL,
     contact_info VARCHAR(100) DEFAULT NULL,
-    status ENUM('active','sold') DEFAULT 'active',
+    status ENUM('active', 'reserved', 'sold') DEFAULT 'active',
     views INT NOT NULL DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (seller_id) REFERENCES users(id) ON DELETE CASCADE,

@@ -20,13 +20,13 @@ $email = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $name = trim($_POST['name'] ?? '');
-  $email = trim($_POST['email'] ?? '');
-  $password = trim($_POST['password'] ?? '');
+  $email = strtolower(trim($_POST['email'] ?? ''));
+  $password = $_POST['password'] ?? '';
   $confirm = trim($_POST['confirm'] ?? '');
 
   // Validation
   if ($name === '') $errors[] = 'Full name is required.';
-  if (strlen($name) > 20) $errors[] = 'Name must be 20 characters or less.';
+  if (strlen($name) > 80) $errors[] = 'Name must be 80 characters or less.';
 
   if ($email === '') $errors[] = 'Email is required.';
   elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Please enter a valid email address.';
@@ -56,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
     $stmt->execute([$name, $email, $hashed, 'junimo_0']);
 
-    // Redirect to login with success message
     header('Location: login.php?registered=1');
     exit;
   }
@@ -103,7 +102,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="password">Password <span class="required">*</span></label>
         <div class="password-input">
           <input type="password" id="password" name="password" placeholder="At least 8 characters" required/>
-          <button type="button" class="toggle-password" onclick="togglePassword('password', this)">Show</button>
+          <button type="button" class="toggle-password" onclick="togglePassword('password', this)" aria-label="Show password">
+            <span class="icon-visibility-on"><?= $visibilityOnIcon ?></span>
+            <span class="icon-visibility-off" style="display:none;"><?= $visibilityOffIcon ?></span>
+          </button>
         </div>
       </div>
 
@@ -111,7 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="confirm">Confirm Password <span class="required">*</span></label>
         <div class="password-input">
           <input type="password" id="confirm" name="confirm" placeholder="Repeat your password" required/>
-          <button type="button" class="toggle-password" onclick="togglePassword('confirm', this)">Show</button>
+          <button type="button" class="toggle-password" onclick="togglePassword('confirm', this)" aria-label="Show password">
+            <span class="icon-visibility-on"><?= $visibilityOnIcon ?></span>
+            <span class="icon-visibility-off" style="display:none;"><?= $visibilityOffIcon ?></span>
+          </button>
         </div>
         <span class="form-hint" id="matchHint"></span>
       </div>
@@ -130,16 +135,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
   function togglePassword(inputId, btn) {
     const input = document.getElementById(inputId);
+    const iconOn = btn.querySelector('.icon-visibility-on');
+    const iconOff = btn.querySelector('.icon-visibility-off');
+
     if (input.type === 'password') {
       input.type = 'text';
-      btn.textContent = 'Hide';
+      iconOn.style.display = 'none';
+      iconOff.style.display = 'inline-flex';
     } else {
       input.type = 'password';
-      btn.textContent = 'Show';
+      iconOn.style.display = 'inline-flex';
+      iconOff.style.display = 'none';
     }
   }
 
-  // Live password match check
   const password = document.getElementById('password');
   const confirm = document.getElementById('confirm');
   const hint = document.getElementById('matchHint');

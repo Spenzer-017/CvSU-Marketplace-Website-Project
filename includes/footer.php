@@ -49,20 +49,20 @@
 </footer>
 
 <?php
-// Load page-specific JS
-if (isset($activePage)) {
-    if ($activePage === 'dashboard') {
-        echo '<script src="js/dashboard.js"></script>';
-    } elseif ($activePage === 'browse') {
-        echo '<script src="js/browse.js"></script>';
-    } elseif ($activePage === 'home') {
-        echo '<script src="js/home.js"></script>';
-    } elseif ($activePage === 'transactions') {
-        echo '<script src="js/transactions.js"></script>';
-    } elseif ($activePage === 'sell') {
-        echo '<script src="js/sell.js"></script>';
-    } 
-}
+// Load page-specific JS (Uncomment if decided to put embedded scripts in external JS files)
+// if (isset($activePage)) {
+//     if ($activePage === 'dashboard') {
+//         echo '<script src="js/dashboard.js"></script>';
+//     } elseif ($activePage === 'browse') {
+//         echo '<script src="js/browse.js"></script>';
+//     } elseif ($activePage === 'home') {
+//         echo '<script src="js/home.js"></script>';
+//     } elseif ($activePage === 'transactions') {
+//         echo '<script src="js/transactions.js"></script>';
+//     } elseif ($activePage === 'sell') {
+//         echo '<script src="js/sell.js"></script>';
+//     } 
+// }
 ?>
 
 </body>
