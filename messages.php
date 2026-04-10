@@ -58,34 +58,54 @@ $uid = (int)$loggedInUser['id'];
     $item_id = (int)($_POST['item_id'] ?? 0);
     $buyer_id = (int)($_POST['buyer_id'] ?? 0);
 
-    if ($item_id > 0 && $buyer_id > 0) {
-      // Verify this user is the seller of that item
-      $stmt = $pdo->prepare("SELECT * FROM items WHERE item_id = ? AND seller_id = ? AND status = 'active'");
-      $stmt->execute([$item_id, $uid]);
-      $item = $stmt->fetch();
+    if ($item_id > 0 && $buyer_id > 0 && $buyer_id !== $uid) {
+      // Use a DB transaction to prevent race conditions / double-submit
+      $pdo->beginTransaction();
 
-      if ($item) {
-        // No pending transaction for this item already
-        $stmt = $pdo->prepare("SELECT 1 FROM transactions WHERE item_id = ? AND status = 'pending' LIMIT 1");
-        $stmt->execute([$item_id]);
+      try {
+        // Verify the logged-in user is the seller and the item is still active
+        $stmt = $pdo->prepare("
+          SELECT item_id, price FROM items
+          WHERE item_id = ? AND seller_id = ? AND status = 'active'
+          LIMIT 1
+        ");
+        $stmt->execute([$item_id, $uid]);
+        $item = $stmt->fetch();
 
-        if (!$stmt->fetch()) {
-          // Verify there is a conversation between seller and this buyer about this item
+        if ($item) {
+          // Check no pending transaction exists for this item with any buyer
           $stmt = $pdo->prepare("
-            SELECT 1 FROM messages
-            WHERE item_id = ?
-            AND ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
+            SELECT 1 FROM transactions
+            WHERE item_id = ? AND status = 'pending'
             LIMIT 1
           ");
-          $stmt->execute([$item_id, $buyer_id, $uid, $uid, $buyer_id]);
+          $stmt->execute([$item_id]);
+          $already_pending = $stmt->fetch();
 
-          if ($stmt->fetch()) {
-            $pdo->prepare("
-              INSERT INTO transactions (buyer_id, seller_id, item_id, amount, status)
-              VALUES (?, ?, ?, ?, 'pending')
-            ")->execute([$buyer_id, $uid, $item_id, $item['price']]);
+          if (!$already_pending) {
+            // Verify a real conversation exists between this seller and this buyer
+            $stmt = $pdo->prepare("
+              SELECT 1 FROM messages
+              WHERE item_id = ?
+              AND ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
+              LIMIT 1
+            ");
+            $stmt->execute([$item_id, $buyer_id, $uid, $uid, $buyer_id]);
+            $has_conversation = $stmt->fetch();
+
+            if ($has_conversation) {
+              $pdo->prepare("
+                INSERT INTO transactions (buyer_id, seller_id, item_id, amount, status)
+                VALUES (?, ?, ?, ?, 'pending')
+              ")->execute([$buyer_id, $uid, $item_id, $item['price']]);
+            }
           }
         }
+
+        $pdo->commit();
+
+      } catch (Exception $e) {
+        $pdo->rollBack();
       }
     }
 
@@ -133,6 +153,7 @@ $uid = (int)$loggedInUser['id'];
   $active_item_data = null;
   $other_user = null;
   $chat_transaction = null;
+  $any_pending_on_item = false;
   $is_seller_in_chat = false;
 
   if ($active_to > 0 && $active_item > 0) {
@@ -168,18 +189,32 @@ $uid = (int)$loggedInUser['id'];
     $stmt->execute([$active_to]);
     $other_user = $stmt->fetch();
 
-    // Fetch the current transaction for this item
+    $is_seller_in_chat = $active_item_data && (int)$active_item_data['seller_id'] === $uid;
+
+    // Determine buyer_id and seller_id for this specific chat
+    $chat_seller_id = $active_item_data ? (int)$active_item_data['seller_id'] : 0;
+    $chat_buyer_id = ($uid === $chat_seller_id) ? $active_to : $uid;
+
+    // Each chat shows only its own transaction, not someone else's
     $stmt = $pdo->prepare("
       SELECT * FROM transactions
       WHERE item_id = ?
-      ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END, created_at DESC
+      AND buyer_id = ?
+      AND seller_id = ?
+      ORDER BY CASE status WHEN 'pending' THEN 0 WHEN 'completed' THEN 1 ELSE 2 END, created_at DESC
+      LIMIT 1
+    ");
+    $stmt->execute([$active_item, $chat_buyer_id, $chat_seller_id]);
+    $chat_transaction = $stmt->fetch();
+
+    // The seller should not be able to create a new transaction while one is active elsewhere
+    $stmt = $pdo->prepare("
+      SELECT 1 FROM transactions
+      WHERE item_id = ? AND status = 'pending'
       LIMIT 1
     ");
     $stmt->execute([$active_item]);
-    $chat_transaction = $stmt->fetch();
-
-    // Is the logged-in user the seller of this item?
-    $is_seller_in_chat = $active_item_data && (int)$active_item_data['seller_id'] === $uid;
+    $any_pending_on_item = (bool)$stmt->fetch();
   }
 ?>
 
@@ -273,19 +308,24 @@ $uid = (int)$loggedInUser['id'];
           </a>
         </div>
 
-        <!-- Transaction bar (shown inside chat when relevant) -->
+        <!-- Transaction bar -->
         <?php
           $chat_txn_status = $chat_transaction ? $chat_transaction['status'] : null;
           $can_create_txn = $is_seller_in_chat
             && $active_item_data['status'] === 'active'
-            && $chat_txn_status !== 'pending';
-          $show_txn_bar = $chat_txn_status || $can_create_txn;
+            && !$any_pending_on_item
+            && $chat_txn_status !== 'pending'
+            && $chat_txn_status !== 'completed';
+
+          $show_txn_bar = $chat_txn_status || $can_create_txn
+            || ($is_seller_in_chat && $any_pending_on_item && $chat_txn_status === null);
         ?>
 
         <?php if ($show_txn_bar): ?>
           <div class="chat-txn-bar">
 
             <?php if ($chat_txn_status === 'pending'): ?>
+              <!-- This chat has an active pending transaction -->
               <div class="chat-txn-status chat-txn-pending">
                 Transaction Pending
               </div>
@@ -302,37 +342,41 @@ $uid = (int)$loggedInUser['id'];
                     <input type="hidden" name="transaction_id" value="<?= (int)$chat_transaction['transaction_id'] ?>">
                     <input type="hidden" name="status" value="cancelled">
                     <button type="submit" name="update_status" class="btn-chat-txn-cancel" onclick="return confirm('Cancel this transaction?')">
-                      Cancel Transaction
+                      Cancel
                     </button>
                   </form>
                 </div>
               <?php else: ?>
+                <!-- Buyer can only cancel their own pending transaction -->
                 <div class="chat-txn-actions">
                   <form method="POST" action="transactions.php">
                     <input type="hidden" name="transaction_id" value="<?= (int)$chat_transaction['transaction_id'] ?>">
                     <input type="hidden" name="status" value="cancelled">
                     <button type="submit" name="update_status" class="btn-chat-txn-cancel" onclick="return confirm('Cancel this transaction?')">
-                      Cancel Transaction
+                      Cancel
                     </button>
                   </form>
                 </div>
               <?php endif; ?>
 
             <?php elseif ($chat_txn_status === 'completed'): ?>
+              <!-- Transaction is done, no further actions -->
               <div class="chat-txn-status chat-txn-completed">
                 Transaction Completed
               </div>
 
             <?php elseif ($chat_txn_status === 'cancelled'): ?>
+              <!-- This chat's transaction was cancelled -->
               <div class="chat-txn-status chat-txn-cancelled">
                 Transaction Cancelled
               </div>
               <?php if ($can_create_txn): ?>
+                <!-- Seller can start a new transaction since item currently has no pending transaction -->
                 <div class="chat-txn-actions">
                   <form method="POST">
                     <input type="hidden" name="item_id" value="<?= $active_item ?>">
                     <input type="hidden" name="buyer_id" value="<?= $active_to ?>">
-                    <button type="submit" name="create_transaction" class="btn-chat-txn-create" onclick="return confirm('Create a transaction with this buyer for &#8369;<?= number_format($active_item_data['price'], 2) ?>?')">
+                    <button type="submit" name="create_transaction" class="btn-chat-txn-create" onclick="return confirm('Create a new transaction with this buyer?')">
                       Create Transaction
                     </button>
                   </form>
@@ -340,6 +384,7 @@ $uid = (int)$loggedInUser['id'];
               <?php endif; ?>
 
             <?php elseif ($can_create_txn): ?>
+              <!-- No transaction yet, seller can start one -->
               <div class="chat-txn-hint">
                 Agreed on a transaction?
               </div>
@@ -352,6 +397,13 @@ $uid = (int)$loggedInUser['id'];
                   </button>
                 </form>
               </div>
+
+            <?php elseif ($is_seller_in_chat && $any_pending_on_item && $chat_txn_status === null): ?>
+              <!-- Seller sees this chat if another buyer already has a pending transaction on this item -->
+              <div class="chat-txn-status chat-txn-pending" style="opacity: 0.7;">
+                Item Reserved with Another Buyer
+              </div>
+
             <?php endif; ?>
 
           </div>

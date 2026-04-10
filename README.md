@@ -48,21 +48,24 @@ Also the footer is not affected by the theme because, i don't like how it looks 
 There's still room for improvement on the color scheme of my themes like in hover and buttons.
 
 # Things To Take Note Of
+(Optional):
+- Maybe implement a real SMTP verification to send OTP to cvsu email and verify its authenticity
 - Image upload might need to change where it saves, also might need to do something on how the image will look like in the      
-  front-end.
-- Might want to add modals for confirmation popups like deleting listings, canceling transactions, etc.
+  front-end of browse page.
 - The load page specific javascript in the footer have no purpose for now because almost all script are embedded
+(Less Important):
+- Might want to add modals for confirmation popups like deleting listings, canceling transactions, etc.
 - The infinite scroll in browse page is quite finicky (doesn't work that great), but it still works. Because its loading
   the entire items table and cutting it in javascript
-- Things to implement/fix still (dashboard, transactions wk3, messages, my-listings, info, purchases & sales, comments,
-  account deletion option, forgot password, real cvsu account validation)
+(Important): 
+- Things to implement/fix still (dashboard, transactions wk3, info, comments, account deletion option, forgot password, 
+  real cvsu account validation)
 - Things that exist in db & some in front-end but not yet implemented properly (saved items [d. board], notifications, reports)
-- Need more icons for (send button, hide/show password button, etc.)
 - Things to fix: 
-    * show only options like cancel transaction, create transaction, mark as sold, etc. to users that has said transaction
-    * maybe delete convo after cancelling transaction or finishing transaction, so that the seller can't make a transaction
-      again with the same buyer over and over again
     * maybe we finally fix the theme icon positioning
+    * info contact form is submitting into void, need to actually send message to something
+    * download icons for info page svg icons
+    * maybe change the hamburger menu, forward arrows, etc. to be an actual svg icon
 
 <!-- Weekly Report -->
 
@@ -92,7 +95,8 @@ There's still room for improvement on the color scheme of my themes like in hove
 
 > Week 3
 - Made authentication (Login, Signup, Logout)
-- Made UI for authentication pages (Login, Signup)
+- Made UI/UX for authentication pages (Login, Signup)
+- Made UI/UX for other pages (Transaction, Messages, Listing, My Listings, Edit Listing)
 - Made a include dedicated for database connection/access
 - Remove manual forced logins and set the $_SESSION to $user in the database
 - Added protection to protected pages like (dashboard, profile, etc.) redirecting guest into login page if they aren't logged in
@@ -106,7 +110,6 @@ There's still room for improvement on the color scheme of my themes like in hove
     - ???
     > My Listings Page Front-end
     - ???
-
 
 > Week 4
 - 

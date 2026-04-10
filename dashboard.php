@@ -1,78 +1,145 @@
-<!-- PHP Logic (Authentication, Session, etc.) -->
-<?php 
-  /*
-    dashboard.php
-    The main page users land on after logging in.
-  */
-
-  session_start();
-
-  if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
-    exit;
-  }
-
-  $user = $_SESSION['user'] ?? null; 
-?>
-
-<!-- PHP UI/UX Logic -->
-<?php 
-  $activePage = "dashboard"; 
-  include "includes/header.php"; 
-?>
-
-<!-- PHP Database Query -->
 <?php
-  // Mock data (replace with real DB queries later)
-  $stats = [
-    ['label' => 'Active Listings', 'value' => 6],
-    ['label' => 'Items Sold', 'value' => 9],
-    ['label' => 'Purchases Made', 'value' => 6],
-    ['label' => 'Unread Messages', 'value' => 7],
-  ];
-  
-  $my_listings = [
-    ['title' => 'Portrait of Myself', 'price' => 777, 'status' => 'active', 'views' => 34, 'id' => 967],
-    ['title' => 'Junimo Plushe', 'price' => 500, 'status' => 'active', 'views' => 21, 'id' => 190],
-    ['title' => 'Statue of My Dog (Life Size)', 'price' => 2500, 'status' => 'sold', 'views' => 58, 'id' => 275],
-    ['title' => 'Rubiks Cube', 'price' => 420, 'status' => 'active', 'views' => 15, 'id' => 489],
-  ];
-  
-  $recent_messages = [
-    ['from' => 'Mom', 'item' => 'Statue of My Dog (Life Size)', 'msg' => 'Why are you selling this son?', 'time' => '10 min ago',  'unread' => true],
-    ['from' => 'Xymon', 'item' => 'Portrait of Myself', 'msg' => 'How much for you to burn it?', 'time' => '1 hour ago', 'unread' => true],
-    ['from' => 'Rob', 'item' => 'Junimo Plushe', 'msg' => 'I will take this out of your hand for 50.','time' => '3 hours ago', 'unread' => false],
-  ];
-  
-  $recent_purchases = [
-    ['title' => 'Death Note', 'from' => 'Ryuk', 'price' => 666, 'date' => 'Mar 10'],
-    ['title' => 'Key Chain', 'from' => 'Yñigo', 'price' => 85, 'date' => 'Mar 8'],
-    ['title' => 'Venus Fly Trap', 'from' => 'Gypsy', 'price' => 800, 'date' => 'Mar 5'],
-  ];
+/*
+  dashboard.php
+  The main page users land on after logging in.
+*/
+
+session_start();
+
+if (!isset($_SESSION['user'])) {
+  header('Location: login.php');
+  exit;
+}
+
+require_once "includes/db.php";
+
+$loggedInUser = $_SESSION['user'];
+$uid = (int)$loggedInUser['id'];
 ?>
 
-<!-- Dashboard Body -->
+<?php
+  $activePage = "dashboard";
+  include "includes/header.php";
+?>
+
+<?php
+  // --- STATS ---
+
+  // Active listings
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM items WHERE seller_id = ? AND status = 'active'");
+  $stmt->execute([$uid]);
+  $stat_active = (int)$stmt->fetchColumn();
+
+  // Items sold
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM items WHERE seller_id = ? AND status = 'sold'");
+  $stmt->execute([$uid]);
+  $stat_sold = (int)$stmt->fetchColumn();
+
+  // Purchases made (completed transactions where I'm the buyer)
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE buyer_id = ? AND status = 'completed'");
+  $stmt->execute([$uid]);
+  $stat_purchases = (int)$stmt->fetchColumn();
+
+  // Unread messages
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND is_read = 0");
+  $stmt->execute([$uid]);
+  $stat_unread = (int)$stmt->fetchColumn();
+
+  // --- MY LISTINGS (last 4, newest first) ---
+  $stmt = $pdo->prepare("
+    SELECT item_id, title, price, status, views
+    FROM items
+    WHERE seller_id = ?
+    ORDER BY created_at DESC
+    LIMIT 4
+  ");
+  $stmt->execute([$uid]);
+  $my_listings = $stmt->fetchAll();
+
+  // --- RECENT MESSAGES (last 3 unique conversations) ---
+  $stmt = $pdo->prepare("
+    SELECT
+      CASE WHEN m.sender_id = ? THEN m.receiver_id ELSE m.sender_id END AS other_user_id,
+      u.name AS other_name,
+      u.avatar AS other_avatar,
+      i.item_id,
+      i.title AS item_title,
+      MAX(m.created_at) AS last_time,
+      SUM(CASE WHEN m.receiver_id = ? AND m.is_read = 0 THEN 1 ELSE 0 END) AS unread_count,
+      (SELECT message FROM messages m2
+       WHERE m2.item_id = m.item_id
+       AND ((m2.sender_id = ? AND m2.receiver_id = other_user_id)
+         OR (m2.sender_id = other_user_id AND m2.receiver_id = ?))
+       ORDER BY m2.created_at DESC LIMIT 1) AS last_message
+    FROM messages m
+    JOIN users u ON u.id = CASE WHEN m.sender_id = ? THEN m.receiver_id ELSE m.sender_id END
+    JOIN items i ON i.item_id = m.item_id
+    WHERE m.sender_id = ? OR m.receiver_id = ?
+    GROUP BY m.item_id, other_user_id
+    ORDER BY last_time DESC
+    LIMIT 3
+  ");
+  $stmt->execute([$uid, $uid, $uid, $uid, $uid, $uid, $uid]);
+  $recent_messages = $stmt->fetchAll();
+
+  // --- RECENT PURCHASES (last 3 completed transactions where I'm buyer) ---
+  $stmt = $pdo->prepare("
+    SELECT t.amount, t.completed_at, i.title AS item_title, u.name AS seller_name
+    FROM transactions t
+    JOIN items i ON t.item_id = i.item_id
+    JOIN users u ON t.seller_id = u.id
+    WHERE t.buyer_id = ? AND t.status = 'completed'
+    ORDER BY t.completed_at DESC
+    LIMIT 3
+  ");
+  $stmt->execute([$uid]);
+  $recent_purchases = $stmt->fetchAll();
+
+  // --- SAVED ITEMS (last 4) ---
+  $stmt = $pdo->prepare("
+    SELECT i.item_id, i.title, i.price, i.image_path, i.status, c.name AS category
+    FROM saved_items s
+    JOIN items i ON s.item_id = i.item_id
+    JOIN categories c ON i.category_id = c.category_id
+    WHERE s.user_id = ?
+    ORDER BY s.saved_at DESC
+    LIMIT 4
+  ");
+  $stmt->execute([$uid]);
+  $saved_items = $stmt->fetchAll();
+?>
+
 <div class="dashboard">
- 
+
   <!-- Welcome Banner -->
   <div class="welcome-banner">
     <div>
-      <h1>Welcome back, <?= htmlspecialchars($user['name'] ?? '') ?>!</h1>
-      <p><?= !empty($user['course']) ? htmlspecialchars($user['course']) . '&nbsp;-&nbsp; CvSU Main Campus' : 'CvSU Main Campus'?></p>
+      <h1>Welcome back, <?= htmlspecialchars($loggedInUser['name'] ?? '') ?>!</h1>
+      <p><?= !empty($loggedInUser['course']) ? htmlspecialchars($loggedInUser['course']) . '&nbsp; | &nbsp;CvSU Main Campus' : 'CvSU Main Campus' ?></p>
     </div>
     <a href="sell.php" class="btn-post">+ Post an Item</a>
   </div>
- 
+
   <!-- Stats -->
   <div class="stats-row">
-    <?php foreach ($stats as $stat): ?>
-      <div class="stat-card">
-        <div class="stat-value"><?= htmlspecialchars($stat['value']) ?></div>
-        <div class="stat-label"><?= htmlspecialchars($stat['label']) ?></div>
-      </div>
-    <?php endforeach; ?>
+    <div class="stat-card">
+      <div class="stat-value"><?= $stat_active ?></div>
+      <div class="stat-label">Active Listings</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value"><?= $stat_sold ?></div>
+      <div class="stat-label">Items Sold</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value"><?= $stat_purchases ?></div>
+      <div class="stat-label">Purchases Made</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value"><?= $stat_unread ?></div>
+      <div class="stat-label">Unread Messages</div>
+    </div>
   </div>
- 
+
   <!-- Quick Actions -->
   <div class="section-heading">
     <h2>Quick Actions</h2>
@@ -95,101 +162,168 @@
       <div class="quick-action-label">My Profile</div>
     </a>
   </div>
- 
-  <!-- My Listings & Messages Grid Section -->
+
+  <!-- My Listings & Messages Grid -->
   <div class="dashboard-grid">
- 
+
     <!-- My Listings Table -->
     <div>
       <div class="section-heading">
         <h2>My Listings</h2>
         <a href="my-listings.php">View all ></a>
       </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Price</th>
-              <th class="hide-mobile">Views</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($my_listings as $listing): ?>
+
+      <?php if (empty($my_listings)): ?>
+        <div class="dashboard-empty-card">
+          <p>You haven't posted anything yet.</p>
+          <a href="sell.php" class="dashboard-empty-link">Post your first item</a>
+        </div>
+      <?php else: ?>
+        <div class="table-container">
+          <table>
+            <thead>
               <tr>
-                <td><?= htmlspecialchars($listing['title']) ?></td>
-                <td><?= number_format($listing['price']) ?></td>
-                <td class="hide-mobile"><?= htmlspecialchars($listing['views']) ?></td>
-                <td>
-                  <span class="badge badge-<?= htmlspecialchars($listing['status']) ?>">
-                    <?= htmlspecialchars(ucfirst($listing['status'])) ?>
-                  </span>
-                </td>
-                <td class="table-actions">
-                  <a href="my-listings.php?id=<?= urlencode($listing['id']) ?>">Edit</a>
-                  <a href="delete-listing.php?id=<?= urlencode($listing['id']) ?>" class="delete">Delete</a>
-                </td>
+                <th>Item</th>
+                <th>Price</th>
+                <th class="hide-mobile">Views</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              <?php foreach ($my_listings as $listing): ?>
+                <tr>
+                  <td><?= htmlspecialchars($listing['title']) ?></td>
+                  <td>&#8369;<?= number_format($listing['price']) ?></td>
+                  <td class="hide-mobile"><?= (int)$listing['views'] ?></td>
+                  <td>
+                    <span class="badge badge-<?= $listing['status'] ?>">
+                      <?= ucfirst($listing['status']) ?>
+                    </span>
+                  </td>
+                  <td class="table-actions">
+                    <a href="edit-listing.php?id=<?= (int)$listing['item_id'] ?>">Edit</a>
+                    <a href="delete-listing.php?id=<?= (int)$listing['item_id'] ?>" class="delete"
+                       onclick="return confirm('Delete this listing?')">Delete</a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      <?php endif; ?>
     </div>
- 
+
     <!-- Messages Panel -->
     <div>
       <div class="section-heading">
         <h2>Messages</h2>
         <a href="messages.php">View all ></a>
       </div>
-      <div class="messages-box">
-        <?php foreach ($recent_messages as $msg): ?>
-          <div class="message-item">
-            <!-- Avatar (first letter of the sender's name) (changed later to their profile avatar) -->
-            <div class="avatar"><?= htmlspecialchars(strtoupper($msg['from'][0] ?? '')) ?></div>
- 
-            <div class="message-content">
-              <div class="message-top">
-                <span class="message-sender"><?= htmlspecialchars($msg['from']) ?></span>
-                <span class="message-time"><?= htmlspecialchars($msg['time']) ?></span>
+
+      <?php if (empty($recent_messages)): ?>
+        <div class="dashboard-empty-card">
+          <p>No conversations yet.</p>
+          <a href="browse.php" class="dashboard-empty-link">Browse listings to start messaging</a>
+        </div>
+      <?php else: ?>
+        <div class="messages-box">
+          <?php foreach ($recent_messages as $msg): ?>
+            <a href="messages.php?to=<?= (int)$msg['other_user_id'] ?>&item=<?= (int)$msg['item_id'] ?>" class="message-item">
+              <div class="avatar">
+                <?php if (!empty($msg['other_avatar'])): ?>
+                  <img src="assets/img/<?= htmlspecialchars($msg['other_avatar']) ?>.png" alt="" class="avatar-pixel-img-sm" />
+                <?php else: ?>
+                  <?= strtoupper($msg['other_name'][0] ?? '?') ?>
+                <?php endif; ?>
               </div>
-              <div class="message-item-name"><?= htmlspecialchars($msg['item']) ?></div>
-              <div class="message-preview"><?= htmlspecialchars($msg['msg']) ?></div>
-            </div>
- 
-            <!-- Green dot for unread messages -->
-            <?php if ($msg['unread']): ?>
-              <div class="unread-dot"></div>
-            <?php endif; ?>
-          </div>
-        <?php endforeach; ?>
-      </div>
+              <div class="message-content">
+                <div class="message-top">
+                  <span class="message-sender"><?= htmlspecialchars($msg['other_name']) ?></span>
+                  <span class="message-time"><?= date('M j', strtotime($msg['last_time'])) ?></span>
+                </div>
+                <div class="message-item-name"><?= htmlspecialchars($msg['item_title']) ?></div>
+                <div class="message-preview"><?= htmlspecialchars($msg['last_message'] ?? '') ?></div>
+              </div>
+              <?php if ((int)$msg['unread_count'] > 0): ?>
+                <div class="unread-dot"></div>
+              <?php endif; ?>
+            </a>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
     </div>
- 
+
   </div>
- 
+
   <!-- Recent Purchases -->
   <div class="section-heading">
     <h2>Recent Purchases</h2>
     <a href="transactions.php?view=buying">View all ></a>
   </div>
-  <div class="purchases-box">
-    <?php foreach ($recent_purchases as $purchase): ?>
-      <div class="purchase-item">
-        <div class="purchase-info">
-          <div class="purchase-title"><?= htmlspecialchars($purchase['title']) ?></div>
-          <div class="purchase-from">From: <?= htmlspecialchars($purchase['from']) ?></div>
+
+  <?php if (empty($recent_purchases)): ?>
+    <div class="dashboard-empty-card" style="margin-bottom: 24px;">
+      <p>You haven't bought anything yet.</p>
+      <a href="browse.php" class="dashboard-empty-link">Start browsing</a>
+    </div>
+  <?php else: ?>
+    <div class="purchases-box" style="margin-bottom: 24px;">
+      <?php foreach ($recent_purchases as $purchase): ?>
+        <div class="purchase-item">
+          <div class="purchase-info">
+            <div class="purchase-title"><?= htmlspecialchars($purchase['item_title']) ?></div>
+            <div class="purchase-from">From: <?= htmlspecialchars($purchase['seller_name']) ?></div>
+          </div>
+          <div class="purchase-right">
+            <div class="purchase-price">&#8369;<?= number_format($purchase['amount'], 2) ?></div>
+            <div class="purchase-date"><?= date('M j', strtotime($purchase['completed_at'])) ?></div>
+          </div>
         </div>
-        <div class="purchase-right">
-          <div class="purchase-price"><?= htmlspecialchars($purchase['price']) ?></div>
-          <div class="purchase-date"><?= htmlspecialchars($purchase['date']) ?></div>
-        </div>
-      </div>
-    <?php endforeach; ?>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
+  <!-- Saved Items -->
+  <div class="section-heading">
+    <h2>Saved Items</h2>
+    <a href="saved-items.php">View all ></a>
   </div>
- 
+
+  <?php if (empty($saved_items)): ?>
+    <div class="dashboard-empty-card">
+      <p>You haven't saved any items yet.</p>
+      <a href="browse.php" class="dashboard-empty-link">Browse listings to save items</a>
+    </div>
+  <?php else: ?>
+    <div class="dashboard-saved-grid">
+      <?php foreach ($saved_items as $saved): ?>
+        <a href="listing.php?id=<?= (int)$saved['item_id'] ?>" class="dashboard-saved-card <?= $saved['status'] !== 'active' ? 'dashboard-saved-unavailable' : '' ?>">
+          <div class="dashboard-saved-img">
+            <?php
+              $savedImg = "uploads/" . $saved['image_path'];
+              if (!empty($saved['image_path']) && file_exists($savedImg)):
+            ?>
+              <img src="<?= htmlspecialchars($savedImg) ?>" alt="<?= htmlspecialchars($saved['title']) ?>" />
+            <?php else: ?>
+              <?= $imgNotAvailableIcon ?>
+            <?php endif; ?>
+            <?php if ($saved['status'] === 'sold'): ?>
+              <div class="dashboard-saved-badge sold">Sold</div>
+            <?php elseif ($saved['status'] === 'reserved'): ?>
+              <div class="dashboard-saved-badge reserved">Reserved</div>
+            <?php endif; ?>
+          </div>
+          <div class="dashboard-saved-info">
+            <div class="dashboard-saved-category"><?= htmlspecialchars($saved['category']) ?></div>
+            <div class="dashboard-saved-title"><?= htmlspecialchars($saved['title']) ?></div>
+            <div class="dashboard-saved-price">&#8369;<?= number_format($saved['price'], 2) ?></div>
+          </div>
+        </a>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
 </div>
- 
+
 <?php include "includes/footer.php"; ?>

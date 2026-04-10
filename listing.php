@@ -212,7 +212,7 @@
 
       <!-- Comments Section -->
       <div class="listing-comments">
-        <h3>Comments & Questions (<?= count($comments) ?>)</h3>
+        <h3>Comments (<?= count($comments) ?>)</h3>
 
         <?php if ($comment_error): ?>
           <div class="alert alert-error" style="margin-bottom: 16px;"><?= htmlspecialchars($comment_error) ?></div>
@@ -224,7 +224,7 @@
 
         <?php if ($loggedInUser && !$is_own_listing): ?>
           <form method="POST" class="comment-form">
-            <textarea name="comment" placeholder="Ask about this item..." maxlength="1000" rows="3" required></textarea>
+            <textarea name="comment" placeholder="Enter your comments" maxlength="1000" rows="3" required></textarea>
             <span class="form-hint">Max 1000 characters</span>
             <button type="submit" name="submit_comment" class="btn-comment">Post Comment</button>
           </form>

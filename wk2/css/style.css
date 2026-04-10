@@ -293,17 +293,28 @@ footer {
 }
 
 /* Responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   header {
     padding: 0 20px;
   }
 
   .menu-toggle {
-    display: block;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    order: 2;
+    margin-left: 0;
+    cursor: pointer;
+  }
+
+  .logo {
+    order: 0;
+    margin-right: auto;
   }
 
   #theme-switch {
-    margin: 20px;
+    order: 1;
+    margin: 0 8px 0 0;
     height: 32px;
     width: 32px;
   }
@@ -323,6 +334,7 @@ footer {
     background-color: var(--contrast-bg);
     display: none;
     border-bottom: 1px solid var(--border-light);
+    order: 3;
   }
 
   nav.open {
