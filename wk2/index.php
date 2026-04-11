@@ -73,7 +73,7 @@
   <div class="inner">
     <div class="section-heading">
       <h2>Browse by Category</h2>
-      <a <?= ($user) ? 'href="browse.php"' : 'href="login.php"' ?>>View all ></a>
+      <a <?= ($user) ? 'href="browse.php"' : 'href="login.php"' ?>>View all</a>
     </div>
     <div class="categories-grid">
       <?php foreach ($categories as $cat): ?>
@@ -91,7 +91,7 @@
 <div class="home-section" id="featured-listings-part">
   <div class="section-heading">
     <h2>Featured Listings</h2>
-    <a href="browse.php">View all ></a>
+    <a href="browse.php">View all</a>
   </div>
   <div class="listings-grid">
     <?php foreach ($featured as $item): ?>

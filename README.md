@@ -38,7 +38,7 @@ NOTE: The theme switch button only works if you include both the header and the 
 the script for the them switch button is in the footer. It works by listening to a click and
 adding the class="darkmode" to the body if its not active and its null, else if its active and
 has class="darkmode" it removes it. It also communicates and saves the states to the server
-local storage so that it saves the state even if you quit the webstie.
+local storage so that it saves the state even if you quit the website.
 
 _Theme-Switch-CSS_
 root variables are declared so that changing it to darkmode reflects to all other CSS properties
@@ -49,7 +49,7 @@ There's still room for improvement on the color scheme of my themes like in hove
 
 # Things To Take Note Of
 (Optional):
-- Maybe implement a real SMTP verification to send OTP to cvsu email and verify its authenticity
+- Maybe implement a real SMTP verification to send OTP to cvsu email and verify account authenticity
 - Image upload might need to change where it saves, also might need to do something on how the image will look like in the      
   front-end of browse page.
 - The load page specific javascript in the footer have no purpose for now because almost all script are embedded
@@ -58,14 +58,14 @@ There's still room for improvement on the color scheme of my themes like in hove
 - The infinite scroll in browse page is quite finicky (doesn't work that great), but it still works. Because its loading
   the entire items table and cutting it in javascript
 (Important): 
-- Things to implement/fix still (dashboard, transactions wk3, info, comments, account deletion option, forgot password, 
-  real cvsu account validation)
-- Things that exist in db & some in front-end but not yet implemented properly (saved items [d. board], notifications, reports)
+- Things to implement/fix still (dashboard, transactions wk3, comments, account deletion option, forgot password)
+- Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
+- Pages to QA and fix code formatting still: (saved-items, my-listings, edit-listings, messages, listing, dashboard)
 - Things to fix: 
-    * maybe we finally fix the theme icon positioning
-    * info contact form is submitting into void, need to actually send message to something
-    * download icons for info page svg icons
-    * maybe change the hamburger menu, forward arrows, etc. to be an actual svg icon
+    * info contact form is submitting into void, need to actually send message to something/somewhere
+    * front-end issues like message to long overflowing, etc. check for all pages
+    * delete listing for (listing, my listing, dashboard) pages, needs to delete also images, while maintaining stability
+      with things like messages for the item. Essentially do something about broken data, after deleting a item
 
 <!-- Weekly Report -->
 
@@ -94,9 +94,10 @@ There's still room for improvement on the color scheme of my themes like in hove
     - ???
 
 > Week 3
+- Made some improvements to the front-end of the page
 - Made authentication (Login, Signup, Logout)
-- Made UI/UX for authentication pages (Login, Signup)
-- Made UI/UX for other pages (Transaction, Messages, Listing, My Listings, Edit Listing)
+- Made a front-end for authentication pages (Login, Signup)
+- Made a front-end for other pages (Transaction, Messages, Listing, My Listings, Edit Listing)
 - Made a include dedicated for database connection/access
 - Remove manual forced logins and set the $_SESSION to $user in the database
 - Added protection to protected pages like (dashboard, profile, etc.) redirecting guest into login page if they aren't logged in

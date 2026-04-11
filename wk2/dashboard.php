@@ -100,7 +100,7 @@
     <div>
       <div class="section-heading">
         <h2>My Listings</h2>
-        <a href="my-listings.php">View all ></a>
+        <a href="my-listings.php">View all</a>
       </div>
       <div class="table-container">
         <table>
@@ -139,7 +139,7 @@
     <div>
       <div class="section-heading">
         <h2>Messages</h2>
-        <a href="messages.php">View all ></a>
+        <a href="messages.php">View all</a>
       </div>
       <div class="messages-box">
         <?php foreach ($recent_messages as $msg): ?>
@@ -170,7 +170,7 @@
   <!-- Recent Purchases -->
   <div class="section-heading">
     <h2>Recent Purchases</h2>
-    <a href="purchases.php">View all ></a>
+    <a href="purchases.php">View all</a>
   </div>
   <div class="purchases-box">
     <?php foreach ($recent_purchases as $purchase): ?>

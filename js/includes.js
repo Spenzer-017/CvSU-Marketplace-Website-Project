@@ -17,9 +17,12 @@ const disableDarkmode = () => {
 }
 
 // Menu Toggle Event
-menuToggle.addEventListener("click", () => {
-    nav.classList.toggle("open");
-});
+if (menuToggle && nav) {
+    menuToggle.addEventListener("click", () => {
+        nav.classList.toggle("open");
+        menuToggle.classList.toggle("open");
+    });
+}
 
 if (darkmode === "active") enableDarkmode();
 

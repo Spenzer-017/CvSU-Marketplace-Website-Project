@@ -95,7 +95,7 @@
   <div class="inner">
     <div class="section-heading">
       <h2>Browse by Category</h2>
-      <a <?= ($user) ? 'href="browse.php"' : 'href="login.php"' ?>>View all ></a>
+      <a <?= ($user) ? 'href="browse.php"' : 'href="login.php"' ?>>View all</a>
     </div>
     <div class="categories-grid">
       <?php foreach ($categories as $cat): ?>
@@ -113,7 +113,7 @@
 <div class="home-section" id="featured-listings-part">
   <div class="section-heading">
     <h2>Featured Listings</h2>
-    <a href="browse.php">View all ></a>
+    <a href="browse.php">View all</a>
   </div>
   <div class="listings-grid">
     <?php foreach ($featured as $item): ?>
@@ -129,7 +129,7 @@
         <div class="listing-content">
           <div class="listing-category"><?= htmlspecialchars($item['category']) ?></div>
           <div class="listing-title"><?= htmlspecialchars(strlen($item['title']) > 30 ? substr($item['title'], 0, 30) . '...' : $item['title']) ?></div>
-          <div class="listing-price">₱<?= number_format($item['price']) ?></div>
+          <div class="listing-price">&#8369;<?= number_format($item['price']) ?></div>
           <div class="listing-other-info">
             <span><?= $userIcon ?> &nbsp; <?= htmlspecialchars($item['seller']) ?></span>
             <span><?= $locationIcon ?> &nbsp; <?= htmlspecialchars($item['location']) ?></span>

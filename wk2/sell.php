@@ -83,7 +83,7 @@
       <h1>Post an Item</h1>
       <p>Fill in the details below and your listing will be live immediately.</p>
     </div>
-    <a href="dashboard.php" class="btn-back">< Back to Dashboard</a>
+    <a href="dashboard.php" class="btn-back">Back to Dashboard</a>
   </div>
 
   <!-- Success message -->

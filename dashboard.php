@@ -1,20 +1,31 @@
 <?php
-/*
-  dashboard.php
-  The main page users land on after logging in.
-*/
+  /*
+    dashboard.php
+    The main page users land on after logging in.
+  */
 
-session_start();
+  session_start();
 
-if (!isset($_SESSION['user'])) {
-  header('Location: login.php');
-  exit;
-}
+  if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit;
+  }
 
-require_once "includes/db.php";
+  require_once "includes/db.php";
 
-$loggedInUser = $_SESSION['user'];
-$uid = (int)$loggedInUser['id'];
+  $loggedInUser = $_SESSION['user'];
+  $uid = (int)$loggedInUser['id'];
+
+  // Handle delete listing
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_item_id'])) {
+    $delete_id = (int)$_POST['delete_item_id'];
+    if ($delete_id > 0) {
+      $stmt = $pdo->prepare("DELETE FROM items WHERE item_id = ? AND seller_id = ?");
+      $stmt->execute([$delete_id, $uid]);
+    }
+    header('Location: dashboard.php');
+    exit;
+  }
 ?>
 
 <?php
@@ -23,10 +34,10 @@ $uid = (int)$loggedInUser['id'];
 ?>
 
 <?php
-  // --- STATS ---
+  // Stats Database Query
 
   // Active listings
-  $stmt = $pdo->prepare("SELECT COUNT(*) FROM items WHERE seller_id = ? AND status = 'active'");
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM items WHERE seller_id = ? AND status IN ('active', 'reserved')");
   $stmt->execute([$uid]);
   $stat_active = (int)$stmt->fetchColumn();
 
@@ -35,7 +46,7 @@ $uid = (int)$loggedInUser['id'];
   $stmt->execute([$uid]);
   $stat_sold = (int)$stmt->fetchColumn();
 
-  // Purchases made (completed transactions where I'm the buyer)
+  // Purchases made
   $stmt = $pdo->prepare("SELECT COUNT(*) FROM transactions WHERE buyer_id = ? AND status = 'completed'");
   $stmt->execute([$uid]);
   $stat_purchases = (int)$stmt->fetchColumn();
@@ -45,7 +56,7 @@ $uid = (int)$loggedInUser['id'];
   $stmt->execute([$uid]);
   $stat_unread = (int)$stmt->fetchColumn();
 
-  // --- MY LISTINGS (last 4, newest first) ---
+  // My Listings Database Query
   $stmt = $pdo->prepare("
     SELECT item_id, title, price, status, views
     FROM items
@@ -56,7 +67,7 @@ $uid = (int)$loggedInUser['id'];
   $stmt->execute([$uid]);
   $my_listings = $stmt->fetchAll();
 
-  // --- RECENT MESSAGES (last 3 unique conversations) ---
+  // Recent Messages Database Query
   $stmt = $pdo->prepare("
     SELECT
       CASE WHEN m.sender_id = ? THEN m.receiver_id ELSE m.sender_id END AS other_user_id,
@@ -64,13 +75,9 @@ $uid = (int)$loggedInUser['id'];
       u.avatar AS other_avatar,
       i.item_id,
       i.title AS item_title,
+      MAX(m.msg_id) AS last_msg_id,
       MAX(m.created_at) AS last_time,
-      SUM(CASE WHEN m.receiver_id = ? AND m.is_read = 0 THEN 1 ELSE 0 END) AS unread_count,
-      (SELECT message FROM messages m2
-       WHERE m2.item_id = m.item_id
-       AND ((m2.sender_id = ? AND m2.receiver_id = other_user_id)
-         OR (m2.sender_id = other_user_id AND m2.receiver_id = ?))
-       ORDER BY m2.created_at DESC LIMIT 1) AS last_message
+      SUM(CASE WHEN m.receiver_id = ? AND m.is_read = 0 THEN 1 ELSE 0 END) AS unread_count
     FROM messages m
     JOIN users u ON u.id = CASE WHEN m.sender_id = ? THEN m.receiver_id ELSE m.sender_id END
     JOIN items i ON i.item_id = m.item_id
@@ -79,10 +86,30 @@ $uid = (int)$loggedInUser['id'];
     ORDER BY last_time DESC
     LIMIT 3
   ");
-  $stmt->execute([$uid, $uid, $uid, $uid, $uid, $uid, $uid]);
-  $recent_messages = $stmt->fetchAll();
+  $stmt->execute([$uid, $uid, $uid, $uid, $uid]);
+  $conv_rows = $stmt->fetchAll();
 
-  // --- RECENT PURCHASES (last 3 completed transactions where I'm buyer) ---
+  // Fetch the last message
+  $recent_messages = [];
+  if (!empty($conv_rows)) {
+    $msg_ids = array_column($conv_rows, 'last_msg_id');
+
+    if (!empty($msg_ids)) {
+      $placeholders = implode(',', array_fill(0, count($msg_ids), '?'));
+      $msg_stmt = $pdo->prepare("SELECT msg_id, message FROM messages WHERE msg_id IN ($placeholders)");
+      $msg_stmt->execute($msg_ids);
+      $msg_map = [];
+      foreach ($msg_stmt->fetchAll() as $row) {
+        $msg_map[(int)$row['msg_id']] = $row['message'];
+      }
+      foreach ($conv_rows as $row) {
+        $row['last_message'] = $msg_map[(int)$row['last_msg_id']] ?? '';
+        $recent_messages[] = $row;
+      }
+    }
+  }
+
+  // Recent Purchases Database Query
   $stmt = $pdo->prepare("
     SELECT t.amount, t.completed_at, i.title AS item_title, u.name AS seller_name
     FROM transactions t
@@ -95,7 +122,7 @@ $uid = (int)$loggedInUser['id'];
   $stmt->execute([$uid]);
   $recent_purchases = $stmt->fetchAll();
 
-  // --- SAVED ITEMS (last 4) ---
+  // Saved Items Database Query
   $stmt = $pdo->prepare("
     SELECT i.item_id, i.title, i.price, i.image_path, i.status, c.name AS category
     FROM saved_items s
@@ -107,6 +134,13 @@ $uid = (int)$loggedInUser['id'];
   ");
   $stmt->execute([$uid]);
   $saved_items = $stmt->fetchAll();
+
+  // Truncate text for previews
+  function truncate(string $text, int $limit = 80): string {
+    $text = trim($text);
+    if (mb_strlen($text) <= $limit) return $text;
+    return mb_substr($text, 0, $limit) . '…';
+  }
 ?>
 
 <div class="dashboard">
@@ -115,7 +149,9 @@ $uid = (int)$loggedInUser['id'];
   <div class="welcome-banner">
     <div>
       <h1>Welcome back, <?= htmlspecialchars($loggedInUser['name'] ?? '') ?>!</h1>
-      <p><?= !empty($loggedInUser['course']) ? htmlspecialchars($loggedInUser['course']) . '&nbsp; | &nbsp;CvSU Main Campus' : 'CvSU Main Campus' ?></p>
+      <p>
+        <?= !empty($loggedInUser['course']) ? htmlspecialchars($loggedInUser['course']) . '&nbsp; | &nbsp;CvSU Main Campus' : 'CvSU Main Campus' ?>
+      </p>
     </div>
     <a href="sell.php" class="btn-post">+ Post an Item</a>
   </div>
@@ -124,7 +160,7 @@ $uid = (int)$loggedInUser['id'];
   <div class="stats-row">
     <div class="stat-card">
       <div class="stat-value"><?= $stat_active ?></div>
-      <div class="stat-label">Active Listings</div>
+      <div class="stat-label">Available Listings</div>
     </div>
     <div class="stat-card">
       <div class="stat-value"><?= $stat_sold ?></div>
@@ -170,7 +206,7 @@ $uid = (int)$loggedInUser['id'];
     <div>
       <div class="section-heading">
         <h2>My Listings</h2>
-        <a href="my-listings.php">View all ></a>
+        <a href="my-listings.php">View all</a>
       </div>
 
       <?php if (empty($my_listings)): ?>
@@ -193,18 +229,20 @@ $uid = (int)$loggedInUser['id'];
             <tbody>
               <?php foreach ($my_listings as $listing): ?>
                 <tr>
-                  <td><?= htmlspecialchars($listing['title']) ?></td>
-                  <td>&#8369;<?= number_format($listing['price']) ?></td>
+                  <td class="td-title"><?= htmlspecialchars(truncate($listing['title'], 35)) ?></td>
+                  <td class="td-nowrap">&#8369;<?= number_format($listing['price']) ?></td>
                   <td class="hide-mobile"><?= (int)$listing['views'] ?></td>
                   <td>
                     <span class="badge badge-<?= $listing['status'] ?>">
                       <?= ucfirst($listing['status']) ?>
                     </span>
                   </td>
-                  <td class="table-actions">
+                  <td class="table-actions td-nowrap">
                     <a href="edit-listing.php?id=<?= (int)$listing['item_id'] ?>">Edit</a>
-                    <a href="delete-listing.php?id=<?= (int)$listing['item_id'] ?>" class="delete"
-                       onclick="return confirm('Delete this listing?')">Delete</a>
+                    <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this listing? This cannot be undone.')">
+                      <input type="hidden" name="delete_item_id" value="<?= (int)$listing['item_id'] ?>">
+                      <button type="submit" class="delete table-delete-btn">Delete</button>
+                    </form>
                   </td>
                 </tr>
               <?php endforeach; ?>
@@ -218,7 +256,7 @@ $uid = (int)$loggedInUser['id'];
     <div>
       <div class="section-heading">
         <h2>Messages</h2>
-        <a href="messages.php">View all ></a>
+        <a href="messages.php">View all</a>
       </div>
 
       <?php if (empty($recent_messages)): ?>
@@ -234,16 +272,16 @@ $uid = (int)$loggedInUser['id'];
                 <?php if (!empty($msg['other_avatar'])): ?>
                   <img src="assets/img/<?= htmlspecialchars($msg['other_avatar']) ?>.png" alt="" class="avatar-pixel-img-sm" />
                 <?php else: ?>
-                  <?= strtoupper($msg['other_name'][0] ?? '?') ?>
+                  <?= strtoupper(substr($msg['other_name'] ?? '?', 0, 1)) ?>
                 <?php endif; ?>
               </div>
               <div class="message-content">
                 <div class="message-top">
-                  <span class="message-sender"><?= htmlspecialchars($msg['other_name']) ?></span>
+                  <span class="message-sender"><?= htmlspecialchars(truncate($msg['other_name'], 20)) ?></span>
                   <span class="message-time"><?= date('M j', strtotime($msg['last_time'])) ?></span>
                 </div>
-                <div class="message-item-name"><?= htmlspecialchars($msg['item_title']) ?></div>
-                <div class="message-preview"><?= htmlspecialchars($msg['last_message'] ?? '') ?></div>
+                <div class="message-item-name"><?= htmlspecialchars(truncate($msg['item_title'], 30)) ?></div>
+                <div class="message-preview"><?= htmlspecialchars(truncate($msg['last_message'], 60)) ?></div>
               </div>
               <?php if ((int)$msg['unread_count'] > 0): ?>
                 <div class="unread-dot"></div>
@@ -259,7 +297,7 @@ $uid = (int)$loggedInUser['id'];
   <!-- Recent Purchases -->
   <div class="section-heading">
     <h2>Recent Purchases</h2>
-    <a href="transactions.php?view=buying">View all ></a>
+    <a href="transactions.php?view=buying">View all</a>
   </div>
 
   <?php if (empty($recent_purchases)): ?>
@@ -272,8 +310,8 @@ $uid = (int)$loggedInUser['id'];
       <?php foreach ($recent_purchases as $purchase): ?>
         <div class="purchase-item">
           <div class="purchase-info">
-            <div class="purchase-title"><?= htmlspecialchars($purchase['item_title']) ?></div>
-            <div class="purchase-from">From: <?= htmlspecialchars($purchase['seller_name']) ?></div>
+            <div class="purchase-title"><?= htmlspecialchars(truncate($purchase['item_title'], 40)) ?></div>
+            <div class="purchase-from">From: <?= htmlspecialchars(truncate($purchase['seller_name'], 25)) ?></div>
           </div>
           <div class="purchase-right">
             <div class="purchase-price">&#8369;<?= number_format($purchase['amount'], 2) ?></div>
@@ -287,7 +325,7 @@ $uid = (int)$loggedInUser['id'];
   <!-- Saved Items -->
   <div class="section-heading">
     <h2>Saved Items</h2>
-    <a href="saved-items.php">View all ></a>
+    <a href="saved-items.php">View all</a>
   </div>
 
   <?php if (empty($saved_items)): ?>
@@ -300,11 +338,9 @@ $uid = (int)$loggedInUser['id'];
       <?php foreach ($saved_items as $saved): ?>
         <a href="listing.php?id=<?= (int)$saved['item_id'] ?>" class="dashboard-saved-card <?= $saved['status'] !== 'active' ? 'dashboard-saved-unavailable' : '' ?>">
           <div class="dashboard-saved-img">
-            <?php
-              $savedImg = "uploads/" . $saved['image_path'];
-              if (!empty($saved['image_path']) && file_exists($savedImg)):
-            ?>
-              <img src="<?= htmlspecialchars($savedImg) ?>" alt="<?= htmlspecialchars($saved['title']) ?>" />
+            <?php if (!empty($saved['image_path'])): ?>
+              <img src="uploads/<?= htmlspecialchars($saved['image_path']) ?>" alt="<?= htmlspecialchars($saved['title']) ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+              <div class="dashboard-saved-fallback" style="display:none;"><?= $imgNotAvailableIcon ?></div>
             <?php else: ?>
               <?= $imgNotAvailableIcon ?>
             <?php endif; ?>

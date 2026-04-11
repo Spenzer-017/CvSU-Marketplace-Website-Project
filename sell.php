@@ -124,7 +124,7 @@
       <h1>Post an Item</h1>
       <p>Fill in the details below and your listing will be live immediately.</p>
     </div>
-    <a href="dashboard.php" class="btn-back">< Back to Dashboard</a>
+    <a href="dashboard.php" class="btn-back">Back to Dashboard</a>
   </div>
 
   <!-- Success message -->
@@ -191,7 +191,7 @@
       <div class="form-group">
         <label for="price">Price <span class="required">*</span></label>
         <div class="price-input">
-          <span class="price-prefix">₱</span>
+          <span class="price-prefix">&#8369;</span>
           <input type="number" id="price" name="price" placeholder="0.00" min="0" step="1" value="<?= htmlspecialchars($price ?? '') ?>"/>
         </div>
       </div>

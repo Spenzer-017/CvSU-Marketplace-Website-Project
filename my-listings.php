@@ -1,4 +1,3 @@
-<!-- PHP Logic (Authentication, Session, etc.) -->
 <?php
   /*
     my-listings.php - Manage My Listings
@@ -17,31 +16,40 @@
 
   $loggedInUser = $_SESSION['user'];
   $uid = (int)$loggedInUser['id'];
+
+  // Read filter early so the redirect after delete can preserve it
+  $filter = $_GET['filter'] ?? 'all';
+  $allowed_filters = ['all', 'active', 'reserved', 'sold'];
+  if (!in_array($filter, $allowed_filters)) $filter = 'all';
+
+  // Handle delete listing
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item_id'])) {
+    $delete_id = (int)$_POST['delete_item_id'];
+    if ($delete_id > 0) {
+      $stmt = $pdo->prepare("DELETE FROM items WHERE item_id = ? AND seller_id = ?");
+      $stmt->execute([$delete_id, $uid]);
+    }
+    header('Location: my-listings.php?filter=' . urlencode($filter));
+    exit;
+  }
 ?>
 
-<!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
   include "includes/header.php";
 ?>
 
-<!-- PHP Database Query -->
 <?php
-  // Filter by status from URL (all, active, sold)
-  $filter = $_GET['filter'] ?? 'all';
-  $allowed_filters = ['all', 'active', 'sold'];
-  if (!in_array($filter, $allowed_filters)) $filter = 'all';
-
   // Build query based on filter
   $where = $filter === 'all' ? "seller_id = ?" : "seller_id = ? AND status = ?";
   $params = $filter === 'all' ? [$uid] : [$uid, $filter];
 
   $stmt = $pdo->prepare("
-  SELECT items.*, categories.name AS category
-  FROM items
-  JOIN categories ON items.category_id = categories.category_id
-  WHERE $where
-  ORDER BY items.created_at DESC
+    SELECT items.*, categories.name AS category
+    FROM items
+    JOIN categories ON items.category_id = categories.category_id
+    WHERE $where
+    ORDER BY items.created_at DESC
   ");
   $stmt->execute($params);
   $listings = $stmt->fetchAll();
@@ -49,10 +57,10 @@
   // Count totals for the filter tabs
   $stmt = $pdo->prepare("SELECT status, COUNT(*) AS cnt FROM items WHERE seller_id = ? GROUP BY status");
   $stmt->execute([$uid]);
-  $counts = ['all' => 0, 'active' => 0, 'sold' => 0];
+  $counts = ['all' => 0, 'active' => 0, 'reserved' => 0, 'sold' => 0];
   foreach ($stmt->fetchAll() as $row) {
-  $counts[$row['status']] = (int)$row['cnt'];
-  $counts['all'] += (int)$row['cnt'];
+    $counts[$row['status']] = (int)$row['cnt'];
+    $counts['all'] += (int)$row['cnt'];
   }
 ?>
 
@@ -68,9 +76,10 @@
 
   <!-- Filter tabs -->
   <div class="listings-filter-tabs">
-    <a href="?filter=all" class="filter-tab <?= $filter === 'all'    ? 'active' : '' ?>">All (<?= $counts['all'] ?>)</a>
+    <a href="?filter=all" class="filter-tab <?= $filter === 'all' ? 'active' : '' ?>">All (<?= $counts['all'] ?>)</a>
     <a href="?filter=active" class="filter-tab <?= $filter === 'active' ? 'active' : '' ?>">Active (<?= $counts['active'] ?>)</a>
-    <a href="?filter=sold" class="filter-tab <?= $filter === 'sold'   ? 'active' : '' ?>">Sold (<?= $counts['sold'] ?>)</a>
+    <a href="?filter=reserved" class="filter-tab <?= $filter === 'reserved' ? 'active' : '' ?>">Reserved (<?= $counts['reserved'] ?>)</a>
+    <a href="?filter=sold" class="filter-tab <?= $filter === 'sold' ? 'active' : '' ?>">Sold (<?= $counts['sold'] ?>)</a>
   </div>
 
   <?php if (empty($listings)): ?>
@@ -120,7 +129,10 @@
           <!-- Actions -->
           <div class="my-listing-actions">
             <a href="edit-listing.php?id=<?= (int)$listing['item_id'] ?>" class="btn-edit-listing">Edit</a>
-            <a href="delete-listing.php?id=<?= (int)$listing['item_id'] ?>" class="btn-delete-listing-sm" onclick="return confirm('Delete this listing? This cannot be undone.')">Delete</a>
+            <form method="POST" onsubmit="return confirm('Delete this listing? This cannot be undone.')">
+              <input type="hidden" name="delete_item_id" value="<?= (int)$listing['item_id'] ?>">
+              <button type="submit" class="btn-delete-listing-sm">Delete</button>
+            </form>
           </div>
 
         </div>

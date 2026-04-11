@@ -271,7 +271,7 @@
           </div>
 
         <?php elseif ($is_own_listing): ?>
-          <!-- SELLER VIEW -->
+          <!-- Seller View -->
 
           <?php if ($txn_status === 'pending'): ?>
             <!-- Seller: transaction is pending with a buyer -->
@@ -304,13 +304,13 @@
           <?php else: ?>
             <!-- Seller: no pending transaction, normal edit/delete -->
             <a href="edit-listing.php?id=<?= $item_id ?>" class="btn-submit">Edit Listing</a>
-            <form method="POST" onsubmit="return confirm('Are you sure you want to delete this listing?');">
+            <form method="POST" onsubmit="return confirm('Delete this listing? This cannot be undone.');">
               <button type="submit" name="delete_item" class="btn-delete-listing">Delete Listing</button>
             </form>
           <?php endif; ?>
 
         <?php elseif ($loggedInUser): ?>
-          <!-- BUYER VIEW -->
+          <!-- Buyer View -->
 
           <?php if ($txn_status === 'pending' && $is_buyer_in_txn): ?>
             <!-- This buyer has a pending transaction for this item -->

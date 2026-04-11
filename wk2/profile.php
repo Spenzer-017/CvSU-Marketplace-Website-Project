@@ -140,7 +140,7 @@
       <h1>Edit Profile</h1>
       <p>Update your info and choose how you appear to other students.</p>
     </div>
-    <a href="dashboard.php" class="btn-back">< Back to Dashboard</a>
+    <a href="dashboard.php" class="btn-back">Back to Dashboard</a>
   </div>
 
   <!-- Success & error alerts -->

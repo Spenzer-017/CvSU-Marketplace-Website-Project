@@ -40,7 +40,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CvSU Marketplace</title>
     <link rel="stylesheet" href="css/style.css?v=<?php echo time(); ?>" /> <!--Remove script at deployment -->
-    <script type="text/javascript" src="js/includes.js" defer></script>
+    <script type="text/javascript" src="js/includes.js?v=<?php echo time(); ?>" defer></script> <!-- Remove here also -->
 </head>
 
 <body>

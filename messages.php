@@ -98,6 +98,11 @@ $uid = (int)$loggedInUser['id'];
                 INSERT INTO transactions (buyer_id, seller_id, item_id, amount, status)
                 VALUES (?, ?, ?, ?, 'pending')
               ")->execute([$buyer_id, $uid, $item_id, $item['price']]);
+
+              // Reserve the item
+              $pdo->prepare("
+                UPDATE items SET status = 'reserved' WHERE item_id = ? AND status = 'active'
+              ")->execute([$item_id]);
             }
           }
         }

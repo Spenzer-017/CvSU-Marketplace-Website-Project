@@ -1,7 +1,32 @@
 /* SECTION 1: HEADER AND FOOTER */
 
 /* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'); */
+
+/* Poppins */
+@font-face {
+  font-family: 'Poppins';
+  src: url('../assets/fonts/poppins/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../assets/fonts/poppins/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../assets/fonts/poppins/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../assets/fonts/poppins/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
 
 /* Color Variables */
 :root {
@@ -538,6 +563,12 @@ footer {
   margin-bottom: 8px;
 }
 
+.category-icon svg {
+  height: 28px;
+  width: auto;
+  fill: var(--primary);
+}
+
 .category-label {
   font-size: 0.8rem;
   font-weight: 600;
@@ -562,13 +593,14 @@ footer {
   border: 1px solid var(--border-light);
   border-radius: 10px;
   overflow: hidden;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: all 0.2s, transform 0.2s;
   text-decoration: none;
   display: block;
   color: inherit;
 }
 
 .listing-card:hover {
+  border-color: var(--primary-light);
   box-shadow: 0 4px 16px rgba(0, 95, 2, 0.1);
   transform: translateY(-2px);
 }
@@ -1149,6 +1181,7 @@ footer {
 .quick-action-icon svg {
   height: 38px;
   width: auto;
+  fill: var(--primary);
 }
 
 .quick-action-label {
@@ -1380,6 +1413,12 @@ footer {
   justify-content: center;
   font-size: 2.8rem;
   position: relative;
+}
+
+.listing-img svg {
+  height: 40px;
+  width: auto;
+  fill: var(--primary);
 }
 
 /* Condition badge on thumbnail */

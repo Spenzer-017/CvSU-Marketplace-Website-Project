@@ -219,7 +219,7 @@
         <div class="listing-content">
           <div class="listing-category">${item.category}</div>
           <div class="listing-title">${item.title}</div>
-          <div class="listing-price">₱${item.price.toLocaleString()}</div>
+          <div class="listing-price">&#8369;${item.price.toLocaleString()}</div>
           <div class="listing-other-info">
             <span> ${userIcon}&nbsp;${item.seller}</span>
             <span> ${locationIcon}&nbsp;${item.location}</span>
