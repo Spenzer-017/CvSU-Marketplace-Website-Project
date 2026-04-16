@@ -28,7 +28,7 @@
     ['title' => 'Iphone 67 Pro Max Fully Paid', 'price' => 6700, 'category' => 'Electronics', 'seller' => 'Jedhorse', 'location' => 'DIT','img' => $imgNotAvailableIcon, 'id' => 267],
     ['title' => 'Lomi', 'price' => 99, 'category' => 'Food', 'seller' => 'Nuggets', 'location' => 'DIET', 'img' => $imgNotAvailableIcon, 'id' => 655],
     ['title' => 'CvSU Uniform M (Large)', 'price' => 500, 'category' => 'Clothing', 'seller' => 'Blessie', 'location' => 'CAS','img' => $imgNotAvailableIcon, 'id' => 430],
-    ['title' => 'Laundry Services', 'price' => 350, 'category' => 'Services', 'seller' => 'Moglie', 'location' => 'Bancod',  'img' => $imgNotAvailableIcon, 'id' => 886],
+    ['title' => 'Silver Necklace', 'price' => 350, 'category' => 'Accessories', 'seller' => 'Moglie', 'location' => 'Bancod',  'img' => $imgNotAvailableIcon, 'id' => 886],
     ['title' => 'Understanding The Self Book', 'price' => 450, 'category' => 'Books', 'seller' => 'Happy', 'location' => 'Oval',  'img' => $imgNotAvailableIcon, 'id' => 987],
     ['title' => 'Keychain', 'price' => 25, 'category' => 'Other', 'seller' => 'Pumpkin', 'location' => 'Grand Stand',  'img' => $imgNotAvailableIcon, 'id' => 101]
   ];
@@ -39,7 +39,7 @@
     ['label' => 'Supplies', 'icon' => $suppliesIcon,  'count' => 65],
     ['label' => 'Clothing', 'icon' => $clothesIcon, 'count' => 53],
     ['label' => 'Food', 'icon' => $foodIcon, 'count' => 39],
-    ['label' => 'Services', 'icon' => $servicesIcon, 'count' => 28],
+    ['label' => 'Accessories', 'icon' => $accessoriesIcon, 'count' => 28],
   ];
 ?>
 

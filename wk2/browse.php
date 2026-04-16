@@ -30,14 +30,14 @@
     ['id' => 5156, 'title' => 'Iphone 67 Pro Max Fully Paid', 'price' => 6700, 'category' => 'Electronics', 'seller' => 'Jedhorse', 'location' => 'DIT','img' => $imgNotAvailableIcon, 'condition' => 'Good'],
     ['id' => 6230, 'title' => 'Lomi', 'price' => 99, 'category' => 'Food', 'seller' => 'Nuggets', 'location' => 'DIET', 'img' => $imgNotAvailableIcon, 'condition' => 'N/A'],
     ['id' => 7998, 'title' => 'CvSU Uniform M (Large)', 'price' => 300, 'category' => 'Clothing', 'seller' => 'Blessie', 'location' => 'CAS','img' => $imgNotAvailableIcon, 'condition' => 'Like New'],
-    ['id' => 8008, 'title' => 'Laundry Services', 'price' => 350, 'category' => 'Services', 'seller' => 'Moglie', 'location' => 'Bancod',  'img' => $imgNotAvailableIcon, 'condition' => 'N/A'],
+    ['id' => 8008, 'title' => 'Silver Necklace', 'price' => 350, 'category' => 'Accessories', 'seller' => 'Moglie', 'location' => 'Bancod',  'img' => $imgNotAvailableIcon, 'condition' => 'N/A'],
     ['id' => 9669, 'title' => 'Understanding The Self Book', 'price' => 450, 'category' => 'Books', 'seller' => 'Happy', 'location' => 'Oval',  'img' => $imgNotAvailableIcon, 'condition' => 'Good'],
     ['id' => 1010, 'title' => 'Keychain', 'price' => 25, 'category' => 'Other', 'seller' => 'Pumpkin', 'location' => 'Grand Stand',  'img' => $imgNotAvailableIcon, 'condition' => 'Like New'],
     ['id' => 1122, 'title' => 'Pins', 'price' => 30, 'category' => 'Other', 'seller' => 'Jettie', 'location' => 'Dorm A', 'img' => $imgNotAvailableIcon, 'condition' => 'Good'],
     ['id' => 1200, 'title' => 'CvSU PE Uniform Set', 'price' => 300, 'category' => 'Clothing', 'seller' => 'Wiffie', 'location' => 'Gym', 'img' => $imgNotAvailableIcon, 'condition' => 'Good'],
 ];
   
-  $categories = ['All', 'Books', 'Electronics', 'Supplies', 'Clothing', 'Food', 'Services', 'Other'];
+  $categories = ['All', 'Books', 'Electronics', 'Supplies', 'Clothing', 'Food', 'Accessories', 'Other'];
   $conditions = ['Any Condition', 'New', 'Like New', 'Good', 'Fair', 'N/A'];
   
   // Active filters from URL

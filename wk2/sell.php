@@ -128,7 +128,7 @@
             <option value="Supplies" <?= ($category ?? '') === 'Supplies' ? 'selected' : '' ?>>Supplies</option>
             <option value="Clothing" <?= ($category ?? '') === 'Clothing' ? 'selected' : '' ?>>Clothing</option>
             <option value="Food" <?= ($category ?? '') === 'Food' ? 'selected' : '' ?>>Food</option>
-            <option value="Services" <?= ($category ?? '') === 'Services' ? 'selected' : '' ?>>Services</option>
+            <option value="Accessories" <?= ($category ?? '') === 'Accessories' ? 'selected' : '' ?>>Accessories</option>
             <option value="Other" <?= ($category ?? '') === 'Other' ? 'selected' : '' ?>>Other</option>
           </select>
         </div>

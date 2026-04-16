@@ -83,9 +83,9 @@
       <div class="quick-action-icon"><?= $searchIcon ?></div>
       <div class="quick-action-label">Browse</div>
     </a>
-    <a href="messages.php" class="quick-action-btn">
-      <div class="quick-action-icon"><?= $messageIcon ?></div>
-      <div class="quick-action-label">Messages</div>
+    <a href="transactions.php" class="quick-action-btn">
+      <div class="quick-action-icon"><?= $transactionIcon ?></div>
+      <div class="quick-action-label">Transactions</div>
     </a>
     <a href="profile.php" class="quick-action-btn">
       <div class="quick-action-icon"><?= $userIcon ?></div>
