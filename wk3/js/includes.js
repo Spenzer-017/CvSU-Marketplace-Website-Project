@@ -26,7 +26,7 @@ if (menuToggle && nav) {
 
 if (darkmode === "active") enableDarkmode();
 
-//Theme Swtich Event
+// Theme Swtich Event
 if (themeSwitch) {
     themeSwitch.addEventListener("click", () => {
         darkmode = localStorage.getItem("darkmode");

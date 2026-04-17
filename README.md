@@ -55,15 +55,16 @@ There's still room for improvement on the color scheme of my themes like in hove
 - The load page specific javascript in the footer have no purpose for now because almost all script are embedded
 - Things to maybe implement (account deletion option, forgot password)
 (Less Important):
-- Might want to add modals for confirmation popups like deleting listings, canceling transactions, etc. [WK4]
 - The infinite scroll in browse page is quite finicky (doesn't work that great), but it still works. Because its loading
-  the entire items table and cutting it in javascript [WK4]
+  the entire items table and cutting it in javascript
 (Important):
-- Things that exist in db & some in front-end but not yet implemented properly (notifications, reports) [WK4]
-- Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard) [WK4]
+- Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
+- Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard)
+- QA pages that got implemented with modals (dashboard, my-listings, listing, transaction, saved-items, messages)
 - Things to fix: 
-    * info contact form is submitting into void, need to actually send message to something/somewhere [WK4]
-    * front-end issues like message to long overflowing, etc. check for all pages [WK4]
+    * info contact form is submitting into void, need to actually send message to something/somewhere
+    * front-end issues like message to long overflowing, etc. check for all pages
+    * make sure to check responsiveness for other pages
 
 <!-- Weekly Report -->
 
@@ -117,3 +118,6 @@ There's still room for improvement on the color scheme of my themes like in hove
     - ???
     > Info Page Front-end
     - ???
+
+> Week 4
+- Added modals for confirmation popups (made the footer handle the JS script for the modals)

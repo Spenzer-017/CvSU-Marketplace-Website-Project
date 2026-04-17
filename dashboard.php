@@ -242,7 +242,7 @@
                   </td>
                   <td class="table-actions td-nowrap">
                     <a href="edit-listing.php?id=<?= (int)$listing['item_id'] ?>">Edit</a>
-                    <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this listing? This cannot be undone.')">
+                    <form method="POST" style="display:inline;" data-confirm="Delete this listing? This cannot be undone.">
                       <input type="hidden" name="delete_item_id" value="<?= (int)$listing['item_id'] ?>">
                       <button type="submit" class="delete table-delete-btn">Delete</button>
                     </form>

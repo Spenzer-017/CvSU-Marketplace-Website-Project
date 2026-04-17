@@ -56,12 +56,14 @@
   }
 
   // Handle delete listing
-  if ($loggedInUser && isset($_POST['delete_item']) && (int)$loggedInUser['id'] === (int)$item['seller_id']) {
-    require_once "includes/delete-item.php";
-    deleteItemWithImage($pdo, $item_id, (int)$loggedInUser['id']);
+  if ( $loggedInUser && isset($_POST['delete_item_id']) && (int)$loggedInUser['id'] === (int)$item['seller_id']) {
+      $delete_id = (int)$_POST['delete_item_id'];
 
-    header("Location: my-listings.php");
-    exit;
+      require_once "includes/delete-item.php";
+      deleteItemWithImage($pdo, $delete_id, (int)$loggedInUser['id']);
+
+      header("Location: my-listings.php");
+      exit;
   }
 
   // Increment view count - skip if the viewer is the seller or its the same viewer
@@ -293,7 +295,7 @@
             <form method="POST" action="transactions.php">
               <input type="hidden" name="transaction_id" value="<?= $txn_id ?>">
               <input type="hidden" name="status" value="completed">
-              <button type="submit" name="update_status" class="btn-submit" onclick="return confirm('Mark this transaction as completed? The item will be marked as sold.')">
+              <button type="submit" name="update_status" class="btn-submit" data-confirm="Mark this transaction as completed? The item will be marked as sold." data-confirm-green>
                 Mark as Sold
               </button>
             </form>
@@ -301,7 +303,7 @@
             <form method="POST" action="transactions.php">
               <input type="hidden" name="transaction_id" value="<?= $txn_id ?>">
               <input type="hidden" name="status" value="cancelled">
-              <button type="submit" name="update_status" class="btn-delete-listing" onclick="return confirm('Cancel this transaction? The item will be available again.')">
+              <button type="submit" name="update_status" class="btn-delete-listing" data-confirm="Cancel this transaction? The item will be available again.">
                 Cancel Transaction
               </button>
             </form>
@@ -309,8 +311,11 @@
           <?php else: ?>
             <!-- Seller: no pending transaction, normal edit/delete -->
             <a href="edit-listing.php?id=<?= $item_id ?>" class="btn-submit">Edit Listing</a>
-            <form method="POST" onsubmit="return confirm('Delete this listing? This cannot be undone.');">
-              <button type="submit" name="delete_item" class="btn-delete-listing">Delete Listing</button>
+            <form method="POST">
+              <input type="hidden" name="delete_item_id" value="<?= $item_id ?>">
+              <button type="submit" class="btn-delete-listing" data-confirm="Delete this listing? This cannot be undone.">
+                Delete Listing
+              </button>
             </form>
           <?php endif; ?>
 
@@ -335,7 +340,7 @@
             <form method="POST" action="transactions.php">
               <input type="hidden" name="transaction_id" value="<?= $txn_id ?>">
               <input type="hidden" name="status" value="cancelled">
-              <button type="submit" name="update_status" class="btn-delete-listing" onclick="return confirm('Cancel this transaction?')">
+              <button type="submit" name="update_status" class="btn-delete-listing" data-confirm="Cancel this transaction?">
                 Cancel Transaction
               </button>
             </form>

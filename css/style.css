@@ -881,6 +881,7 @@ footer {
   padding: 32px 24px;
   max-width: 1100px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 /* Welcome Banner */
@@ -895,6 +896,7 @@ footer {
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 28px;
+  min-height: 80px;
 }
 
 .welcome-banner h1 {
@@ -918,6 +920,7 @@ footer {
   font-size: 0.875rem;
   white-space: nowrap;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 
 .welcome-banner .btn-post:hover {
@@ -1101,6 +1104,11 @@ footer {
   overflow: hidden;
 }
 
+a.message-item {
+  overflow: hidden;
+  min-width: 0;
+}
+
 .message-item, a.message-item {
   padding: 14px 18px;
   border-bottom: 1px solid var(--border-light);
@@ -1148,6 +1156,7 @@ footer {
 .message-content {
   flex: 1;
   min-width: 0;
+  width: 0;
 }
 
 .message-top {
@@ -1467,30 +1476,123 @@ footer {
 
 @media (max-width: 480px) {
   .dashboard {
-    padding: 20px 16px;
+    padding: 16px 14px;
   }
 
+  /* Welcome banner */
   .welcome-banner {
-    padding: 20px;
+    padding: 18px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .welcome-banner h1 {
     font-size: 1.1rem;
   }
 
+  .welcome-banner .btn-post {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Stats */
   .stats-row {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+    margin-bottom: 20px;
   }
 
   .stat-card {
-    padding: 16px;
+    padding: 14px 10px;
   }
 
   .stat-card .stat-value {
     font-size: 1.6rem;
   }
 
+  .stat-card .stat-label {
+    font-size: 0.72rem;
+  }
+
+  /* Quick Actions */
+  .quick-actions {
+    gap: 10px;
+  }
+
+  .quick-action-btn {
+    padding: 14px 8px;
+  }
+
+  .quick-action-icon svg {
+    height: 30px;
+  }
+
+  .quick-action-label {
+    font-size: 0.72rem;
+  }
+
+  /* Table */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-container th,
+  .table-container td {
+    padding: 10px 10px;
+    font-size: 0.78rem;
+  }
+
+  .td-title {
+    max-width: 100px;
+  }
+
+  .badge {
+    padding: 2px 7px;
+    font-size: 0.68rem;
+  }
+
+  .table-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .table-actions a,
+  .table-delete-btn {
+    margin-right: 0;
+    font-size: 0.75rem;
+  }
+
+  /* Section headings */
+  .section-heading h2 {
+    font-size: 0.9rem;
+  }
+
+  .section-heading a {
+    font-size: 0.75rem;
+  }
+
+  /* Saved items */
+  .dashboard-saved-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .dashboard-saved-info {
+    padding: 8px 10px;
+  }
+
+  .dashboard-saved-title {
+    font-size: 0.76rem;
+  }
+
+  .dashboard-saved-price {
+    font-size: 0.82rem;
+  }
+
+  /* Hide views column on mobile */
   .hide-mobile {
     display: none;
   }
@@ -4852,6 +4954,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /* SECTION 13: SAVED ITEMS PAGE */
+/* NOT FINALIZE YET, NEED SOME CHANGES & OTHER THINGS */
 
 .saved-page {
   max-width: 1100px;
@@ -4977,7 +5080,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   color: var(--text-muted);
 }
 
-/* Action buttons — both same width, same height, same border-radius */
+/* Action buttons - both same width, same height, same border-radius */
 .saved-card-actions {
   display: flex;
   flex-direction: column;
@@ -5004,7 +5107,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   box-sizing: border-box;
 }
 
-/* View button — green filled */
+/* View button - green filled */
 .saved-btn-view {
   background-color: var(--primary);
   color: #ffffff;
@@ -5025,7 +5128,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   cursor: default;
 }
 
-/* Remove button — outline red */
+/* Remove button - outline red */
 .saved-btn-remove {
   background-color: transparent;
   color: #b94040;
@@ -5069,3 +5172,145 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   }
 }
 
+/* ------------------------------------------------------------------------------------------------------------------------- */
+/* SECTION 14: CONFIRMATION MODALS */
+/* NOT FINALIZE YET, NEED SOME CHANGES & OTHER THINGS */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+ 
+.modal-overlay.modal-open {
+  opacity: 1;
+  pointer-events: all;
+}
+ 
+.modal-box {
+  background-color: var(--contrast-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 28px 28px 24px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  transform: translateY(8px);
+  transition: transform 0.2s;
+}
+ 
+.modal-overlay.modal-open .modal-box {
+  transform: translateY(0);
+}
+ 
+.modal-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(185, 64, 64, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+ 
+.modal-icon svg {
+  height: 22px;
+  width: 22px;
+  fill: #b94040;
+}
+ 
+/* Green icon variant for non-destructive confirms */
+.modal-icon.modal-icon-green {
+  background-color: var(--hover-bg);
+}
+ 
+.modal-icon.modal-icon-green svg {
+  fill: var(--primary);
+}
+ 
+.modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+ 
+.modal-message {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+ 
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+ 
+.modal-btn-cancel {
+  background-color: var(--hover-bg);
+  color: var(--text-dark);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 9px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+ 
+.modal-btn-cancel:hover {
+  background-color: var(--theme-hover-bg);
+}
+ 
+.modal-btn-confirm {
+  background-color: #b94040;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+ 
+.modal-btn-confirm:hover {
+  background-color: #a03535;
+}
+ 
+/* Green confirm button variant for non-destructive actions */
+.modal-btn-confirm.modal-btn-green {
+  background-color: var(--primary);
+}
+ 
+.modal-btn-confirm.modal-btn-green:hover {
+  background-color: var(--primary-light);
+}
+ 
+@media (max-width: 480px) {
+  .modal-box {
+    padding: 22px 18px 18px;
+  }
+ 
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+ 
+  .modal-btn-cancel, .modal-btn-confirm {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -114,6 +114,7 @@
 
       } catch (Exception $e) {
         $pdo->rollBack();
+        error_log("Transaction creation failed: " . $e->getMessage());
       }
     }
 
@@ -342,14 +343,14 @@
                   <form method="POST" action="transactions.php">
                     <input type="hidden" name="transaction_id" value="<?= (int)$chat_transaction['transaction_id'] ?>">
                     <input type="hidden" name="status" value="completed">
-                    <button type="submit" name="update_status" class="btn-chat-txn-complete" onclick="return confirm('Mark as sold?')">
+                    <button type="submit" name="update_status" class="btn-chat-txn-complete" data-confirm="Mark as sold?" data-confirm-green>
                       Mark as Sold
                     </button>
                   </form>
                   <form method="POST" action="transactions.php">
                     <input type="hidden" name="transaction_id" value="<?= (int)$chat_transaction['transaction_id'] ?>">
                     <input type="hidden" name="status" value="cancelled">
-                    <button type="submit" name="update_status" class="btn-chat-txn-cancel" onclick="return confirm('Cancel this transaction?')">
+                    <button type="submit" name="update_status" class="btn-chat-txn-cancel" data-confirm="Cancel this transaction?">
                       Cancel
                     </button>
                   </form>
@@ -360,7 +361,7 @@
                   <form method="POST" action="transactions.php">
                     <input type="hidden" name="transaction_id" value="<?= (int)$chat_transaction['transaction_id'] ?>">
                     <input type="hidden" name="status" value="cancelled">
-                    <button type="submit" name="update_status" class="btn-chat-txn-cancel" onclick="return confirm('Cancel this transaction?')">
+                    <button type="submit" name="update_status" class="btn-chat-txn-cancel" data-confirm="Cancel this transaction?">
                       Cancel
                     </button>
                   </form>
@@ -384,7 +385,7 @@
                   <form method="POST">
                     <input type="hidden" name="item_id" value="<?= $active_item ?>">
                     <input type="hidden" name="buyer_id" value="<?= $active_to ?>">
-                    <button type="submit" name="create_transaction" class="btn-chat-txn-create" onclick="return confirm('Create a new transaction with this buyer?')">
+                    <button type="submit" name="create_transaction" class="btn-chat-txn-create" data-confirm="Create a new transaction with this buyer?" data-confirm-green>
                       Create Transaction
                     </button>
                   </form>
@@ -400,7 +401,7 @@
                 <form method="POST">
                   <input type="hidden" name="item_id" value="<?= $active_item ?>">
                   <input type="hidden" name="buyer_id" value="<?= $active_to ?>">
-                  <button type="submit" name="create_transaction" class="btn-chat-txn-create" onclick="return confirm('Create a pending transaction with this buyer for &#8369;<?= number_format($active_item_data['price'], 2) ?>?')">
+                  <button type="submit" name="create_transaction" class="btn-chat-txn-create" data-confirm="Create a pending transaction with this buyer for &#8369;<?= number_format($active_item_data['price'], 2) ?>?" data-confirm-green>
                     Create Transaction
                   </button>
                 </form>

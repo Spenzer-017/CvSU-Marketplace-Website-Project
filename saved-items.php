@@ -114,7 +114,7 @@
             </a>
             <form method="POST">
               <input type="hidden" name="item_id" value="<?= (int)$item['item_id'] ?>">
-              <button type="submit" name="unsave_item" class="saved-btn-remove" onclick="return confirm('Remove this item from your saved list?')">
+              <button type="submit" name="unsave_item" class="saved-btn-remove" data-confirm="Remove this item from your saved list?">
                 Remove
               </button>
             </form>

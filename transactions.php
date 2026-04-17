@@ -293,7 +293,7 @@
                 <form method="POST">
                   <input type="hidden" name="transaction_id" value="<?= (int)$txn['transaction_id'] ?>">
                   <input type="hidden" name="status" value="completed">
-                  <button type="submit" name="update_status" class="btn-txn-complete" onclick="return confirm('Mark this deal as completed? The item will be marked as sold.')">
+                  <button type="submit" name="update_status" class="btn-txn-complete" data-confirm="Mark this deal as completed? The item will be marked as sold." data-confirm-green>
                     Mark as Sold
                   </button>
                 </form>
@@ -303,7 +303,7 @@
               <form method="POST">
                 <input type="hidden" name="transaction_id" value="<?= (int)$txn['transaction_id'] ?>">
                 <input type="hidden" name="status" value="cancelled">
-                <button type="submit" name="update_status" class="btn-txn-cancel" onclick="return confirm('Cancel this transaction?')">
+                <button type="submit" name="update_status" class="btn-txn-cancel" data-confirm="Cancel this transaction?">
                   Cancel
                 </button>
               </form>

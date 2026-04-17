@@ -24,7 +24,7 @@
       require_once "includes/delete-item.php";
       deleteItemWithImage($pdo, $delete_id, $uid);
     }
-    header('Location: dashboard.php');
+    header('Location: my-listings.php');
     exit;
   }
 ?>

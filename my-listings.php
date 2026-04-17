@@ -132,7 +132,7 @@
           <!-- Actions -->
           <div class="my-listing-actions">
             <a href="edit-listing.php?id=<?= (int)$listing['item_id'] ?>" class="btn-edit-listing">Edit</a>
-            <form method="POST" onsubmit="return confirm('Delete this listing? This cannot be undone.')">
+            <form method="POST" data-confirm="Delete this listing? This cannot be undone.">
               <input type="hidden" name="delete_item_id" value="<?= (int)$listing['item_id'] ?>">
               <button type="submit" class="btn-delete-listing-sm">Delete</button>
             </form>

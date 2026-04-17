@@ -48,6 +48,25 @@
 
 </footer>
 
+<!-- Confirmation Modals -->
+<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+ 
+    <div class="modal-icon" id="modalIcon">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    </div>
+ 
+    <div class="modal-title" id="modalTitle">Are you sure?</div>
+    <div class="modal-message" id="modalMessage"></div>
+ 
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" id="modalCancel">Cancel</button>
+      <button class="modal-btn-confirm" id="modalConfirm">Confirm</button>
+    </div>
+ 
+  </div>
+</div>
+
 <?php
 // Load page-specific JS (Uncomment if decided to put embedded scripts in external JS files)
 // if (isset($activePage)) {
@@ -64,6 +83,88 @@
 //     } 
 // }
 ?>
+
+<script>
+    (function () {
+    const overlay = document.getElementById('confirmModal');
+    const msgEl = document.getElementById('modalMessage');
+    const iconEl = document.getElementById('modalIcon');
+    const btnConfirm = document.getElementById('modalConfirm');
+    const btnCancel = document.getElementById('modalCancel');
+    
+    let pendingAction = null;
+    
+    function openModal(message, onConfirm, isGreen) {
+        msgEl.textContent = message;
+        pendingAction = onConfirm;
+    
+        if (isGreen) {
+        btnConfirm.classList.add('modal-btn-green');
+        iconEl.classList.add('modal-icon-green');
+        } else {
+        btnConfirm.classList.remove('modal-btn-green');
+        iconEl.classList.remove('modal-icon-green');
+        }
+    
+        overlay.classList.add('modal-open');
+        btnCancel.focus();
+    }
+    
+    function closeModal() {
+        overlay.classList.remove('modal-open');
+        pendingAction = null;
+    }
+    
+    btnConfirm.addEventListener('click', function () {
+        const action = pendingAction;
+        closeModal();
+        if (action) action();
+    });
+    
+    btnCancel.addEventListener('click', closeModal);
+    
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeModal();
+    });
+    
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('modal-open')) closeModal();
+    });
+    
+    // Pattern A: <form data-confirm="...">
+    // Intercepts submit, shows modal, submits for real only on Confirm.
+    document.addEventListener('submit', function (e) {
+        const form = e.target;
+        const msg  = form.dataset.confirm;
+        if (!msg) return;
+    
+        e.preventDefault();
+        const isGreen = 'confirmGreen' in form.dataset;
+    
+        openModal(msg, function () {
+        delete form.dataset.confirm;
+        form.submit();
+        }, isGreen);
+    });
+    
+    // Pattern B: <button data-confirm="...">
+    // Intercepts click, shows modal, re-fires click only on Confirm.
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('button[data-confirm]');
+        if (!btn) return;
+    
+        e.preventDefault();
+        const msg     = btn.dataset.confirm;
+        const isGreen = 'confirmGreen' in btn.dataset;
+    
+        openModal(msg, function () {
+        delete btn.dataset.confirm;
+        btn.click();
+        }, isGreen);
+    });
+    
+    })();
+</script>
 
 </body>
 

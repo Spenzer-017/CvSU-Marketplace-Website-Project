@@ -114,6 +114,7 @@
 
       } catch (Exception $e) {
         $pdo->rollBack();
+        error_log("Transaction creation failed: " . $e->getMessage());
       }
     }
 
