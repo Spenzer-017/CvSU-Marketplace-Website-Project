@@ -24,81 +24,8 @@
 ?>
 
 <!-- PHP Database Query -->
-<?php 
-  // Pagination Setup
-  $perBatch = 8;
-  $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-  $offset = ($page - 1) * $perBatch;
-
-  // Items Database Query
-  $stmt = $pdo->prepare("
-    SELECT 
-      items.item_id AS id,
-      items.title,
-      items.price,
-      items.image_path,
-      items.condition_type AS `condition`,
-      items.meetup_location AS location,
-      categories.name AS category,
-      users.name AS seller
-    FROM items
-    JOIN users ON items.seller_id = users.id
-    JOIN categories ON items.category_id = categories.category_id
-    WHERE items.status = 'active'
-    ORDER BY items.created_at DESC
-  ");
-
-  $perBatch = 40;
-  $offset = 0;
-
-  $stmt = $pdo->prepare("
-    SELECT 
-      items.item_id AS id,
-      items.title,
-      items.price,
-      items.image_path,
-      items.condition_type AS `condition`,
-      items.meetup_location AS location,
-      categories.name AS category,
-      users.name AS seller
-    FROM items
-    JOIN users ON items.seller_id = users.id
-    JOIN categories ON items.category_id = categories.category_id
-    WHERE items.status = 'active'
-    ORDER BY items.created_at DESC
-    LIMIT :limit OFFSET :offset
-  ");
-
-  $stmt->bindValue(':limit', $perBatch, PDO::PARAM_INT);
-  $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-  $stmt->execute();
-
-  $items = $stmt->fetchAll();
-
-  // Convert to JS friendly format
-  $all_listings = [];
-
-  foreach ($items as $item) {
-    $imgPath = "uploads/" . $item['image_path'];
-
-    if (!empty($item['image_path']) && file_exists($imgPath)) {
-      $img = '<img src="' . htmlspecialchars($imgPath) . '" alt="Item Image">';
-    } else {
-      $img = $imgNotAvailableIcon;
-    }
-
-    $all_listings[] = [
-      'id' => $item['id'],
-      'title' => $item['title'],
-      'price' => (int)$item['price'],
-      'category' => $item['category'],
-      'seller' => $item['seller'],
-      'location' => $item['location'],
-      'condition' => $item['condition'],
-      'img' => $img
-    ];
-  }
-
+<?php
+  // Categories & Conditions
   $categories = ['All', 'Books', 'Electronics', 'Supplies', 'Clothing', 'Food', 'Accessories', 'Other'];
   $conditions = ['Any Condition', 'New', 'Like New', 'Good', 'Fair', 'N/A'];
 
@@ -135,7 +62,7 @@
     <!-- Sort -->
     <select class="filter-select" id="sortFilter">
       <option value="newest" <?= $active_sort === 'newest' ? 'selected' : '' ?>>Newest First</option>
-      <option value="price_asc"<?= $active_sort === 'price_asc' ? 'selected' : '' ?>>Price: Low to High</option>
+      <option value="price_asc" <?= $active_sort === 'price_asc' ? 'selected' : '' ?>>Price: Low to High</option>
       <option value="price_desc" <?= $active_sort === 'price_desc' ? 'selected' : '' ?>>Price: High to Low</option>
     </select>
   </div>
@@ -150,7 +77,7 @@
     <?php endforeach; ?>
   </div>
  
-  <!-- Result count (Updated in JS script) -->
+  <!-- Result count (Updated by JS script) -->
   <p class="result-count" id="resultCount">
     Showing <span id="shownCount">0</span> listings
   </p>
@@ -165,7 +92,7 @@
     <p>Try a different search term or category.</p>
   </div>
  
-  <!-- Invisible element at the bottom that triggers loading more -->
+  <!-- Sentiner: Invisible element at the bottom that triggers the next fetch -->
   <div id="scroll-sentinel"></div>
  
   <!-- Loading animation -->
@@ -181,186 +108,157 @@
 </div>
 
 <script>
-  //  All Listing Data
-  //  Fetch this from a real server later on
-  
-  const allListings = <?= json_encode($all_listings) ?>;
- 
-  // How many cards to show per batch (each scroll load)
-  const perBatchAmt = 8;
- 
-  let currentBatch = 0;
-  let isLoading = false;
-  let allLoaded = false;
-  let filteredItems = [];
- 
-  // DOM Variables
+  // Card Icons
+  const userIcon = <?= json_encode($userIcon) ?>;
+  const locationIcon = <?= json_encode($locationIcon) ?>;
+  const noImgIcon = <?= json_encode($imgNotAvailableIcon) ?>;
+
+  // DOM references
   const grid = document.getElementById('listingsGrid');
   const loader = document.getElementById('loader');
   const endMsg = document.getElementById('end-message');
   const emptyState = document.getElementById('emptyState');
   const shownCount = document.getElementById('shownCount');
   const searchInput = document.getElementById('searchInput');
-  const conditionFil = document.getElementById('conditionFilter');
+  const condFil = document.getElementById('conditionFilter');
   const sortFil = document.getElementById('sortFilter');
+  const sentinel = document.getElementById('scroll-sentinel');
 
-  // PHP Variables (SVGs)
-  const userIcon = <?= json_encode($userIcon) ?>;
-  const locationIcon = <?= json_encode($locationIcon) ?>;
- 
-  // Build one card to the HTML
+  // Pagination state 
+  let currentPage = 1;
+  let isLoading = false;
+  let isDone = false;
+  let totalShown = 0;
+
+  // Build a single listing card 
   function buildCard(item) {
+    const imgHtml = item.img ? `<img src="uploads/${item.img}" loading="lazy">` : noImgIcon;
+
     return `
       <a href="listing.php?id=${item.id}" class="listing-card">
         <div class="listing-img">
           <span class="condition-badge">${item.condition}</span>
-          ${item.img}
+          ${imgHtml}
         </div>
         <div class="listing-content">
           <div class="listing-category">${item.category}</div>
           <div class="listing-title">${item.title}</div>
-          <div class="listing-price">&#8369;${item.price.toLocaleString()}</div>
+          <div class="listing-price">&#8369;${(Number(item.price) || 0).toLocaleString()}</div>
           <div class="listing-other-info">
-            <span> ${userIcon}&nbsp;${item.seller}</span>
-            <span> ${locationIcon}&nbsp;${item.location}</span>
+            <span>${userIcon}&nbsp;${item.seller}</span>
+            <span>${locationIcon}&nbsp;${item.location}</span>
           </div>
         </div>
       </a>`;
   }
- 
-  // Apply search, condition, sort filters
-  function applyFilters() {
-    const q = searchInput.value.trim().toLowerCase();
-    const condition = conditionFil.value;
-    const sort = sortFil.value;
- 
-    // Get active category from URL
+
+  // Read current filter values 
+  function getFilters() {
     const params = new URLSearchParams(window.location.search);
-    const category = params.get('category') || 'All';
- 
-    let items = [...allListings];
- 
-    // Filter by category
-    if (category !== 'All') {
-      items = items.filter(i => i.category === category);
-    }
- 
-    // Filter by search query
-    if (q) {
-      items = items.filter(i =>
-        i.title.toLowerCase().includes(q) ||
-        i.category.toLowerCase().includes(q)
-      );
-    }
- 
-    // Filter by condition
-    if (condition !== 'Any Condition') {
-      items = items.filter(i => i.condition === condition);
-    }
- 
-    // Sort
-    if (sort === 'price_asc') items.sort((a, b) => a.price - b.price);
-    if (sort === 'price_desc') items.sort((a, b) => b.price - a.price);
- 
-    filteredItems = items;
-  }
- 
-  // Reset and reload from page 0
-  function resetGrid() {
-    grid.innerHTML = '';
-    currentBatch = 0;
-    allLoaded = false;
-    endMsg.style.display = 'none';
-    emptyState.style.display = 'none';
-    applyFilters();
-    loadNextBatch();
+    return {
+      category: params.get('category')  || 'All',
+      condition: condFil.value,
+      sort: sortFil.value,
+      q: searchInput.value.trim(),
+    };
   }
 
-  // Load more items from server
-  async function loadMoreFromServer() {
-    const nextPage = Math.floor(allListings.length / 40) + 1;
+  // Fetch one page of results from the server 
+  async function fetchPage() {
+    if (isLoading || isDone) return;
 
-    const res = await fetch(`api/get_listings.php?page=${nextPage}`);
-    const data = await res.json();
-
-    if (data.length === 0) {
-      allLoaded = true;
-      return;
-    }
-
-    allListings.push(...data);
-  }
- 
-  // Load the next batch of items
-  async function loadNextBatch() {
-    if (isLoading || allLoaded) return;
- 
     isLoading = true;
     loader.style.display = 'block';
- 
-    // Simulate a small network delay (remove this in production, and replace with a real fetch() call to PHP API)
-    setTimeout(() => {
-      const start = currentBatch * perBatchAmt;
-      const batch = filteredItems.slice(start, start + perBatchAmt);
- 
-      if (batch.length === 0 && currentBatch === 0) {
-        // No results at all
+
+    const f = getFilters();
+    const qs = new URLSearchParams({
+      page: currentPage,
+      limit: 12,
+      category: f.category,
+      condition: f.condition,
+      sort: f.sort,
+      q: f.q,
+    });
+
+    try {
+      const res  = await fetch(`api/get-listings.php?${qs}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      // First page, if no results show empty state
+      if (currentPage === 1 && data.items.length === 0) {
         emptyState.style.display = 'block';
-      } else {
-        batch.forEach(item => {
-          grid.insertAdjacentHTML('beforeend', buildCard(item));
-        });
-        currentBatch++;
+        shownCount.textContent = '0';
+        loader.style.display = 'none';
+        isLoading = false;
+        return;
       }
- 
-      // Update count
-      const shown = Math.min(currentBatch * perBatchAmt, filteredItems.length);
-      shownCount.textContent = shown;
- 
-      // Check if loaded everything
-      if (start + batch.length >= filteredItems.length) {
-        allLoaded = true;
-        if (filteredItems.length > 0) {
-          endMsg.style.display = 'block';
-        }
+
+      // Append cards to grid
+      data.items.forEach(item => {
+        grid.insertAdjacentHTML('beforeend', buildCard(item));
+      });
+
+      totalShown += data.items.length;
+      shownCount.textContent = totalShown;
+      currentPage++;
+
+      // No more pages
+      if (!data.has_more) {
+        isDone = true;
+        if (totalShown > 0) endMsg.style.display = 'block';
+        observer.disconnect();
       }
- 
-      isLoading = false;
-      loader.style.display = 'none';
-    }, 400); // 400ms simulated delay
 
-    const endOfLoadedData = start + perBatchAmt >= allListings.length;
-
-    if (endOfLoadedData && !allLoaded) {
-      await loadMoreFromServer();
+    } catch (err) {
+      console.error('Failed to load listings:', err);
     }
+
+    loader.style.display = 'none';
+    isLoading = false;
   }
- 
-  // Infinite Scroll via IntersectionObserver
-  // This fires loadNextBatch() function whenever the sentinel element scrolls into view at the bottom of the page.
+
+  // Reset grid and fetch from page 1 
+  function resetAndFetch() {
+    grid.innerHTML = '';
+    emptyState.style.display = 'none';
+    endMsg.style.display = 'none';
+    currentPage = 1;
+    isLoading = false;
+    isDone = false;
+    totalShown = 0;
+    shownCount.textContent = '0';
+
+    // Re-attach observer in case it was disconnected after the previous "all loaded"
+    observer.observe(sentinel);
+
+    fetchPage();
+  }
+
+  // IntersectionObserver: Fires whenever the sentinel enters the viewport.
   const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      loadNextBatch();
-    }
+    if (entries[0].isIntersecting) fetchPage();
   }, {
-    rootMargin: '200px' // start loading 200px before reaching the bottom
+    root: null,
+    rootMargin: '300px 0px',
+    threshold: 0,
   });
- 
-  observer.observe(document.getElementById('scroll-sentinel'));
- 
-  // Filter event listeners
-  // Debounce the search so it doesn't fire on every keypress
+
+  observer.observe(sentinel);
+
+  // Filter events 
+  // Debounce search: wait 350ms after the user stops typing before fetching
   let searchTimer;
   searchInput.addEventListener('input', () => {
     clearTimeout(searchTimer);
-    searchTimer = setTimeout(resetGrid, 300);
+    searchTimer = setTimeout(resetAndFetch, 350);
   });
- 
-  conditionFil.addEventListener('change', resetGrid);
-  sortFil.addEventListener('change', resetGrid);
- 
-  // Initial load
-  resetGrid();
+
+  condFil.addEventListener('change', resetAndFetch);
+  sortFil.addEventListener('change', resetAndFetch);
+
+  // Initial load 
+  fetchPage();
 </script>
  
 <?php include 'includes/footer.php'; ?>

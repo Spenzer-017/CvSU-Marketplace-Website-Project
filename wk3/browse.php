@@ -135,7 +135,7 @@
     <!-- Sort -->
     <select class="filter-select" id="sortFilter">
       <option value="newest" <?= $active_sort === 'newest' ? 'selected' : '' ?>>Newest First</option>
-      <option value="price_asc"<?= $active_sort === 'price_asc' ? 'selected' : '' ?>>Price: Low to High</option>
+      <option value="price_asc" <?= $active_sort === 'price_asc' ? 'selected' : '' ?>>Price: Low to High</option>
       <option value="price_desc" <?= $active_sort === 'price_desc' ? 'selected' : '' ?>>Price: High to Low</option>
     </select>
   </div>
@@ -150,7 +150,7 @@
     <?php endforeach; ?>
   </div>
  
-  <!-- Result count (Updated in JS script) -->
+  <!-- Result count (Updated by JS script) -->
   <p class="result-count" id="resultCount">
     Showing <span id="shownCount">0</span> listings
   </p>
@@ -165,7 +165,7 @@
     <p>Try a different search term or category.</p>
   </div>
  
-  <!-- Invisible element at the bottom that triggers loading more -->
+  <!-- Sentiner: Invisible element at the bottom that triggers the next fetch -->
   <div id="scroll-sentinel"></div>
  
   <!-- Loading animation -->
