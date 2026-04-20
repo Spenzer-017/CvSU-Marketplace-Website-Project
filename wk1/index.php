@@ -7,7 +7,7 @@ $_SESSION['user_id'] = 1; // Test for logged-in user navigation
 ?>
 
 <h1>
-    <center>Wow A Darkmode Feature!</center>
+    <center>Home Page</center>
 </h1>
 
 <?php include "includes/footer.php"; ?>

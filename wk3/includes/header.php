@@ -74,7 +74,7 @@
     <header>
 
         <!-- Logo -->
-        <a href="/index.php" class="logo">
+        <a href="index.php" class="logo">
             CvSU <span>Marketplace</span>
         </a>
 
