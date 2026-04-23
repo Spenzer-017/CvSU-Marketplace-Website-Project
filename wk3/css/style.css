@@ -50,6 +50,9 @@
 
   --surface-tint: #F2E3BB;
   --surface-tint-text: #005F02;
+
+  --avatar-bg: #EDE4C8;
+  --avatar-border: #C0B87A;
 }
 
 /* Darkmode Color Variables */
@@ -74,6 +77,9 @@
 
   --surface-tint: #252A25;
   --surface-tint-text: #C0B87A;
+
+  --avatar-bg: #1A2E1A;
+  --avatar-border: #3A5C3A;
 }
 
 /* General Structure */
@@ -1131,10 +1137,11 @@ a.message-item {
 
 /* Avatar circle */
 .avatar {
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--avatar-border);
   border-radius: 50%;
-  background-color: var(--primary-light);
+  background-color: var(--avatar-bg);
   color: var(--contrast-bg);
   font-size: 0.875rem;
   font-weight: 600;
@@ -1151,6 +1158,8 @@ a.message-item {
   height: 100%;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  margin-top: -0.1rem;   
+  margin-left: 0.10rem;
 }
 
 .message-content {
@@ -1559,8 +1568,7 @@ a.message-item {
     gap: 2px;
   }
 
-  .table-actions a,
-  .table-delete-btn {
+  .table-actions a, .table-delete-btn {
     margin-right: 0;
     font-size: 0.75rem;
   }
@@ -2612,9 +2620,9 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   margin: 0 auto 12px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid var(--accent);
+  border: 4px solid var(--avatar-border);
   transition: border-color 0.2s;
-  background-color: var(--surface-tint);
+  background-color: var(--avatar-bg);
 }
 
 .current-avatar img.avatar-pixel-img {
@@ -3455,8 +3463,9 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 .seller-avatar {
   width: 48px;
   height: 48px;
+  border: 2px solid var(--avatar-border);
   border-radius: 50%;
-  background-color: var(--primary-light);
+  background-color: var(--avatar-bg);
   color: #ffffff;
   font-size: 1.1rem;
   font-weight: 700;
@@ -3472,6 +3481,8 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   height: 100%;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  margin-top: -0.1rem;
+  margin-left: 0.10rem;
 }
 
 .seller-name {
@@ -3718,11 +3729,12 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
  
 .conv-avatar {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  border: 2px solid var(--avatar-border);
   border-radius: 50%;
-  background-color: var(--primary-light);
+  background-color: var(--avatar-bg);
   color: #ffffff;
   font-size: 0.9rem;
   font-weight: 700;
@@ -3738,6 +3750,8 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   height: 100%;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  margin-top: -0.1rem;   
+  margin-left: 0.10rem;
 }
  
 .conv-info {
@@ -3927,14 +3941,26 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   width: 30px;
   height: 30px;
   min-width: 30px;
+  border: 1px solid var(--avatar-border);
   border-radius: 50%;
-  background-color: var(--primary-light);
+  background-color: var(--avatar-bg);
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.chat-msg-avatar img.avatar-pixel-img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  margin-top: -0.1rem;   
+  margin-left: 0.10rem;
 }
  
 .chat-msg-bubble {

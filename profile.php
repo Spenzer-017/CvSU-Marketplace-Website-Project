@@ -51,18 +51,72 @@
 
   // Courses
   $courses = [
-    'BS Computer Science',
-    'BS Information Technology',
-    'BS Civil Engineering',
-    'BS Electrical Engineering',
-    'BS Mechanical Engineering',
-    'BS Electronics Engineering',
-    'BS Computer Engineering',
-    'BS Nursing',
-    'BS Tourism Management',
-    'BS Hotel And Restaurant Management',
-    'BS Criminology',
-    'Other',
+    // Agriculture & Environment
+    "Bachelor of Agricultural Entrepreneurship",
+    "BS Agriculture",
+    "BS Environmental Science",
+    "BS Food Technology",
+
+    // Arts and Sciences
+    "BA English Language Studies",
+    "BA Journalism",
+    "BA Political Science",
+    "BS Applied Mathematics",
+    "BS Biology",
+    "BS Psychology",
+    "BS Social Work",
+
+    // Criminal Justice
+    "BS Criminology",
+    "BS Industrial Security Management",
+
+    // Economics, Management, Development
+    "BS Accountancy",
+    "BS Business Management",
+    "BS Development Management",
+    "BS Economics",
+    "BS International Studies",
+    "BS Office Administration",
+
+    // Education
+    "Bachelor of Early Childhood Education",
+    "Bachelor of Elementary Education",
+    "Bachelor of Secondary Education",
+    "Bachelor of Special Needs Education",
+    "Bachelor of Technology and Livelihood Education",
+    "BS Hospitality Management",
+    "BS Tourism Management",
+    "Teacher Certificate Program",
+    "Science High School",
+    "Elementary Education",
+    "Pre-Elementary Education",
+
+    // Engineering & IT
+    "BS Agricultural and Biosystems Engineering",
+    "BS Architecture",
+    "BS Civil Engineering",
+    "BS Computer Engineering",
+    "BS Computer Science",
+    "BS Electrical Engineering",
+    "BS Electronics Engineering",
+    "BS Industrial Engineering",
+    "BS Industrial Technology - Automotive Technology",
+    "BS Industrial Technology - Electrical Technology",
+    "BS Industrial Technology - Electronics Technology",
+    "BS Information Technology",
+
+    // Nursing & Health
+    "BS Medical Technology",
+    "BS Midwifery",
+    "BS Nursing",
+    "Diploma in Midwifery",
+
+    // Sports
+    "Bachelor of Physical Education",
+    "Bachelor of Exercise and Sports Sciences",
+
+    // Veterinary
+    "Doctor of Veterinary Medicine"
   ];
 
   // Year Level

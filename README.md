@@ -50,8 +50,7 @@ There's still room for improvement on the color scheme of my themes like in hove
 # Things To Take Note Of
 (Optional):
 - Maybe implement a real SMTP verification to send OTP to cvsu email and verify account authenticity
-- Image upload might need to change where it saves, also might need to do something on how the image will look like in the      
-  front-end of browse page.
+- Image upload might need to change where it saves
 - The load page specific javascript in the footer have no purpose for now because almost all script are embedded
 - Things to maybe implement (account deletion option, forgot password)
 - Currently only accepting int in selling prices, maybe make it accept decimal/float prices
@@ -65,6 +64,7 @@ There's still room for improvement on the color scheme of my themes like in hove
     * info contact form is submitting into void, need to actually send message to something/somewhere
     * front-end issues like message to long overflowing, etc. check for all pages
     * make sure to check responsiveness for other pages
+    * modal overall design (center align texts, fonts, etc.)
 
 <!-- Weekly Report -->
 

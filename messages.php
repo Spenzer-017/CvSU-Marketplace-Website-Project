@@ -428,7 +428,7 @@
               <div class="chat-msg <?= $isMine ? 'mine' : 'theirs' ?>">
                 <?php if (!$isMine): ?>
                   <div class="chat-msg-avatar">
-                    <?= strtoupper($msg['sender_name'][0] ?? '?') ?>
+                    <img src="assets/img/<?= htmlspecialchars($other_user['avatar']) ?>.png" alt="" class="avatar-pixel-img" />
                   </div>
                 <?php endif; ?>
                 <div class="chat-msg-bubble">
@@ -475,7 +475,7 @@
     msgInput.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        document.getElementById('chatForm').submit();
+        document.querySelector('#chatForm button[name="send_message"]').click();
       }
     });
   }
