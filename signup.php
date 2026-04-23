@@ -76,7 +76,10 @@
   <div class="auth-card">
 
     <div class="auth-header">
-      <a href="index.php" class="logo">CvSU <span>Marketplace</span></a>
+      <a href="index.php" class="logo">
+        <span>Kabsu<span class="logo-accent">hayan</span></span>
+        <img src="./assets/img/v3_logo.png" alt="website-logo" class="auth-logo-img">
+      </a>
       <h1>Create an account</h1>
       <p>Join the CvSU student marketplace for free</p>
     </div>
