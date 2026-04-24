@@ -60,7 +60,7 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
 - Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard, transaction)
 - Things to fix: 
-    * info contact form is submitting into void, need to actually send message to something/somewhere
+    * 
 - Things to look out for:
     * front-end issues like message to long overflowing, etc. check for all pages
     * responsiveness for all pages
@@ -120,4 +120,5 @@ There's still room for improvement on the color scheme of my themes like in hove
 
 > Week 4
 - Added modals for confirmation popups (made the footer handle the JS script for the modals)
-- Made a real infinite scroll in browse page fetching items with API
+- Implemented a infinite scroll feature in browse page fetching items with an API
+- Implemented Gmail SMTP using PHPMailer to send contact form submissions to kabsuhayan@gmail.com

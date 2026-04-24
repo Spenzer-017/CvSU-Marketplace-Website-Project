@@ -223,6 +223,12 @@
 <div class="info-section-full" id="contact-section">
   <div class="info-inner">
 
+    <?php
+      // Retrieve old form data in case of error
+      $old = $_SESSION['contact_old'] ?? [];
+      unset($_SESSION['contact_old']);
+    ?>
+
     <div class="info-section-label">Contact</div>
     <h2 class="info-section-title">Get in touch with us</h2>
     <p class="info-section-sub">
@@ -239,17 +245,26 @@
           </div>
         <?php endif; ?>
 
-        <form class="contact-form" action="contact-handler.php" method="POST">
+        <?php if (!empty($_SESSION['contact_errors'])): ?>
+          <div class="alert alert-error" style="margin-bottom: 20px;">
+              <ul>
+                  <?php foreach ($_SESSION['contact_errors'] as $err): ?>
+                      <li><?= htmlspecialchars($err) ?></li>
+                  <?php endforeach; ?>
+              </ul>
+          </div>
+          <?php unset($_SESSION['contact_errors']); ?>
+        <?php endif; ?>
+
+        <form class="contact-form" action="includes/contact-handler.php" method="POST">
           <div class="form-group">
             <label for="contact-name">Full Name <span class="required">*</span></label>
-            <input type="text" id="contact-name" name="name" placeholder="e.g. Juan dela Cruz" required value="<?= $user ? htmlspecialchars($user['name']) : '' ?>" />
+            <input type="text" id="contact-name" name="name" placeholder="e.g. Spenzer Lima" required value="<?= htmlspecialchars($_SESSION['contact_old']['name'] ?? ($user ? $user['name'] : '')) ?>" />
           </div>
 
           <div class="form-group">
             <label for="contact-email">Email Address <span class="required">*</span></label>
-            <input type="email" id="contact-email" name="email" placeholder="e.g. juandelacruz@cvsu.edu.ph" required
-              value="<?= $user ? htmlspecialchars($user['email']) : '' ?>"
-              <?= $user ? 'readonly' : '' ?> />
+            <input type="email" id="contact-email" name="email" placeholder="e.g. kevinspenzer.lima@cvsu.edu.ph" required value="<?= htmlspecialchars($old['email'] ?? ($user ? $user['email'] : '')) ?>" <?= $user ? 'readonly' : '' ?>>
             <?php if ($user): ?>
               <span class="form-hint">Using your registered CvSU email.</span>
             <?php endif; ?>
@@ -258,19 +273,19 @@
           <div class="form-group">
             <label for="contact-subject">Subject <span class="required">*</span></label>
             <select id="contact-subject" name="subject" required>
-              <option value="" disabled selected>Select a topic</option>
-              <option value="report-user">Report a User</option>
-              <option value="report-listing">Report a Listing</option>
-              <option value="account-issue">Account Issue</option>
-              <option value="bug-report">Bug / Technical Problem</option>
-              <option value="suggestion">Suggestion or Feedback</option>
-              <option value="other">Other</option>
+              <option value="" disabled <?= empty($old['subject']) ? 'selected' : '' ?>>Select a topic</option>
+              <option value="report-user" <?= (isset($old['subject']) && $old['subject'] === 'report-user') ? 'selected' : '' ?>>Report a User</option>
+              <option value="report-listing" <?= (isset($old['subject']) && $old['subject'] === 'report-listing') ? 'selected' : '' ?>>Report a Listing</option>
+              <option value="account-issue" <?= (isset($old['subject']) && $old['subject'] === 'account-issue') ? 'selected' : '' ?>>Account Issue</option>
+              <option value="bug-report" <?= (isset($old['subject']) && $old['subject'] === 'bug-report') ? 'selected' : '' ?>>Bug / Technical Problem</option>
+              <option value="suggestion" <?= (isset($old['subject']) && $old['subject'] === 'suggestion') ? 'selected' : '' ?>>Suggestion or Feedback</option>
+              <option value="other" <?= (isset($old['subject']) && $old['subject'] === 'other') ? 'selected' : '' ?>>Other</option>
             </select>
           </div>
 
           <div class="form-group">
             <label for="contact-message">Message <span class="required">*</span></label>
-            <textarea id="contact-message" name="message" rows="5" placeholder="Describe your concern" required></textarea>
+            <textarea id="contact-message" name="message" rows="5" placeholder="Describe your concern" required><?= htmlspecialchars($old['message'] ?? '') ?></textarea>
           </div>
 
           <button type="submit" class="btn-submit">Send Message</button>
