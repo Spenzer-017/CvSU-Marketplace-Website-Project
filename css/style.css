@@ -334,7 +334,7 @@ footer {
 }
 
 .footer-brand .logo {
-  color: var(--accent-light);
+  color: var(--primary);
   margin-bottom: 10px;
   display: block;
 }
@@ -5248,6 +5248,10 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
  
 .modal-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   background-color: var(--contrast-bg);
   border: 1px solid var(--border-light);
   border-radius: 12px;
@@ -5272,6 +5276,8 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
+  margin-left: auto;
+  margin-right: auto;
 }
  
 .modal-icon svg {
@@ -5290,6 +5296,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
  
 .modal-title {
+  text-align: center;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-dark);
@@ -5297,6 +5304,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
  
 .modal-message {
+  text-align: center;
   font-size: 0.875rem;
   color: var(--text-muted);
   line-height: 1.6;
@@ -5306,7 +5314,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 .modal-actions {
   display: flex;
   gap: 10px;
-  justify-content: flex-end;
+  justify-content: center;
 }
  
 .modal-btn-cancel {
@@ -5358,11 +5366,12 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   }
  
   .modal-actions {
-    flex-direction: column-reverse;
+    gap: 8px;
+    justify-content: center;
   }
  
   .modal-btn-cancel, .modal-btn-confirm {
-    width: 100%;
-    text-align: center;
+    padding: 9px 14px;
+    font-size: 0.8rem;
   }
 }

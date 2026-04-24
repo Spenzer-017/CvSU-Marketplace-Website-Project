@@ -128,10 +128,21 @@ header {
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--primary);
+  display: flex; 
+  align-items: center;
+  gap: 10px;
 }
 
-.logo span {
+.logo .logo-accent {
   color: var(--accent);
+}
+
+/* Logo image sizing */
+.header-logo-img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 /* Theme container */
@@ -270,7 +281,7 @@ footer {
 }
 
 .footer-brand .logo {
-  color: var(--accent-light);
+  color: var(--primary);
   margin-bottom: 10px;
   display: block;
 }

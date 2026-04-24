@@ -55,16 +55,15 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Things to maybe implement (account deletion option, forgot password)
 - Currently only accepting int in selling prices, maybe make it accept decimal/float prices
 (Less Important):
-- 
+- Add a favicon and also a different title depending on a page
 (Important):
 - Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
-- Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard)
-- QA pages that got implemented with modals (dashboard, my-listings, listing, transaction, saved-items, messages)
+- Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard, transaction)
 - Things to fix: 
     * info contact form is submitting into void, need to actually send message to something/somewhere
+- Things to look out for:
     * front-end issues like message to long overflowing, etc. check for all pages
-    * make sure to check responsiveness for other pages
-    * modal overall design (center align texts, fonts, etc.)
+    * responsiveness for all pages
 
 <!-- Weekly Report -->
 

@@ -157,10 +157,21 @@ header {
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--primary);
+  display: flex; 
+  align-items: center;
+  gap: 10px;
 }
 
-.logo span {
+.logo .logo-accent {
   color: var(--accent);
+}
+
+/* Logo image sizing */
+.header-logo-img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 /* Theme container */
@@ -323,7 +334,7 @@ footer {
 }
 
 .footer-brand .logo {
-  color: var(--accent-light);
+  color: var(--primary);
   margin-bottom: 10px;
   display: block;
 }
@@ -2918,11 +2929,27 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   margin-bottom: 28px;
 }
 
+/* Brand block inside auth card */
 .auth-header .logo {
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 20px;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 700;
 }
+
+/* Bigger logo image for auth pages */
+.auth-logo-img {
+  width: 192px;
+  height: 192px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 
 .auth-header h1 {
   font-size: 1.3rem;

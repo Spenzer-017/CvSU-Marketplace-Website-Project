@@ -288,7 +288,7 @@
             </div>
             <div>
               <div class="contact-info-label">Email</div>
-              <div class="contact-info-value">kevinspenzer.lima@cvsu.edu.ph</div>
+              <div class="contact-info-value">kabsuhayan@gmail.com</div>
             </div>
           </div>
 

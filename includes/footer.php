@@ -6,7 +6,9 @@
 
         <!-- Brand column -->
         <div class="footer-brand">
-            <a href="index.php" class="logo">CvSU <span style="color: #C0B87A;">Marketplace</span></a>
+            <a href="index.php" class="logo">
+                <span>Kabsu<span class="logo-accent">hayan</span></span>
+            </a>
             <p>Your campus marketplace - buy & sell within the CvSU community.</p>
         </div>
 
@@ -53,7 +55,7 @@
   <div class="modal-box">
  
     <div class="modal-icon" id="modalIcon">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M109-120q-11 0-20-5.5T75-140q-5-9-5.5-19.5T75-180l370-640q6-10 15.5-15t19.5-5q10 0 19.5 5t15.5 15l370 640q6 10 5.5 20.5T885-140q-5 9-14 14.5t-20 5.5H109Zm69-80h604L480-720 178-200Zm330.5-51.5Q520-263 520-280t-11.5-28.5Q497-320 480-320t-28.5 11.5Q440-297 440-280t11.5 28.5Q463-240 480-240t28.5-11.5Zm0-120Q520-383 520-400v-120q0-17-11.5-28.5T480-560q-17 0-28.5 11.5T440-520v120q0 17 11.5 28.5T480-360q17 0 28.5-11.5ZM480-460Z"/></svg>
     </div>
  
     <div class="modal-title" id="modalTitle">Are you sure?</div>
@@ -131,7 +133,6 @@
         if (e.key === 'Escape' && overlay.classList.contains('modal-open')) closeModal();
     });
     
-    // Pattern A: <form data-confirm="...">
     // Intercepts submit, shows modal, submits for real only on Confirm.
     document.addEventListener('submit', function (e) {
         const form = e.target;
@@ -147,7 +148,6 @@
         }, isGreen);
     });
     
-    // Pattern B: <button data-confirm="...">
     // Intercepts click, shows modal, re-fires click only on Confirm.
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('button[data-confirm]');

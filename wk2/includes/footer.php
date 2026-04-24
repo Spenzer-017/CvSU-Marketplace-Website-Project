@@ -6,7 +6,9 @@
 
         <!-- Brand column -->
         <div class="footer-brand">
-            <a href="index.php" class="logo">CvSU <span style="color: #C0B87A;">Marketplace</span></a>
+            <a href="index.php" class="logo">
+                <span>Kabsu<span class="logo-accent">hayan</span></span>
+            </a>
             <p>Your campus marketplace - buy & sell within the CvSU community.</p>
         </div>
 

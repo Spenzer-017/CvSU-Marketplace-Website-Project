@@ -445,7 +445,7 @@
           <form method="POST" class="chat-form" id="chatForm">
             <input type="hidden" name="receiver_id" value="<?= $active_to ?>">
             <input type="hidden" name="item_id" value="<?= $active_item ?>">
-            <textarea name="message" id="messageInput" placeholder="Type a message..." maxlength="1000" rows="1" required></textarea>
+            <textarea name="message" id="messageInput" placeholder="Enter a message" maxlength="1000" rows="1" required></textarea>
             <button type="submit" name="send_message" class="btn-send" aria-label="Send message">
               <?= $sendIcon ?>
             </button>

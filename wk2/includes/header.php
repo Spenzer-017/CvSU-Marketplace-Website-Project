@@ -51,7 +51,8 @@
 
         <!-- Logo -->
         <a href="index.php" class="logo">
-            CvSU <span>Marketplace</span>
+            <img src="./assets/img/v3_logo.png" alt="website-logo" class="header-logo-img">
+            <span>Kabsu<span class="logo-accent">hayan</span></span>
         </a>
 
         <!-- Navigation links -->
