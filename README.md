@@ -60,7 +60,8 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
 - Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard, transaction)
 - Things to fix: 
-    * 
+    * Terms & conditions
+    * Logout button inside profile
 - Things to look out for:
     * front-end issues like message to long overflowing, etc. check for all pages
     * responsiveness for all pages

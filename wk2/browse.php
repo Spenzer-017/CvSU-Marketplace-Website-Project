@@ -8,7 +8,7 @@
   session_start();
 
   // Forced user login (Remove/change later on for authentication)
-  $_SESSION['user'] = ["name" => "Spenzer", 'course' => 'BS Computer Science', "id" => 17];
+  // $_SESSION['user'] = ["name" => "Spenzer", 'course' => 'BS Computer Science', "id" => 17];
   $user = $_SESSION['user'] ?? null;
 ?>
 
@@ -81,9 +81,7 @@
   <!-- Category tabs -->
   <div class="category-tabs">
     <?php foreach ($categories as $cat): ?>
-      <a href="?category=<?= urlencode($cat) ?>&q=<?= urlencode($search_q) ?>&sort=<?= urlencode($active_sort) ?>"
-         class="cat-tab <?= $active_cat === $cat ? 'active' : '' ?>">
-        <?= htmlspecialchars($cat) ?>
+      <a href="?category=<?= urlencode($cat) ?>&q=<?= urlencode($search_q) ?>&sort=<?= urlencode($active_sort) ?>" class="cat-tab <?= $active_cat === $cat ? 'active' : '' ?>"> <?= htmlspecialchars($cat) ?>
       </a>
     <?php endforeach; ?>
   </div>

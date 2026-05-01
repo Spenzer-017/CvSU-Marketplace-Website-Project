@@ -405,7 +405,7 @@
         <!-- Contact -->
         <div class="form-group" style="margin-bottom:0;">
           <label for="contact">Contact / Messenger</label>
-          <input type="text" id="contact" name="contact" value="<?= htmlspecialchars($user['contact_info']) ?>" placeholder="e.g. FB: Juan dela Cruz" maxlength="80"/>
+          <input type="text" id="contact" name="contact" value="<?= htmlspecialchars($user['contact_info']) ?>" placeholder="e.g. FB: Spenzer Lima" maxlength="80"/>
         </div>
 
       </div>
