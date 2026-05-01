@@ -174,13 +174,6 @@ header {
   image-rendering: crisp-edges;
 }
 
-/* Theme container */
-.theme-container {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
 /* Theme switch */
 #theme-switch {
   margin-left: 10px;

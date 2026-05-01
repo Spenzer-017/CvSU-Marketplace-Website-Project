@@ -1,104 +1,134 @@
-/* includes.js — Kabsuhayan */
+// Menu Toggle Variables (Guest header)
+const menuToggle = document.querySelector("header .menu-toggle");
+const nav = document.querySelector("header nav");
 
-document.addEventListener('DOMContentLoaded', () => {
+// Theme Switch Variables
+let darkmode = localStorage.getItem("darkmode");
+const themeSwitch = document.getElementById("theme-switch");
 
-  const body          = document.body;
-  const sidebar       = document.getElementById('sidebar');
-  const overlay       = document.getElementById('sidebarOverlay');
-  const sidebarToggle = document.getElementById('sidebarToggle');
-  const profileToggle = document.getElementById('profileToggle');
-  const profileMenu   = document.getElementById('profileDropdown');
-  const themeBtns     = document.querySelectorAll('#theme-switch');
+// Darkmode Enable Function
+const enableDarkmode = () => {
+    document.body.classList.add("darkmode");
+    localStorage.setItem("darkmode", "active");
+}
 
-  // ── Theme ──────────────────────────────────────────────────────
-  // Supports both old key ("active") and new key ("dark") so existing
-  // user preferences aren't lost after the update.
-  const savedTheme = localStorage.getItem('darkmode');
-  if (savedTheme === 'active' || savedTheme === 'dark') {
-    body.classList.add('darkmode');
-  }
+// Darkmode Disable Function
+const disableDarkmode = () => {
+    document.body.classList.remove("darkmode");
+    localStorage.setItem("darkmode", null);
+}
 
-  const enableDarkmode = () => {
-    body.classList.add('darkmode');
-    localStorage.setItem('darkmode', 'active'); // keep original key/value
-  };
-
-  const disableDarkmode = () => {
-    body.classList.remove('darkmode');
-    localStorage.setItem('darkmode', null);
-  };
-
-  themeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      localStorage.getItem('darkmode') === 'active'
-        ? disableDarkmode()
-        : enableDarkmode();
+// Guest Menu Toggle Event
+if (menuToggle && nav) {
+    menuToggle.addEventListener("click", () => {
+        nav.classList.toggle("open");
+        menuToggle.classList.toggle("open");
     });
-  });
+}
 
-  // ── Mobile sidebar open/close ──────────────────────────────────
-  function openSidebar() {
-    if (!sidebar) return;
-    sidebar.classList.add('open');
-    if (overlay) overlay.classList.add('active');
-  }
+if (darkmode === "active") enableDarkmode();
 
-  function closeSidebar() {
-    if (!sidebar) return;
-    sidebar.classList.remove('open');
-    if (overlay) overlay.classList.remove('active');
-  }
-
-  if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', () => {
-      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+// Theme Switch Event
+if (themeSwitch) {
+    themeSwitch.addEventListener("click", () => {
+        darkmode = localStorage.getItem("darkmode");
+        darkmode !== "active" ? enableDarkmode() : disableDarkmode();
     });
-  }
+}
 
-  if (overlay) overlay.addEventListener('click', closeSidebar);
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeSidebar(); closeProfile(); }
-  });
-
-  // ── Submenu groups ─────────────────────────────────────────────
-  document.querySelectorAll('.sidebar-group-toggle').forEach(toggle => {
-    toggle.addEventListener('click', () => {
-      const group  = toggle.closest('.sidebar-group');
-      if (!group) return;
-      const isOpen = group.classList.contains('open');
-      document.querySelectorAll('.sidebar-group.open').forEach(g => {
-        if (g !== group) g.classList.remove('open');
-      });
-      group.classList.toggle('open', !isOpen);
-      toggle.setAttribute('aria-expanded', !isOpen);
-    });
-  });
-
-  // ── Profile dropdown ───────────────────────────────────────────
-  function closeProfile() {
-    if (profileMenu) profileMenu.classList.remove('open');
-  }
-
-  if (profileToggle && profileMenu) {
-    profileToggle.addEventListener('click', e => {
-      e.stopPropagation();
-      profileMenu.classList.toggle('open');
-    });
-    document.addEventListener('click', e => {
-      if (!profileMenu.contains(e.target)) closeProfile();
-    });
-  }
-
-  // ── Guest hamburger (original behavior preserved) ──────────────
-  const menuToggle = document.getElementById('guestMenuToggle');
-  const guestNav   = document.querySelector('.guest-header nav');
-
-  if (menuToggle && guestNav) {
-    menuToggle.addEventListener('click', () => {
-      const isOpen = guestNav.classList.toggle('open');
-      menuToggle.classList.toggle('open', isOpen);
-    });
-  }
-
+// Theme Switch Button Event
+const sidebarThemeBtn = document.getElementById("sidebarThemeBtn");
+sidebarThemeBtn.addEventListener("click", () => {
+    darkmode = localStorage.getItem("darkmode");
+    darkmode !== "active" ? enableDarkmode() : disableDarkmode();
 });
+
+// ============================================================
+// SIDEBAR (Logged-in users)
+// ============================================================
+(function () {
+    const sidebar = document.getElementById("sidebar");
+    if (!sidebar) return;
+
+    // Mark body for layout shift
+    document.body.classList.add("has-sidebar");
+
+    const backdrop = document.getElementById("sidebarBackdrop");
+    const mobileToggle = document.getElementById("menuToggle");
+
+    // ---- Mobile sidebar open/close ----
+    function openSidebar() {
+        sidebar.classList.add("expanded");
+        if (backdrop) {
+            backdrop.style.display = "block";
+            requestAnimationFrame(() => backdrop.classList.add("visible"));
+        }
+        if (mobileToggle) mobileToggle.classList.add("open");
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove("expanded");
+        if (backdrop) {
+            backdrop.classList.remove("visible");
+            setTimeout(() => { backdrop.style.display = "none"; }, 260);
+        }
+        if (mobileToggle) mobileToggle.classList.remove("open");
+    }
+
+    function isMobile() {
+        return window.innerWidth <= 1000;
+    }
+
+    if (mobileToggle) {
+        mobileToggle.addEventListener("click", () => {
+            if (sidebar.classList.contains("expanded")) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener("click", closeSidebar);
+    }
+
+    // Close sidebar on resize back to desktop
+    window.addEventListener("resize", () => {
+        if (!isMobile()) {
+            closeSidebar();
+        }
+    });
+
+    // ---- Submenu toggle ----
+    const submenuWraps = document.querySelectorAll(".sidebar-submenu-wrap");
+    submenuWraps.forEach(wrap => {
+        const toggle = wrap.querySelector(".sidebar-submenu-toggle");
+        if (!toggle) return;
+        toggle.addEventListener("click", () => {
+            wrap.classList.toggle("open");
+        });
+    });
+
+    // ---- Profile dropdown ----
+    const profileWrap = document.getElementById("profileDropdownWrap");
+    const profileBtn = document.getElementById("profileAvatarBtn");
+    const profileDropdown = document.getElementById("profileDropdown");
+
+    if (profileBtn && profileWrap) {
+        profileBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            profileWrap.classList.toggle("open");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!profileWrap.contains(e.target)) {
+                profileWrap.classList.remove("open");
+            }
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") profileWrap.classList.remove("open");
+        });
+    }
+})();
