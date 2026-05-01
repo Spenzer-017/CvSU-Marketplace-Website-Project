@@ -56,6 +56,20 @@
     $priceTagIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M856-390 570-104q-12 12-27 18t-30 6q-15 0-30-6t-27-18L103-457q-11-11-17-25.5T80-513v-287q0-33 23.5-56.5T160-880h287q16 0 31 6.5t26 17.5l352 353q12 12 17.5 27t5.5 30q0 15-5.5 29.5T856-390ZM513-160l286-286-353-354H160v286l353 354ZM260-640q25 0 42.5-17.5T320-700q0-25-17.5-42.5T260-760q-25 0-42.5 17.5T200-700q0 25 17.5 42.5T260-640Zm220 160Z"/></svg>';
 
     $sustainableIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M440-122q-121-15-200.5-105.5T160-440q0-66 26-126.5T260-672l57 57q-38 34-57.5 79T240-440q0 88 56 155.5T440-202v80Zm80 0v-80q87-16 143.5-83T720-440q0-100-70-170t-170-70h-3l44 44-56 56-140-140 140-140 56 56-44 44h3q134 0 227 93t93 227q0 121-79.5 211.5T520-122Z"/></svg>';
+
+    // Sidebar-specific nav icons (placeholders — swap with your preferred SVGs)
+    $navHomeIcon         = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M240-200h150v-250h180v250h150v-390L480-765 240-590v390Zm-80 80v-520l320-240 320 240v520H520v-250h-80v250H160Zm320-353Z"/></svg>';
+    $navDashboardIcon    = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Z"/></svg>';
+    $navSellIcon         = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>';
+    $navListingsIcon     = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M360-240h440v-107H360v107ZM160-613h107v-107H160v107Zm0 187h107v-107H160v107Zm0 186h107v-107H160v107Zm200-186h440v-107H360v107Zm0-187h440v-107H360v107Z"/></svg>';
+    $navSavedIcon        = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z"/></svg>';
+    $navLogoutIcon       = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>';
+    $navPurchasesIcon    = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Z"/></svg>';
+    $navSalesIcon        = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M441-120v-86q-53-12-91.5-46T293-348l74-30q15 48 44.5 73t77.5 25q41 0 69.5-18.5T587-356q0-35-22-55.5T463-455q-78-27-113-64t-35-95q0-51 31.5-91T441-754v-86h80v86q42 6 72.5 36.5T638-640l-74 32q-11-32-32-48t-52-16q-40 0-65 19.5T390-600q0 32 20 51t67 35q57 20 95.5 58t38.5 93q0 57-33 93.5T521-206v86h-80Z"/></svg>';
+    $navChevronIcon      = '<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>';
+    $navBellIcon         = '<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px"><path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z"/></svg>';
+    $navSunIcon          = '<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px"><path d="M338.5-338.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>';
+    $navMoonIcon         = '<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>';
 ?>
 
 <!DOCTYPE html>
@@ -71,47 +85,210 @@
 
 <body>
 
-    <header>
+<?php if (isset($_SESSION['user'])): ?>
+<!-- =====================================================
+     LOGGED-IN LAYOUT: Sidebar + Top Header
+     ===================================================== -->
 
-        <!-- Logo -->
-        <a href="index.php" class="logo">
-            <img src="./assets/img/v3_logo.png" alt="website-logo" class="header-logo-img">
-            <span>Kabsu<span class="logo-accent">hayan</span></span>
-        </a>
+    <!-- Mobile overlay backdrop -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <!-- Navigation links -->
-        <nav>
-            <!-- Logged In -->
-            <?php if (isset($_SESSION['user'])): ?>
-                <a href="index.php" <?= ($activePage ?? '') === 'home' ? 'class="active"' : '' ?>>Home</a>
-                <a href="dashboard.php" <?= ($activePage ?? '') === 'dashboard' ? 'class="active"' : '' ?>>Dashboard</a>
-                <a href="browse.php" <?= ($activePage ?? '') === 'browse' ? 'class="active"' : '' ?>>Browse</a>
-                <a href="sell.php" <?= ($activePage ?? '') === 'sell' ? 'class="active"' : '' ?>>Sell</a>
-                <a href="transactions.php" <?= ($activePage ?? '') === 'transactions' ? 'class="active"' : '' ?>>Transactions</a>
-                <a href="profile.php" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>Profile</a>
-                <a href="logout.php" class="btn-login">Logout</a>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
 
-            <!-- Guest -->
-            <?php else: ?>
-                <a href="index.php" <?= ($activePage ?? '') === 'home' ? 'class="active"' : '' ?>>Home</a>
-                <a href="login.php" class="btn-login">Login</a>
-                <a href="signup.php" class="btn-signup">Sign Up</a>
-            <?php endif; ?>
+        <!-- Logo area -->
+        <div class="sidebar-logo">
+            <a href="index.php" class="sidebar-logo-link">
+                <img src="./assets/img/v3_logo.png" alt="Kabsuhayan"
+                     class="sidebar-logo-img"
+                     style="image-rendering:pixelated; image-rendering:crisp-edges;">
+                <span class="sidebar-logo-text">
+                    Kabsu<span class="sidebar-logo-accent">hayan</span>
+                </span>
+            </a>
+        </div>
+
+        <!-- Nav links -->
+        <nav class="sidebar-nav">
+            <a href="index.php"
+               class="sidebar-link <?= ($activePage ?? '') === 'home' ? 'active' : '' ?>">
+                <span class="sidebar-icon"><?= $navHomeIcon ?></span>
+                <span class="sidebar-label">Home</span>
+            </a>
+
+            <a href="dashboard.php"
+               class="sidebar-link <?= ($activePage ?? '') === 'dashboard' ? 'active' : '' ?>">
+                <span class="sidebar-icon"><?= $navDashboardIcon ?></span>
+                <span class="sidebar-label">Dashboard</span>
+            </a>
+
+            <a href="browse.php"
+               class="sidebar-link <?= ($activePage ?? '') === 'browse' ? 'active' : '' ?>">
+                <span class="sidebar-icon"><?= $searchIcon ?></span>
+                <span class="sidebar-label">Browse</span>
+            </a>
+
+            <a href="sell.php"
+               class="sidebar-link <?= ($activePage ?? '') === 'sell' ? 'active' : '' ?>">
+                <span class="sidebar-icon"><?= $navSellIcon ?></span>
+                <span class="sidebar-label">Sell an Item</span>
+            </a>
+
+            <!-- Transactions with submenu -->
+            <div class="sidebar-group <?= in_array(($activePage ?? ''), ['transactions']) ? 'open' : '' ?>">
+                <button class="sidebar-link sidebar-group-toggle"
+                        aria-expanded="<?= in_array(($activePage ?? ''), ['transactions']) ? 'true' : 'false' ?>">
+                    <span class="sidebar-icon"><?= $transactionIcon ?></span>
+                    <span class="sidebar-label">Transactions</span>
+                    <span class="sidebar-chevron"><?= $navChevronIcon ?></span>
+                </button>
+                <div class="sidebar-submenu">
+                    <a href="transactions.php?view=buying"
+                       class="sidebar-sublink <?= (($activePage ?? '') === 'transactions' && ($_GET['view'] ?? '') === 'buying') ? 'active' : '' ?>">
+                        <span class="sidebar-icon"><?= $navPurchasesIcon ?></span>
+                        <span class="sidebar-label">My Purchases</span>
+                    </a>
+                    <a href="transactions.php?view=selling"
+                       class="sidebar-sublink <?= (($activePage ?? '') === 'transactions' && ($_GET['view'] ?? '') === 'selling') ? 'active' : '' ?>">
+                        <span class="sidebar-icon"><?= $navSalesIcon ?></span>
+                        <span class="sidebar-label">My Sales</span>
+                    </a>
+                </div>
+            </div>
+
+            <a href="my-listings.php"
+               class="sidebar-link <?= ($activePage ?? '') === 'my-listings' ? 'active' : '' ?>">
+                <span class="sidebar-icon"><?= $navListingsIcon ?></span>
+                <span class="sidebar-label">My Listings</span>
+            </a>
+
+            <a href="messages.php"
+               class="sidebar-link <?= ($activePage ?? '') === 'messages' ? 'active' : '' ?>">
+                <span class="sidebar-icon"><?= $messageIcon ?></span>
+                <span class="sidebar-label">Messages</span>
+                <!-- Unread badge — populate via PHP if needed -->
+                <?php
+                    // Example: if you have $stat_unread available here, show it
+                    // if (!empty($stat_unread) && $stat_unread > 0):
+                    //   echo '<span class="sidebar-badge">' . $stat_unread . '</span>';
+                    // endif;
+                ?>
+            </a>
+
+            <a href="saved-items.php"
+               class="sidebar-link <?= ($activePage ?? '') === 'saved-items' ? 'active' : '' ?>">
+                <span class="sidebar-icon"><?= $navSavedIcon ?></span>
+                <span class="sidebar-label">Saved Items</span>
+            </a>
         </nav>
 
-        <!-- Theme Switch -->
-        <button id="theme-switch">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M338.5-338.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>
+        <!-- Sidebar footer: theme + logout -->
+        <div class="sidebar-footer">
+            <!-- Theme switch -->
+            <button class="sidebar-link sidebar-theme-btn" id="theme-switch" title="Toggle theme">
+                <span class="sidebar-icon sidebar-icon-sun"><?= $navSunIcon ?></span>
+                <span class="sidebar-icon sidebar-icon-moon"><?= $navMoonIcon ?></span>
+                <span class="sidebar-label sidebar-theme-label">Toggle Theme</span>
+            </button>
+
+            <!-- Logout -->
+            <a href="logout.php" class="sidebar-link sidebar-logout">
+                <span class="sidebar-icon"><?= $navLogoutIcon ?></span>
+                <span class="sidebar-label">Logout</span>
+            </a>
+        </div>
+
+    </aside>
+    <!-- ===== END SIDEBAR ===== -->
+
+    <!-- ===== TOP HEADER (logged in — minimal) ===== -->
+    <header class="topbar" id="topbar">
+
+        <!-- Hamburger (mobile only) -->
+        <button class="topbar-hamburger" id="sidebarToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
         </button>
 
-        <!-- Hamburger menu toggle (For mobile) -->
-        <div class="menu-toggle">
-            <?= $menuIcon ?>
-            <?= $closeIcon ?>
+        <!-- Page title slot — optional, pages can set $pageTitle -->
+        <div class="topbar-title">
+            <?= htmlspecialchars($pageTitle ?? 'Kabsuhayan') ?>
+        </div>
+
+        <div class="topbar-right">
+            <!-- Notification bell -->
+            <button class="topbar-icon-btn" title="Notifications">
+                <?= $navBellIcon ?>
+                <!-- Optional badge: <span class="topbar-badge">3</span> -->
+            </button>
+
+            <!-- Profile dropdown -->
+            <div class="topbar-profile" id="profileDropdown">
+                <button class="topbar-avatar" id="profileToggle">
+                    <?php if (!empty($_SESSION['user']['avatar'])): ?>
+                        <img src="assets/img/<?= htmlspecialchars($_SESSION['user']['avatar']) ?>.png"
+                             alt="avatar"
+                             style="image-rendering:pixelated; image-rendering:crisp-edges;">
+                    <?php else: ?>
+                        <span><?= strtoupper(substr($_SESSION['user']['name'] ?? 'U', 0, 1)) ?></span>
+                    <?php endif; ?>
+                </button>
+                <div class="topbar-dropdown" id="profileMenu">
+                    <div class="topbar-dropdown-header">
+                        <strong><?= htmlspecialchars($_SESSION['user']['name'] ?? '') ?></strong>
+                        <small><?= htmlspecialchars($_SESSION['user']['email'] ?? '') ?></small>
+                    </div>
+                    <a href="profile.php" class="topbar-dropdown-item">
+                        <?= $userIcon ?> My Profile
+                    </a>
+                    <a href="dashboard.php" class="topbar-dropdown-item">
+                        <?= $navDashboardIcon ?> Dashboard
+                    </a>
+                    <div class="topbar-dropdown-divider"></div>
+                    <a href="logout.php" class="topbar-dropdown-last-item topbar-dropdown-logout">
+                        <?= $navLogoutIcon ?> Logout
+                    </a>
+                </div>
+            </div>
         </div>
 
     </header>
+    <!-- ===== END TOP HEADER ===== -->
 
-    <!-- Main starter -->
+    <!-- Page content wrapper -->
+    <main class="main-content">
+
+<?php else: ?>
+<!-- =====================================================
+     GUEST LAYOUT: Traditional top header
+     ===================================================== -->
+
+    <header class="guest-header">
+        <a href="index.php" class="logo">
+            <img src="./assets/img/v3_logo.png" alt="Kabsuhayan"
+                 class="header-logo-img"
+                 style="image-rendering:pixelated; image-rendering:crisp-edges;">
+            <span>Kabsu<span class="logo-accent">hayan</span></span>
+        </a>
+
+        <nav id="guestNav">
+            <a href="index.php" <?= ($activePage ?? '') === 'home' ? 'class="active"' : '' ?>>Home</a>
+            <a href="login.php" class="btn-login">Login</a>
+            <a href="signup.php" class="btn-signup">Sign Up</a>
+        </nav>
+
+        <!-- Theme switch (guest) -->
+        <button id="theme-switch" class="guest-theme-btn">
+            <?= $navSunIcon ?>
+            <?= $navMoonIcon ?>
+        </button>
+
+        <!-- Mobile hamburger (guest) -->
+        <div class="menu-toggle" id="guestMenuToggle">
+            <?= $menuIcon ?>
+            <?= $closeIcon ?>
+        </div>
+    </header>
+
     <main>
+
+<?php endif; ?>
