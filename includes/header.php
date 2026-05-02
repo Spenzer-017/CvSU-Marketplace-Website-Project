@@ -88,8 +88,14 @@
                 <a href="browse.php" <?= ($activePage ?? '') === 'browse' ? 'class="active"' : '' ?>>Browse</a>
                 <a href="sell.php" <?= ($activePage ?? '') === 'sell' ? 'class="active"' : '' ?>>Sell</a>
                 <a href="transactions.php" <?= ($activePage ?? '') === 'transactions' ? 'class="active"' : '' ?>>Transactions</a>
-                <a href="profile.php" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>Profile</a>
-                <a href="logout.php" class="btn-login">Logout</a>
+                <div class="profile-dropdown-wrapper">
+                    <a href="profile.php" id="profileDropdownBtn" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>Profile</a>
+                    <ul id="profileDropdownMenu">
+                        <li><a href="profile.php" class="profile-dropdown-content">Edit Profile</a></li>
+                        <li><a href="logout.php" class="profile-dropdown-content">Logout</a></li>
+                    </ul>
+                </div>
+                <!-- <a href="logout.php" class="btn-login">Logout</a> -->
 
             <!-- Guest -->
             <?php else: ?>
