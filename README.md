@@ -49,7 +49,6 @@ There's still room for improvement on the color scheme of my themes like in hove
 
 # Things To Take Note Of
 (Optional):
-- Maybe implement a real SMTP verification to send OTP to cvsu email and verify account authenticity
 - Image upload might need to change where it saves
 - The load page specific javascript in the footer have no purpose for now because almost all script are embedded
 - Things to maybe implement (account deletion option, forgot password)
@@ -59,7 +58,7 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Major design improvements to desktop and other devices navbar
 (Important):
 - Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
-- Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard, transaction)
+- Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard, transaction, signup, verify, mail)
 - Things to fix: 
     * Terms & conditions
 - Things to look out for:

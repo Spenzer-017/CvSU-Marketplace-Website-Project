@@ -6,6 +6,8 @@
 
   session_start();
 
+  date_default_timezone_set('Asia/Manila');
+
   // If already logged in, redirect to dashboard
   if (isset($_SESSION['user'])) {
     header('Location: dashboard.php');
@@ -57,17 +59,25 @@
       if ($stmt->fetch()) $errors[] = 'An account with that email already exists.';
     }
 
-    // Create the account
+    // All checks passed — store pending data and send OTP
     if (empty($errors)) {
-      $hashed = password_hash($password, PASSWORD_DEFAULT);
-      $stmt = $pdo->prepare(
-        'INSERT INTO users (name, email, password, avatar, created_at)
-        VALUES (?, ?, ?, ?, NOW())'
-      );
-      $stmt->execute([$name, $email, $hashed, 'junimo_0']);
+      require_once 'includes/mail.php';
 
-      header('Location: login.php?registered=1');
-      exit;
+      $_SESSION['pending_user'] = [
+        'name' => $name,
+        'email' => $email,
+        'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+      ];
+
+      $result = sendVerificationCode($pdo, $email, $name);
+
+      if ($result['success']) {
+        header('Location: verify.php');
+        exit;
+      } else {
+        unset($_SESSION['pending_user']);
+        $errors[] = 'We could not send a verification email. Please try again later.';
+      }
     }
   }
 ?>
@@ -195,13 +205,19 @@
 
       <!-- T&C Checkbox -->
       <div class="form-group tnc-row">
-        <label class="tnc-checkbox-label">
-          <input type="checkbox" name="agreed_tnc" id="agreedTnc" <?= (isset($_POST['agreed_tnc'])) ? 'checked' : '' ?> required/>
-          <span class="tnc-text">
+        <div class="tnc-checkbox-label">
+
+          <input type="checkbox" name="agreed_tnc" id="agreedTnc" <?= (isset($_POST['agreed_tnc'])) ? 'checked' : '' ?> required>
+
+          <label for="agreedTnc" class="tnc-text">
             I have read and agree to the
-            <button type="button" class="tnc-link" id="tncOpenBtn">Terms &amp; Conditions</button>
-          </span>
-        </label>
+          </label>
+
+          <button type="button" class="tnc-link" id="tncOpenBtn">
+            Terms &amp; Conditions
+          </button>
+
+        </div>
       </div>
 
       <button type="submit" class="btn-submit" id="submitBtn">Create Account</button>
