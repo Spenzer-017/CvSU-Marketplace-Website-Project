@@ -74,7 +74,7 @@
   <?php if ($user): ?>
     <!-- Search bar -->
     <form class="hero-search" action="browse.php" method="GET">
-      <input type="text" name="q" placeholder="Search for books, gadgets, supplies…" />
+      <input type="text" name="q" placeholder="Search for books, gadgets, supplies, etc." />
       <button type="submit">Search</button>
     </form>
 

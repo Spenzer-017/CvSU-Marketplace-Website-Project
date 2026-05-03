@@ -1,8 +1,14 @@
+// Menu Toggle Variables
 const menuToggle = document.querySelector(".menu-toggle");
 const nav = document.querySelector("nav");
 
+// Theme Switch Variables
 let darkmode = localStorage.getItem("darkmode");
 const themeSwitch = document.getElementById("theme-switch");
+
+// Profile Dropdown Menu Variables
+const profileBtn = document.getElementById('profileDropdownBtn');
+const profileMenu = document.getElementById('profileDropdownMenu');
 
 // Darkmode Enable Function
 const enableDarkmode = () => {
@@ -26,10 +32,25 @@ if (menuToggle && nav) {
 
 if (darkmode === "active") enableDarkmode();
 
-// Theme Swtich Event
+// Theme Switch Event
 if (themeSwitch) {
     themeSwitch.addEventListener("click", () => {
         darkmode = localStorage.getItem("darkmode");
         darkmode !== "active" ? enableDarkmode() : disableDarkmode();
     });
 }
+
+// Profile Dropdown Event
+profileBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    profileMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', function (e) {
+    if (
+        !profileBtn.contains(e.target) &&
+        !profileMenu.contains(e.target)
+    ) {
+        profileMenu.classList.remove('show');
+    }
+});

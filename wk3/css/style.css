@@ -255,20 +255,111 @@ nav a.active {
 }
 
 .btn-login:hover {
-  background-color: var(--primary-light);
+  transform: scale(1.05);
+  background-color: var(--primary);
+  color: var(--contrast-bg);
 }
 
 .btn-signup {
   background-color: var(--accent);
-  color: var(--text-dark);
+  color: var(--contrast-bg);
   padding: 8px 20px;
   border-radius: 6px;
   font-weight: 500;
 }
 
 .btn-signup:hover {
+  transform: scale(1.05);
   background-color: var(--accent);
-  filter: brightness(0.9);
+  color: var(--contrast-bg);
+}
+
+.btn-logout {
+  display: none;
+  background-color: var(--primary);
+  color: var(--contrast-bg);
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-logout:hover {
+  transform: scale(1.05);
+  background-color: var(--primary);
+  color: var(--contrast-bg);
+}
+
+#burgerProfileNav {
+  display: none;
+}
+
+.profile-dropdown-wrapper {
+  position: relative;
+}
+
+.profile-dropdown-wrapper #profileDropdownBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+#profileDropdownBtn > svg {
+  fill: currentColor;
+}
+
+#profileDropdownMenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--contrast-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 8px;
+  min-width: 170px;
+  margin-top: 10px;
+  z-index: 1000;
+}
+
+#profileDropdownMenu.show {
+  display: block;
+}
+
+#profileDropdownMenu li {
+  list-style: none;
+}
+
+.profile-dropdown-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.profile-dropdown-content:hover {
+  background: var(--hover-bg);
+  color: var(--primary);
+}
+
+.profile-dropdown-content svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.profile-dropdown-content[href="logout.php"] {
+  color: #b94040;
+}
+
+.profile-dropdown-content[href="logout.php"]:hover {
+  background-color: rgba(229, 57, 53, 0.08);
+  color: #b94040;
 }
 
 /* Hamburger menu */
@@ -396,6 +487,18 @@ footer {
   .logo {
     order: 0;
     margin-right: auto;
+  }
+
+  #burgerProfileNav {
+    display: block;
+  }
+
+  .profile-dropdown-wrapper {
+    display: none;
+  }
+
+  .btn-logout {
+    display: block;
   }
 
   #theme-switch {
@@ -642,16 +745,18 @@ footer {
   color: var(--text-muted);
 }
 
+/* Being overide by the style of browse section */
+/* This is just for reference and has no difference on browse section */
 /* Listings Grid */
 .listings-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
 
 .listing-card {
   background-color: var(--contrast-bg);
-  border: 1px solid var(--border-light);
+  border: 2px solid var(--border-light);
   border-radius: 10px;
   overflow: hidden;
   transition: box-shadow 0.2s, transform 0.2s;
@@ -661,6 +766,7 @@ footer {
 }
 
 .listing-card:hover {
+  border-color: var(--primary-light);
   box-shadow: 0 4px 16px rgba(0, 95, 2, 0.1);
   transform: translateY(-2px);
 }
@@ -1770,7 +1876,7 @@ a.message-item {
 /* Listing Card */
 .listing-card {
   background-color: var(--contrast-bg);
-  border: 1px solid var(--border-light);
+  border: 2px solid var(--border-light);
   border-radius: 10px;
   overflow: hidden;
   transition: all 0.2s, transform 0.2s;

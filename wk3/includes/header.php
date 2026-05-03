@@ -56,6 +56,10 @@
     $priceTagIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M856-390 570-104q-12 12-27 18t-30 6q-15 0-30-6t-27-18L103-457q-11-11-17-25.5T80-513v-287q0-33 23.5-56.5T160-880h287q16 0 31 6.5t26 17.5l352 353q12 12 17.5 27t5.5 30q0 15-5.5 29.5T856-390ZM513-160l286-286-353-354H160v286l353 354ZM260-640q25 0 42.5-17.5T320-700q0-25-17.5-42.5T260-760q-25 0-42.5 17.5T200-700q0 25 17.5 42.5T260-640Zm220 160Z"/></svg>';
 
     $sustainableIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M440-122q-121-15-200.5-105.5T160-440q0-66 26-126.5T260-672l57 57q-38 34-57.5 79T240-440q0 88 56 155.5T440-202v80Zm80 0v-80q87-16 143.5-83T720-440q0-100-70-170t-170-70h-3l44 44-56 56-140-140 140-140 56 56-44 44h3q134 0 227 93t93 227q0 121-79.5 211.5T520-122Z"/></svg>';
+
+    $arrowDownIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M465-363.5q-7-2.5-13-8.5L268-556q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-372q-6 6-13 8.5t-15 2.5q-8 0-15-2.5Z"/></svg>';
+
+    $logoutIcon = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h240q17 0 28.5 11.5T480-800q0 17-11.5 28.5T440-760H200v560h240q17 0 28.5 11.5T480-160q0 17-11.5 28.5T440-120H200Zm487-320H400q-17 0-28.5-11.5T360-480q0-17 11.5-28.5T400-520h287l-75-75q-11-11-11-27t11-28q11-12 28-12.5t29 11.5l143 143q12 12 12 28t-12 28L669-309q-12 12-28.5 11.5T612-310q-11-12-10.5-28.5T613-366l74-74Z"/></svg>';
 ?>
 
 <!DOCTYPE html>
@@ -88,8 +92,15 @@
                 <a href="browse.php" <?= ($activePage ?? '') === 'browse' ? 'class="active"' : '' ?>>Browse</a>
                 <a href="sell.php" <?= ($activePage ?? '') === 'sell' ? 'class="active"' : '' ?>>Sell</a>
                 <a href="transactions.php" <?= ($activePage ?? '') === 'transactions' ? 'class="active"' : '' ?>>Transactions</a>
-                <a href="profile.php" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>Profile</a>
-                <a href="logout.php" class="btn-login">Logout</a>
+                <a href="profile.php" id="burgerProfileNav" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>Profile</a>
+                <div class="profile-dropdown-wrapper">
+                    <a href="#" id="profileDropdownBtn" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>Profile <?= $arrowDownIcon ?></a>
+                    <ul id="profileDropdownMenu">
+                        <li><a href="profile.php" class="profile-dropdown-content"><?= $userIcon ?>Edit Profile</a></li>
+                        <li><a href="logout.php" class="profile-dropdown-content"><?= $logoutIcon ?>Logout</a></li>
+                    </ul>
+                </div>
+                <a href="logout.php" class="btn-logout">Logout</a>
 
             <!-- Guest -->
             <?php else: ?>
