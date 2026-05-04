@@ -20,11 +20,16 @@
     exit;
   }
 
+  // DB connection
   require_once 'includes/db.php';
+
+  // Deletes expired email verification data like codes, etc.
+  $pdo->exec("DELETE FROM email_verifications WHERE expires_at < NOW()");
 
   $pending = $_SESSION['pending_user'];
   $pendingEmail = $pending['email'];
 
+  $otpError = false;
   $errors = [];
   $info = '';
 
@@ -38,7 +43,7 @@
       $stmt = $pdo->prepare(
         'SELECT id, code, expires_at, attempts
          FROM email_verifications
-         WHERE email = ?
+         WHERE email = ? AND expires_at > NOW()
          ORDER BY created_at DESC
          LIMIT 1'
       );
@@ -49,30 +54,41 @@
         $errors[] = 'No verification code found. Please request a new one.';
       } elseif ($row['attempts'] >= 5) {
         $errors[] = 'Too many incorrect attempts. Please request a new code.';
+        $otpError = true;
       } elseif (new DateTime() > new DateTime($row['expires_at'])) {
         $errors[] = 'Your code has expired. Please request a new one.';
+        $otpError = true;
       } elseif (!hash_equals($row['code'], $submitted)) {
         $pdo->prepare('UPDATE email_verifications SET attempts = attempts + 1 WHERE id = ?')->execute([$row['id']]);
         $remaining = max(0, 5 - ($row['attempts'] + 1));
-        $errors[] = 'Incorrect code. ' . ($remaining > 0 ? "{$remaining} attempt(s) remaining." : 'No attempts remaining — please request a new code.');
+        $errors[] = 'Incorrect code. ' . ($remaining > 0 ? "{$remaining} attempt(s) remaining." : 'No attempts remaining - please request a new code.');
+        $otpError = true;
       } else {
         // If valid create the user account
-        $pdo->prepare(
-          'INSERT INTO users (name, email, password, avatar, created_at)
-           VALUES (?, ?, ?, ?, NOW())'
-        )->execute([
-          $pending['name'],
-          $pending['email'],
-          $pending['password_hash'],
-          'junimo_0',
-        ]);
+        try {
+          $pdo->prepare(
+            'INSERT INTO users (name, email, password, avatar, created_at)
+            VALUES (?, ?, ?, ?, NOW())'
+          )->execute([
+            $pending['name'],
+            $pending['email'],
+            $pending['password_hash'],
+            'junimo_0',
+          ]);
 
-        // Clean up verification row and pending session data
-        $pdo->prepare('DELETE FROM email_verifications WHERE email = ?')->execute([$pendingEmail]);
-        unset($_SESSION['pending_user']);
+          // Clean up verification row and pending session data
+          $pdo->prepare('DELETE FROM email_verifications WHERE email = ?')->execute([$pendingEmail]);
+          unset($_SESSION['pending_user']);
 
-        header('Location: login.php?registered=1');
-        exit;
+          header('Location: login.php?registered=1');
+          exit;
+        } catch (PDOException $e) {
+          if ($e->getCode() == 23000) {
+            $errors[] = 'An account with this email already exists.';
+          } else {
+            throw $e;
+          }
+        }
       }
     }
   }
@@ -137,6 +153,23 @@
     $elapsed = time() - strtotime($lastCreated);
     $remainingCooldown = max(0, $resendCooldown - $elapsed);
   }
+
+  // Dev Mode Setup
+  define('DEV_MODE', false);
+  $devCode = null;
+
+  if (DEV_MODE) {
+    $stmt = $pdo->prepare(
+      'SELECT code
+      FROM email_verifications
+      WHERE email = ?
+      ORDER BY created_at DESC
+      LIMIT 1'
+    );
+
+    $stmt->execute([$pendingEmail]);
+    $devCode = $stmt->fetchColumn();
+  }
 ?>
 
 <div class="auth-page verify-page">
@@ -170,6 +203,13 @@
     <?php if ($info === 'resent'): ?>
       <div class="alert alert-success">
         A new code has been sent to your email.
+      </div>
+    <?php endif; ?>
+
+    <!-- Dev Mode Container -->
+    <?php if (DEV_MODE): ?>
+      <div class="dev-code-container">
+        <code>DEV MODE ENABLED: <strong><?= htmlspecialchars($devCode) ?></strong></code>
       </div>
     <?php endif; ?>
 
@@ -278,17 +318,19 @@
     inputs[0].focus();
 
     /* Resend cooldown timer */
+    let timerInterval;
+
     function startTimer(initial) {
       let seconds = initial ?? 60;
       resendBtn.style.display = 'none';
       timerEl.style.display = 'inline';
       countdown.textContent = seconds;
 
-      const tick = setInterval(() => {
+      timerInterval = setInterval(() => {
         seconds--;
         countdown.textContent = seconds;
         if (seconds <= 0) {
-          clearInterval(tick);
+          clearInterval(timerInterval);
           timerEl.style.display = 'none';
           resendBtn.style.display = 'inline';
         }
@@ -305,7 +347,7 @@
     }
 
     /* Shake animation on wrong code  */
-    <?php if (!empty($errors)): ?>
+    <?php if ($otpError): ?>
     (function () {
       const group = document.getElementById('otpGroup');
       group.classList.add('otp-shake');

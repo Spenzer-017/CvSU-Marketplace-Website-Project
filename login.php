@@ -11,6 +11,7 @@
   // Login Rate Limiting
   $max_attempts = 5;
   $lock_time = 60;
+  $remaining = 0;
   $is_locked = false;
 
   if (!isset($_SESSION['login_attempts'])) {

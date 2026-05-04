@@ -17,6 +17,9 @@
   // DB connection
   require_once 'includes/db.php';
 
+  // Deletes expired email verification data like codes, etc.
+  $pdo->exec("DELETE FROM email_verifications WHERE expires_at < NOW()");
+
   $errors = [];
   $name = '';
   $email = '';

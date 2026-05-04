@@ -248,8 +248,9 @@ nav a.active {
 }
 
 .btn-login:hover {
-  transform: scale(1.05);
+  transform: translateY(-0.5px);
   background-color: var(--primary);
+  filter: brightness(1.1);
   color: var(--contrast-bg);
 }
 
@@ -262,7 +263,8 @@ nav a.active {
 }
 
 .btn-signup:hover {
-  transform: scale(1.05);
+  transform: translateY(-0.5px);
+  filter: brightness(1.1);
   background-color: var(--accent);
   color: var(--contrast-bg);
 }
@@ -5766,6 +5768,20 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 .verify-email {
   color: var(--text-dark);
   font-weight: 600;
+}
+
+/* Dev Mode */
+.dev-code-container {
+  margin: 8px;
+}
+
+.dev-code-container code {
+  background: var(--hover-bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-family: monospace;
+  color: var(--primary);
 }
 
 /* OTP group */
