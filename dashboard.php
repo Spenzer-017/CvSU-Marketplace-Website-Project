@@ -32,6 +32,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = "dashboard";
+  $pageTitle = "Dashboard";
   include "includes/header.php";
 ?>
 

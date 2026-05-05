@@ -117,6 +117,7 @@
 
   // Page Setup
   $activePage = '';
+  $pageTitle = "Email Verification";
   include 'includes/header.php';
 
   // Mask the email for display

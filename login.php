@@ -87,6 +87,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
+  $pageTitle = "Login";
   include 'includes/header.php';
 ?>
 

@@ -152,6 +152,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
+  $pageTitle = "Edit Listing";
   include "includes/header.php";
 ?>
 

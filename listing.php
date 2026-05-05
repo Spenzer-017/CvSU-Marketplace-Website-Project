@@ -156,6 +156,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
+  $pageTitle = "Item Details";
   include "includes/header.php";
 ?>
 

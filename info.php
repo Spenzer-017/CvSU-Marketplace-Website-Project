@@ -12,6 +12,7 @@
 
 <?php  
   $activePage = "info"; 
+  $pageTitle = "Help Center";
   include "includes/header.php"; 
 ?>
 

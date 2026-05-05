@@ -38,6 +38,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
+  $pageTitle = "My Listings";
   include "includes/header.php";
 ?>
 

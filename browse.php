@@ -20,6 +20,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = "browse"; 
+  $pageTitle = "Browse Listings";
   include "includes/header.php";
 ?>
 

@@ -205,6 +205,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = 'transactions';
+  $pageTitle = "Transactions";
   include "includes/header.php";
 ?>
 

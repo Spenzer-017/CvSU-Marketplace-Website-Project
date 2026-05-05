@@ -51,10 +51,9 @@ There's still room for improvement on the color scheme of my themes like in hove
 (Optional):
 - Image upload might need to change where it saves
 - The load page specific javascript in the footer have no purpose for now because almost all script are embedded
-- Things to maybe implement (account deletion option, forgot password)
 - Currently only accepting int in selling prices, maybe make it accept decimal/float prices
+- Things to maybe implement (account deletion option, forgot password)
 (Less Important):
-- Add a favicon and also a different title depending on a page
 - Major design improvements to desktop and other devices navbar
 (Important):
 - Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
@@ -128,4 +127,5 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Integrated Gmail SMTP using PHPMailer to send contact form submissions to kabsuhayan@gmail.com
 - Added terms & conditions agreement before account registration
 - Implemented an email verification system that sends OTP codes through SMTP using PHPMailer
-- Added a developer mode for easier OTP testing during development.
+- Added a developer mode for easier OTP testing during development
+- Made a dynamically changing page titles for better UX

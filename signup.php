@@ -82,6 +82,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
+  $pageTitle = "Create Account";
   include 'includes/header.php';
 ?>
 

@@ -20,6 +20,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = "profile";
+  $pageTitle = "My Profile";
   include "includes/header.php";
 ?>
 

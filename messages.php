@@ -224,6 +224,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
+  $pageTitle = "Conversations";
   include "includes/header.php";
 ?>
 

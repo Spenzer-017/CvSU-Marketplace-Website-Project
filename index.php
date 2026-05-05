@@ -15,6 +15,7 @@
 <!-- PHP UI/UX Logic -->
 <?php  
   $activePage = "home"; 
+  $pageTitle = "Home";
   include "includes/header.php"; 
 ?>
 

@@ -19,6 +19,7 @@
 <!-- PHP UI/UX Logic -->
 <?php 
   $activePage = "sell"; 
+  $pageTitle = "Post an Item";
   include "includes/header.php";
 ?>
 

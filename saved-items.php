@@ -48,6 +48,7 @@
 <!-- PHP UI/UX Logic -->
 <?php
   $activePage = '';
+  $pageTitle = "Saved Items";
   include "includes/header.php";
 ?>
 
