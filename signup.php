@@ -25,12 +25,6 @@
   $email = '';
 ?>
 
-<!-- PHP UI/UX Logic -->
-<?php
-  $activePage = '';
-  include 'includes/header.php';
-?>
-
 <!-- PHP Database Query -->
 <?php
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -83,6 +77,12 @@
       }
     }
   }
+?>
+
+<!-- PHP UI/UX Logic -->
+<?php
+  $activePage = '';
+  include 'includes/header.php';
 ?>
 
 <!-- T&C Modal -->

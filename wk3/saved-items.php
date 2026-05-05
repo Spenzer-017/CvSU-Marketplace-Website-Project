@@ -18,12 +18,6 @@
   $uid = (int)$loggedInUser['id'];
 ?>
 
-<!-- PHP UI/UX Logic -->
-<?php
-  $activePage = '';
-  include "includes/header.php";
-?>
-
 <!-- PHP Database Query -->
 <?php
   // Handle unsave POST
@@ -49,6 +43,12 @@
   ");
   $stmt->execute([$uid]);
   $saved_items = $stmt->fetchAll();
+?>
+
+<!-- PHP UI/UX Logic -->
+<?php
+  $activePage = '';
+  include "includes/header.php";
 ?>
 
 <div class="saved-page">

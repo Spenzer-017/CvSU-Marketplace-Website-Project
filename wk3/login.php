@@ -42,12 +42,6 @@
   $email = '';
 ?>
 
-<!-- PHP UI/UX Logic -->
-<?php
-  $activePage = '';
-  include 'includes/header.php';
-?>
-
 <!-- PHP Database Query -->
 <?php
   if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_locked) {
@@ -87,6 +81,12 @@
       }
     }
   }
+?>
+
+<!-- PHP UI/UX Logic -->
+<?php
+  $activePage = '';
+  include 'includes/header.php';
 ?>
 
 <div class="auth-page">

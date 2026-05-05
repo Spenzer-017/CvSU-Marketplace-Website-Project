@@ -19,12 +19,6 @@
   $uid = (int)$loggedInUser['id'];
 ?>
 
-<!-- PHP UI/UX Logic -->
-<?php
-  $activePage = 'transactions';
-  include "includes/header.php";
-?>
-
 <!-- Database Query -->
 <?php 
   // Handle status update POST
@@ -206,6 +200,12 @@
     $counts[$row['status']] = (int)$row['cnt'];
     $counts['all'] += (int)$row['cnt'];
   }
+?>
+
+<!-- PHP UI/UX Logic -->
+<?php
+  $activePage = 'transactions';
+  include "includes/header.php";
 ?>
 
 <div class="transactions-page">

@@ -19,12 +19,6 @@
   $uid = (int)$loggedInUser['id'];
 ?>
 
-<!-- PHP UI/UX Logic -->
-<?php
-  $activePage = '';
-  include "includes/header.php";
-?>
-
 <!-- Database Query -->
 <?php
   // Handle sending a message
@@ -225,6 +219,12 @@
     $stmt->execute([$active_item]);
     $any_pending_on_item = (bool)$stmt->fetch();
   }
+?>
+
+<!-- PHP UI/UX Logic -->
+<?php
+  $activePage = '';
+  include "includes/header.php";
 ?>
 
 <div class="messages-page">

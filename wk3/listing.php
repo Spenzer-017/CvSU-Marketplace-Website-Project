@@ -14,12 +14,6 @@
   $loggedInUser = $_SESSION['user'] ?? null;
 ?>
 
-<!-- PHP UI/UX Logic -->
-<?php
-  $activePage = '';
-  include "includes/header.php";
-?>
-
 <!-- Database Query -->
 <?php
   // Get and validate item id from URL
@@ -155,6 +149,12 @@
 
   $is_own_listing = $loggedInUser && (int)$loggedInUser['id'] === (int)$item['seller_id'];
   $is_buyer_in_txn = $loggedInUser && $txn_buyer_id === (int)$loggedInUser['id'];
+?>
+
+<!-- PHP UI/UX Logic -->
+<?php
+  $activePage = '';
+  include "includes/header.php";
 ?>
 
 <div class="listing-page">

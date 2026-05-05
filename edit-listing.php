@@ -23,12 +23,6 @@
   }
 ?>
 
-<!-- PHP UI/UX Logic -->
-<?php
-  $activePage = '';
-  include "includes/header.php";
-?>
-
 <!-- PHP Database Query -->
 <?php
   // Fetch the item - make sure it belongs to the logged-in user
@@ -153,6 +147,12 @@
       }
     }
   }
+?>
+
+<!-- PHP UI/UX Logic -->
+<?php
+  $activePage = '';
+  include "includes/header.php";
 ?>
 
 <div class="sell-page">
