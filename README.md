@@ -57,9 +57,14 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Major design improvements to desktop and other devices navbar
 (Important):
 - Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
-- Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard, transaction)
+- Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard, transaction, reactions, react)
+- Navbar design overhaul, specifically towards profile, notification, and dropdowns
+- Listing card design overhaul
 - Things to fix:
     * make comments feature more functionable
+    * download and replace placeholder svg in listing.php, make a svg junimo skeleton for react svg
+    * fix text format of listing.php, reactions.php, react.php, and style.css(listing page section)
+    * fix responsiveness of emoji hover options and listing action buttons
 - Things to look out for:
     * front-end issues like message to long overflowing, etc. check for all pages
     * responsiveness for all pages

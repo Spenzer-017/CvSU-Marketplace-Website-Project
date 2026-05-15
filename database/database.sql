@@ -122,6 +122,18 @@ CREATE TABLE saved_items (
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
 );
 
+-- TABLE: item_reactions
+CREATE TABLE item_reactions (
+    reaction_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    item_id INT NOT NULL,
+    reaction_type ENUM('like','heart','laugh','wow','cry') NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_item_reaction (user_id, item_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
+);
+
 -- TABLE: notifications
 CREATE TABLE notifications (
     notif_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -142,6 +154,10 @@ CREATE INDEX idx_users_email ON users(email);
 -- ITEMS
 CREATE INDEX idx_items_seller ON items(seller_id);
 CREATE INDEX idx_items_category ON items(category_id);
+
+-- ITEMS REACTIONS
+CREATE INDEX idx_reactions_item ON item_reactions(item_id);
+CREATE INDEX idx_reactions_user ON item_reactions(user_id);
 
 -- MESSAGES
 CREATE INDEX idx_messages_sender ON messages(sender_id);
