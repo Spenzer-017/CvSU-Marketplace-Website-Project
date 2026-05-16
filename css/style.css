@@ -1663,8 +1663,7 @@ a.message-item {
     -webkit-overflow-scrolling: touch;
   }
 
-  .table-container th,
-  .table-container td {
+  .table-container th, .table-container td {
     padding: 10px 10px;
     font-size: 0.78rem;
   }
@@ -3296,7 +3295,11 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   scrollbar-color: var(--border-light) transparent;
 }
  
-.tnc-modal-body::-webkit-scrollbar { width: 5px; } .tnc-modal-body::-webkit-scrollbar-thumb {
+.tnc-modal-body::-webkit-scrollbar {
+  width: 5px;
+} 
+
+.tnc-modal-body::-webkit-scrollbar-thumb {
   background: var(--border-light);
   border-radius: 4px;
 }
@@ -3455,7 +3458,6 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /* SECTION 9: LISTING PAGE */
 /* NOT FINALIZE YET, NEED SOME CHANGES & OTHER THINGS */
-/* SECTION 9: LISTING PAGE */
 
 .lp-page {
   max-width: 1200px;
@@ -3489,7 +3491,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   background: var(--hover-bg);
 }
 
-/* FB-style two-column: big image left, scrollable detail right */
+/* Two-column: big image left, scrollable detail right */
 .lp-layout {
   display: grid;
   grid-template-columns: 1fr 420px;
@@ -3501,7 +3503,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   background: var(--contrast-bg);
 }
 
-/* ─── LEFT: IMAGE COLUMN ─── */
+/* Left image column */
 .lp-image-col {
   position: sticky;
   top: 80px;
@@ -3567,10 +3569,15 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   color: #fff;
 }
 
-.lp-overlay--sold { background: rgba(0,0,0,0.55); }
-.lp-overlay--reserved { background: rgba(192,160,0,0.52); }
+.lp-overlay--sold {
+  background: rgba(0,0,0,0.55);
+}
 
-/* ─── RIGHT: DETAIL COLUMN ─── */
+.lp-overlay--reserved {
+  background: rgba(192,160,0,0.52);
+}
+
+/* Right detail column */
 .lp-detail-col {
   border-left: 1px solid var(--border-light);
   max-height: calc(100vh - 70px);
@@ -3580,12 +3587,25 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   padding-bottom: 24px;
 }
 
-/* Scrollbar inside detail col */
-.lp-detail-col::-webkit-scrollbar { width: 6px; }
-.lp-detail-col::-webkit-scrollbar-track { background: transparent; }
-.lp-detail-col::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 10px; }
+/* Scrollbar inside detail column */
+.lp-detail-col::-webkit-scrollbar {
+  width: 6px;
+}
 
-/* ─── TITLE BLOCK ─── */
+.lp-detail-col::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lp-detail-col::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 10px;
+}
+
+.lp-detail-col::-webkit-scrollbar-thumb:hover {
+  background: var(--hover-scroll);
+}
+
+/* Title block */
 .lp-title-block {
   padding: 24px 24px 0;
 }
@@ -3643,7 +3663,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   flex-shrink: 0;
 }
 
-/* ─── ACTIONS ─── */
+/* Actions */
 .lp-actions {
   padding: 16px 24px;
   border-bottom: 1px solid var(--border-light);
@@ -3683,12 +3703,15 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   text-align: center;
 }
 
-.lp-txn-buyer strong { color: var(--text-dark); }
+.lp-txn-buyer strong {
+  color: var(--text-dark);
+}
 
 .lp-action-btns {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  align-items: stretch;
 }
 
 .lp-action-btn {
@@ -3696,9 +3719,9 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   align-items: center;
   justify-content: center;
   gap: 6px;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
-  padding: 10px 14px;
+  padding: 10px 10px;
   border-radius: 10px;
   font-family: 'Poppins', sans-serif;
   font-size: 0.82rem;
@@ -3733,6 +3756,15 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   background: var(--hover-bg);
   color: var(--text-dark);
   border: 1.5px solid var(--border-light);
+}
+
+.lp-action-btn--full {
+  width: 100%;
+  flex: none;
+}
+
+.lp-action-btn--grow {
+  flex: 2 1 0;
 }
 
 .lp-action-btn--success {
@@ -3777,7 +3809,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   text-align: center;
 }
 
-/* ─── REACTION BAR ─── */
+/* Reaction bar */
 .lp-reaction-section {
   padding: 14px 24px;
   border-bottom: 1px solid var(--border-light);
@@ -3797,40 +3829,40 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 .lp-react-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 20px;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   background: transparent;
   border: 1.5px solid var(--border-light);
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.16s, border-color 0.16s, color 0.16s;
-  white-space: nowrap;
+  transition: background 0.16s, border-color 0.16s;
+  flex-shrink: 0;
+  padding: 0;
 }
 
 .lp-react-btn svg {
-  fill: currentColor;
-  width: 16px;
-  height: 16px;
+  fill: var(--text-muted);
+  width: 18px;
+  height: 18px;
+  transition: fill 0.16s;
 }
 
-.lp-react-btn:hover,
-.lp-react-btn--active {
+.lp-react-btn:hover, .lp-react-btn--active {
   background: var(--hover-bg);
-  border-color: var(--primary-light);
-  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.lp-react-btn:hover svg, .lp-react-btn--active svg {
+  fill: var(--primary);
 }
 
 .lp-react-btn-emoji-wrap {
-  width: 20px;
-  height: 20px;
-  min-width: 20px;
-  min-height: 20px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   border-radius: 50%;
-  background: var(--surface-tint);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -3844,7 +3876,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   display: block;
-  transform: scale(1.2) translate(0.5px, -0.5px);
+  transform: scale(1.4) translate(0.5px, -0.5px);
   object-fit: cover;
 }
 
@@ -3977,7 +4009,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   display: block;
-  transform: scale(1.2) translate(0.5px, -0.5px);
+  transform: scale(1.4) translate(0.4px, -0.4px);
   object-fit: cover;
 }
 
@@ -3987,7 +4019,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   color: var(--text-muted);
 }
 
-/* ─── SHARED SECTION WRAPPER ─── */
+/* Section wrapper */
 .lp-section {
   padding: 16px 24px;
   border-bottom: 1px solid var(--border-light);
@@ -4013,7 +4045,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   line-height: 1.75;
 }
 
-/* ─── SELLER CARD ─── */
+/* Seller card */
 .lp-seller-card {
   display: flex;
   align-items: center;
@@ -4057,7 +4089,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   margin-top: 2px;
 }
 
-/* ─── MORE FROM SELLER ─── */
+/* More from seller card */
 .lp-more-listings {
   display: flex;
   flex-direction: column;
@@ -4078,7 +4110,9 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   padding-bottom: 0;
 }
 
-.lp-more-item:hover { opacity: 0.7; }
+.lp-more-item:hover {
+  opacity: 0.7;
+}
 
 .lp-more-img {
   width: 46px;
@@ -4116,9 +4150,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   color: var(--primary);
 }
 
-/* ─── COMMENTS ─── */
-/* .lp-comments-section { } */
-
+/* Comments section */
 .lp-comment-form {
   margin-bottom: 18px;
 }
@@ -4174,8 +4206,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   transform: translateY(-1px);
 }
 
-.lp-comment-login,
-.lp-no-comments {
+.lp-comment-login, .lp-no-comments {
   font-size: 0.82rem;
   color: var(--text-muted);
 }
@@ -4246,7 +4277,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   line-height: 1.6;
 }
 
-/* ─── ALERTS ─── */
+/* Alerts */
 .lp-alert {
   font-size: 0.8rem;
   font-weight: 600;
@@ -4267,7 +4298,7 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
   border: 1px solid rgba(0,95,2,0.18);
 }
 
-/* ─── RESPONSIVE ─── */
+/* Responsiveness */
 @media (max-width: 900px) {
   .lp-layout {
     grid-template-columns: 1fr;
@@ -4292,37 +4323,38 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
 
 @media (max-width: 560px) {
-  .lp-page {
-    padding: 16px 12px 56px;
+  .lp-reaction-picker {
+    left: 0;
+    right: auto;
+    transform: translateY(8px) scale(0.94);
   }
 
-  .lp-title { font-size: 1.15rem; }
-  .lp-price { font-size: 1.4rem; }
-
-  .lp-title-block,
-  .lp-actions,
-  .lp-reaction-section,
-  .lp-section {
-    padding-left: 16px;
-    padding-right: 16px;
+  .lp-reaction-picker.lp-picker--visible {
+    transform: translateY(0) scale(1);
   }
 
-  .lp-action-btn span {
-    display: none;
+  .lp-reaction-opt {
+    padding: 4px 3px;
   }
 
-  .lp-action-btn {
+  .lp-reaction-img-wrap {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  .lp-reaction-opt-label {
+    font-size: 0.55rem;
+  }
+
+  .lp-action-btn--ghost {
     flex: 0 0 auto;
     padding: 10px 12px;
   }
 
-  .lp-reaction-picker {
-    left: 50%;
-    transform: translateX(-50%) translateY(8px) scale(0.94);
-  }
-
-  .lp-reaction-picker.lp-picker--visible {
-    transform: translateX(-50%) translateY(0) scale(1);
+  .lp-action-btn--ghost span, .lp-action-btn--secondary span, .lp-action-btn--saved span {
+    display: none;
   }
 }
 
@@ -5321,7 +5353,6 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 }
 
 /* FAQ */
-
 .faq-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

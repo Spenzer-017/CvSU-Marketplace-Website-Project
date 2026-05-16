@@ -91,7 +91,7 @@ There's still room for improvement on the color scheme of my themes like in hove
     > Profile Page Front-end
     - ???
 
-> Week 3
+> Week #3
 - Made everything functional by connecting most pages with the created database
 - Made some improvements to the front-end of the page
 - Made authentication (Login, Signup, Logout)

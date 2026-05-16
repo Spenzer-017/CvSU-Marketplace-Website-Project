@@ -53,8 +53,8 @@ There's still room for improvement on the color scheme of my themes like in hove
 - The load page specific javascript in the footer have no purpose for now because almost all script are embedded
 - Currently only accepting int in selling prices, maybe make it accept decimal/float prices
 - Things to maybe implement (account deletion option, forgot password)
+- Implement AJAX for important pages like (messages, etc.) for smoother UX
 (Less Important):
-- Major design improvements to desktop and other devices navbar
 (Important):
 - Things that exist in db & some in front-end but not yet implemented properly (notifications, reports)
 - Pages to check QA: (saved-items, my-listings, edit-listings, messages, listing, dashboard, transaction, reactions, react)
@@ -62,9 +62,6 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Listing card design overhaul
 - Things to fix:
     * make comments feature more functionable
-    * download and replace placeholder svg in listing.php, make a svg junimo skeleton for react svg
-    * fix text format of listing.php, reactions.php, react.php, and style.css(listing page section)
-    * fix responsiveness of emoji hover options and listing action buttons
 - Things to look out for:
     * front-end issues like message to long overflowing, etc. check for all pages
     * responsiveness for all pages
@@ -98,7 +95,7 @@ There's still room for improvement on the color scheme of my themes like in hove
     > Profile Page Front-end
     - ???
 
-> Week 3
+> Week #3
 - Made everything functional by connecting most pages with the created database
 - Made some improvements to the front-end of the page
 - Made authentication (Login, Signup, Logout)
@@ -126,7 +123,7 @@ There's still room for improvement on the color scheme of my themes like in hove
     > Info Page Front-end
     - ???
 
-> Week 4
+> Week #4
 - Added confirmation modals for important actions (made the footer handle the JS script for the modals)
 - Implemented a infinite scroll feature on the browse page that dynamically fetches items using an API
 - Integrated Gmail SMTP using PHPMailer to send contact form submissions to kabsuhayan@gmail.com
@@ -134,3 +131,8 @@ There's still room for improvement on the color scheme of my themes like in hove
 - Implemented an email verification system that sends OTP codes through SMTP using PHPMailer
 - Added a developer mode for easier OTP testing during development
 - Made a dynamically changing page titles for better UX
+
+> Week #5
+- Redesigned the listing page layout to a Facebook Marketplace inspired two-column structure
+- Implemented a Junimo-themed reaction system with 5 custom pixel-art emojis (Like, Heart, Laugh, Wow, Cry)
+- Built a REST API endpoint with AJAX handling for adding, changing, and removing reactions per listing with live count updates
